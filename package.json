@@ -1,0 +1,11 @@
+{
+  "name": "golden",
+  "version": "3.0.0",
+  "description": "A Premium Discord Bot with a lot of functions and wihtout any Paywalls!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Botis",
+  "license": "ISC"
+}
