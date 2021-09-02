@@ -13,7 +13,7 @@ client.once('ready', () => {
 	const text =  client.user.tag + ' is Online!';
 	var underline = "";
 
-	for (var i=0; i<= text.length-1; i++ ) {
+	for (var i=1; i<= text.length; i++ ) {
 		underline += "▬";
 	}
 
