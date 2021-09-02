@@ -1,2 +1,2 @@
-**IMPORTANT** Code Command Handler!
+**IMPORTANT:** Code Command Handler!
 
