@@ -1,7 +1,9 @@
 /** ++ Discord init ++ **/
 const { Client, Collection, Intents } = require('discord.js');
 const fs = require('fs');
-//const { config } = require('./config/config.json');
+///const { config } = require('./config/config.json');
+
+require('dotenv').config({ path: './config/.env'});
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
@@ -13,7 +15,7 @@ for (const file of commandFiles) {
 
 	client.commands.set(command.data.name, command);
 }
-/** -- Discord -- **/
+/** -- Discord init -- **/
 
 /** ++ Colors, Console Log & Start ++ **/
 var colors = require('colors/safe');
@@ -32,5 +34,5 @@ client.once('ready', () => {
 	console.log(colors.green(underline));
 });
 
-client.login('ODY0OTcxNDExMDY3NjMzNjY0.YO9NZg.EU11g0ob7ipC4MkDEKV8F_1Z1zo');
+client.login(process.env.TOKEN);
 /** -- Color & Console Log -- **/
