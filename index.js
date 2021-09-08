@@ -7,6 +7,7 @@ require('dotenv').config({ path: './config/.env'});
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
+/** ++ Command Handler ++ */
 client.commands = new Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -15,24 +16,42 @@ for (const file of commandFiles) {
 
 	client.commands.set(command.data.name, command);
 }
+
+client.on('interactionCreate', async interaction => {
+	if (!interaction.isCommand()) return;
+
+	const command = client.commands.get(interaction.commandName);
+
+	if (!command) return interaction.reply('please submit a Valid command!');
+
+	try {
+		await command.execute(interaction);
+	} catch (error) {
+		console.error(error);
+		await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+	}
+});
+/** -- Command Handler -- */
+
+/** ++ Event Handler ++ */
+
+const eventFiles = fs.readdirSync(`./events`).filter(file => file.endsWith('.js'));
+
+for (const file of eventFiles) {
+	const event = require(`./events/${file}`);
+
+	if (event.once) {
+		client.once(event.name, (...args)=> event.execute(...args));
+	} else {
+		client.on(event.name, (...args)=> event.execute(...args));
+	}
+}
+
+/** -- Event Handler -- */
+
+
 /** -- Discord init -- **/
 
-/** ++ Colors, Console Log & Start ++ **/
-var colors = require('colors/safe');
-
-client.once('ready', () => {
-
-	const text =  client.user.tag + ' is Online!';
-	var underline = "";
-
-	for (var i=1; i<= text.length; i++ ) {
-		underline += "▬";
-	}
-
-	console.log(colors.green(underline));
-	console.log(colors.green.bold(text));
-	console.log(colors.green(underline));
-});
-
+/** ++ Start ++ **/
 client.login(process.env.TOKEN);
-/** -- Color & Console Log -- **/
+/** -- Start -- **/
