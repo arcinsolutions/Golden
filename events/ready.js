@@ -4,9 +4,7 @@ module.exports = {
     name: 'ready',
     once: true,
     execute(client) {
-
-            var imgText = '';
-            imgText = `
+            const imgText = `
    ██████╗  ██████╗ ██╗     ██████╗ ███████╗███╗   ██╗ 
   ██╔════╝ ██╔═══██╗██║     ██╔══██╗██╔════╝████╗  ██║ 
   ██║  ███╗██║   ██║██║     ██║  ██║█████╗  ██╔██╗ ██║ 
