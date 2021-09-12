@@ -4,10 +4,9 @@ const fs = require('fs')
 var colors = require('colors/safe')
 
 const commands = []
-var commandFiles = ''
 
 fs.readdirSync('./commands/').forEach(dir => {
-  commandFiles = fs
+  const commandFiles = fs
     .readdirSync(`./commands/${dir}/`)
     .filter(file => file.endsWith('.js'))
   for (const file of commandFiles) {
@@ -32,9 +31,9 @@ const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
       underline += '═'
     }
 
-    console.log(colors.red(`      ╔${underline}╗`))
-    console.log('' + colors.red(`      ║${colors.green.bold(text)}║`))
-    console.log(colors.red('      ╚' + underline + '╝'))
+    console.log(colors.red(`        ╔${underline}╗`))
+    console.log('' + colors.red(`        ║${colors.green.bold(text)}║`))
+    console.log(colors.red('        ╚' + underline + '╝'))
   } catch (error) {
     console.error(error)
   }
