@@ -1,6 +1,6 @@
 var colors = require('colors/safe');
 const fs = require('fs');
-const { getRandomNumber } = require('../functions/random');
+const { getRandomActivity } = require('../functions/random');
 
 import('../functions/random.js')
 
@@ -45,32 +45,9 @@ module.exports = {
 
             //** ++ Activity ++ */ 
 
-            var currentActivity = getRandomNumber(1, 4);
-
             setInterval(()=>{
                 try{
-                    switch(currentActivity) {
-                        case 1:
-                            client.user.setActivity(`${stats[0]} Guilds`, { type: 'LISTENING' });
-                            currentActivity = getRandomNumber(0, 5);
-                            break;
-                        case 2:
-                            client.user.setActivity(`${stats[1]} Members`, { type: 'LISTENING' });
-                            currentActivity = getRandomNumber(0, 5);
-                            break;
-                        case 3:
-                            client.user.setActivity(`${stats[2]} Channels`, { type: 'LISTENING' });
-                            currentActivity = getRandomNumber(0, 5);
-                            break;
-                        case 4:
-                            client.user.setActivity(`Asking @Spastencord#1289 for Games`, { type: 'CUSTOM' });
-                            currentActivity = getRandomNumber(0, 5);
-                            break;
-                        default:
-                            client.user.setActivity(`@Botis‽#6940`, { type: 'WATCHING' });
-                            currentActivity = getRandomNumber(0, 5);
-                            break;
-                    }
+                    getRandomActivity(client)
                 }catch (e) {
                   console.log(e);
                 }
