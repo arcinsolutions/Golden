@@ -4,7 +4,7 @@ const { getRandomActivity } = require('../../functions/random')
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('activity')
-    .setDefaultPermission(false)
+    .setDefaultPermission(true)
     .setDescription('change the Activity of the Bot!'),
 
    
