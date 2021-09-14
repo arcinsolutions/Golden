@@ -20,7 +20,7 @@ const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
 
 (async () => {
   try {
-    await rest.put(Routes.applicationCommands(process.env.APPID), {
+    await rest.put(Routes.applicationGuildCommands(process.env.APPID, '863873035224612944'), {
       body: commands
     })
 
