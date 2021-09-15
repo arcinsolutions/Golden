@@ -6,8 +6,7 @@ module.exports = {
     .setName('ping')
     .setDescription('Replies with Pong!'),
   async execute (interaction, client) {
-    let embed = new MessageEmbed()
-      .setColor('GREEN')
+    const embed = new MessageEmbed()
       .setFooter(client.user.username, client.user.displayAvatarURL())
       .setTimestamp()
 
@@ -16,6 +15,7 @@ module.exports = {
         embed.setDescription(
           `**Pinging...**`
         )
+        .setColor('RED')
       ],
       fetchReply: true
     })
@@ -25,7 +25,7 @@ module.exports = {
         embed.setDescription(
           `**Roundtrip latency: ${sent.createdTimestamp -
             interaction.createdTimestamp}ms**`
-        )
+        ).setColor('DARK_GREEN')
       ]
     })
   }
