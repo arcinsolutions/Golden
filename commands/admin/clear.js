@@ -5,6 +5,7 @@ module.exports = {
     .setName('clear')
     .setDefaultPermission(true)
     .setDescription('delete a Specific amount of Messages!')
+    //.setDefaultPermission(false)
     .addIntegerOption(option =>
       option
         .setName('amount')
@@ -28,7 +29,7 @@ module.exports = {
           .then(messages => {
             // interaction.deferReply({ ephemeral: true })
             interaction.channel.bulkDelete(messages)
-            interaction.editReply(`${messages.size} Messages got deleted`)
+            interaction.editReply(`${messages.size} Messages got deleted!`) // | Command ID: ${interaction.id}
           })
       } catch (e) {
         interaction.editReply(`${e}`)

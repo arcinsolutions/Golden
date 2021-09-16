@@ -14,6 +14,6 @@ module.exports = {
     } catch(e) {
       console.log(e)
     }
-    return interaction.reply('Test!')
+    return interaction.reply('Current Activity changed!')
   }
 }
