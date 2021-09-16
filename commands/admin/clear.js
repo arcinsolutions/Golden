@@ -1,41 +1,48 @@
-const { SlashCommandBuilder } = require('@discordjs/builders')
+const { SlashCommandBuilder } = require('@discordjs/builders');
+const { MessageEmbed } = require('discord.js');
 
 module.exports = {
-  data: new SlashCommandBuilder()
-    .setName('clear')
-    .setDefaultPermission(true)
-    .setDescription('delete a Specific amount of Messages!')
-    //.setDefaultPermission(false)
-    .addIntegerOption(option =>
-      option
-        .setName('amount')
-        .setDescription('Specify the Amount of Messages get deleted!')
-        .setRequired(true)
-    ),
+	data: new SlashCommandBuilder()
+		.setName('clear')
+		.setDefaultPermission(true)
+		.setDescription('delete a Specific amount of Messages!')
+		//.setDefaultPermission(false)
+		.addIntegerOption((option) =>
+			option.setName('amount').setDescription('Specify the Amount of Messages get deleted!').setRequired(true)
+		),
 
-  async execute (interaction) {
-    const amount = interaction.options.getInteger('amount')
+	async execute(interaction, client) {
+		const amount = interaction.options.getInteger('amount');
 
-    if (amount <= 0) {
-      return interaction.reply({content: `the Amount can´t be that small! (Max 100)`, ephemeral: true })
-    } else if (amount > 100) {
-      return interaction.reply({content: `the Amount can´t be that big! (Max 100)`, ephemeral: true })
-    } else {
-      await interaction.deferReply({ ephemeral: true })
+		const embed = new MessageEmbed().setFooter(client.user.username, client.user.displayAvatarURL()).setTimestamp();
 
-      try {
-        return interaction.channel.messages
-          .fetch({ limit: amount })
-          .then(messages => {
-            // interaction.deferReply({ ephemeral: true })
-            interaction.channel.bulkDelete(messages)
-            interaction.editReply(`${messages.size} Messages got deleted!`) // | Command ID: ${interaction.id}
-          })
-      } catch (e) {
-        interaction.editReply(`${e}`)
-      }
+		if (amount <= 0) {
+			return interaction.reply({
+				embeds: [ embed.setDescription(`**the Amount can´t be that small! (Min 1)**`).setColor('DARK_RED') ],
+				ephemeral: true
+			});
+		} else if (amount > 100) {
+			return interaction.reply({
+				embeds: [ embed.setDescription(`**the Amount can´t be that big! (Max 100)**`).setColor('DARK_RED') ],
+				ephemeral: true
+			});
+		} else {
+			await interaction.deferReply({ ephemeral: true });
 
-      // return interaction.reply(`${amount} Messages got deleted`)
-    }
-  }
-}
+			try {
+				return interaction.channel.messages.fetch({ limit: amount }).then((messages) => {
+					// interaction.deferReply({ ephemeral: true })
+					interaction.channel.bulkDelete(messages);
+					interaction.editReply({
+            embeds: [ embed.setDescription(`**${messages.size} Messages were delted!**`).setColor('DARK_RED') ],
+            ephemeral: true
+          }); // | Command ID: ${interaction.id} | ${messages.size} Messages
+				});
+			} catch (e) {
+				interaction.editReply(`${e}`);
+			}
+
+			// return interaction.reply(`${amount} Messages got deleted`)
+		}
+	}
+};
