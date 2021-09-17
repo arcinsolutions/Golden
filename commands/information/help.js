@@ -18,7 +18,10 @@ module.exports = {
 			.setFooter(client.user.username, client.user.displayAvatarURL())
 			.setTimestamp()
 			.setTitle('**Help Menu**')
-			.addField('**Name** : Description', ', ', false)
+			.addFields([
+				{ name: 'Test1', value: 'test1', inline: true },
+				{ name: 'Test2', value: 'test2', inline: true }
+			])
 			.setColor('GOLD');
 
 		console.log(commandsNamesArr[0]);
@@ -27,7 +30,7 @@ module.exports = {
 			const name = commandsNamesArr[i].toString();
 			const description = commandsDescriptionsArr[i].toString();
 			console.log(name + ' : ' + description);
-			embed.addField(`**${name}** : ${description} `, ', ', false);
+			// embed.addField(`**${name}** : ${description} `, ', ', false);
 		}
 
 		// for (let index = 0; index < commandsCollection.size; index++) {
