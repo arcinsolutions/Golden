@@ -4,9 +4,8 @@ const { MessageEmbed } = require('discord.js');
 module.exports = {
 	data: new SlashCommandBuilder()
 		.setName('clear')
-		.setDefaultPermission(true)
+		.setDefaultPermission(false)
 		.setDescription('delete a Specific amount of Messages!')
-		//.setDefaultPermission(false)
 		.addIntegerOption((option) =>
 			option.setName('amount').setDescription('Specify the Amount of Messages get deleted!').setRequired(true)
 		),
@@ -34,9 +33,11 @@ module.exports = {
 					// interaction.deferReply({ ephemeral: true })
 					interaction.channel.bulkDelete(messages);
 					interaction.editReply({
-            embeds: [ embed.setDescription(`**${messages.size} Messages were delted!**`).setColor('DARK_RED') ],
-            ephemeral: true
-          }); // | Command ID: ${interaction.id} | ${messages.size} Messages
+						embeds: [
+							embed.setDescription(`**${messages.size} Messages were delted!**`).setColor('DARK_RED')
+						],
+						ephemeral: true
+					}); // | Command ID: ${interaction.id} | ${messages.size} Messages
 				});
 			} catch (e) {
 				interaction.editReply(`${e}`);

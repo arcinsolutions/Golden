@@ -18,15 +18,15 @@ module.exports = {
             command.permissions.set({ permissions });
 
 
-            const fullPermissions = [
-                {
-                    id: '123456789012345678',
-                    permissions: [{
-                        id: '224617799434108928',
-                        type: 'USER',
-                        permission: false,
-                    }],
-                },
-            ]
+            // const fullPermissions = [
+            //     {
+            //         id: '123456789012345678',
+            //         permissions: [{
+            //             id: '224617799434108928',
+            //             type: 'USER',
+            //             permission: false,
+            //         }],
+            //     },
+            // ]
 	},
 };
