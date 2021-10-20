@@ -20,7 +20,6 @@ module.exports = {
 		for (var i = 0; i < commandsNames.length; i++) {
 			const name = commandsNames[i].Name.toString();
 			const description = commandsNames[i].Description.toString();
-			console.log(name + ' : ' + description);
 			embed.addField(`**${name}**`, description, false);
 		}
 
