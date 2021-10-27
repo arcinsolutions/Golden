@@ -20,6 +20,12 @@ const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
 
 (async () => {
   try {
+    //Global
+    // await rest.put(Routes.applicationCommands(process.env.APPID), {
+    //   body: commands
+    // })
+
+    //Guild (Dev)
     await rest.put(Routes.applicationGuildCommands(process.env.APPID, '863873035224612944'), {
       body: commands
     })
@@ -28,12 +34,12 @@ const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
     const text = 'Successfully registered slash commands.'
 
     for (var i = 1; i <= text.length; i++) {
-      underline += '═'
+      underline += '─'
     }
 
-    console.log(colors.red(`        ╔${underline}╗`))
-    console.log('' + colors.red(`        ║${colors.green.bold(text)}║`))
-    console.log(colors.red('        ╚' + underline + '╝'))
+    console.log(colors.red(`        ╭${underline}╮`))
+    console.log('' + colors.red(`        │${colors.green.bold(text)}│`))
+    console.log(colors.red('        ╰' + underline + '╯'))
   } catch (error) {
     console.error(error)
   }
