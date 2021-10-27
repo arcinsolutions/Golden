@@ -1,11 +1,13 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
+const path = require('path')
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('clear')
-        // .setDefaultPermission(false)
-        .setDescription('delete a Specific amount of Messages!')
+        .setDefaultPermission(false)
+        .setDescription('Disabled!')
+        // .setDescription('delete a Specific amount of Messages!')
         .addIntegerOption((option) =>
             option
                 .setName('amount')
@@ -13,6 +15,7 @@ module.exports = {
                 .setRequired(true)
         ),
 
+		category: path.basename(__dirname),
     async execute(interaction, client) {
         const amount = interaction.options.getInteger('amount')
 
