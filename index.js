@@ -141,9 +141,12 @@ client.player.on('trackStart', (queue, track) => {
         queue.metadata.send({
             embeds: [
                 embed
-                    .setDescription(
-                        `**Now Playing:** ${track.title} by ${track.author}`
+                    .setAuthor(
+                        `Now Playing: ${track.title} by ${track.author}`,
+                        '',
+                        track.url
                     )
+                    .setDescription('')
                     .setImage(track.thumbnail)
                     .setThumbnail('')
                     .setFooter(
@@ -162,9 +165,11 @@ client.player.on('trackAdd', (queue, track) => {
     queue.metadata.send({
         embeds: [
             embed
+                .setAuthor('')
                 .setDescription(
                     `🎶 | Track **${track.title} by ${track.author}** queued!`
                 )
+                .setURL(track.url)
                 .setImage('')
                 .setThumbnail(track.thumbnail)
                 .setFooter(client.user.username, client.user.displayAvatarURL())
@@ -177,6 +182,7 @@ client.player.on('botDisconnect', (queue) => {
     queue.metadata.send({
         embeds: [
             embed
+                .setAuthor('')
                 .setDescription(
                     '❌ | I was manually disconnected from the voice channel, clearing queue!'
                 )
@@ -192,6 +198,7 @@ client.player.on('channelEmpty', (queue) => {
     queue.metadata.send({
         embeds: [
             embed
+                .setAuthor('')
                 .setDescription(
                     '❌ | Nobody is in the voice channel, leaving...'
                 )
@@ -207,6 +214,7 @@ client.player.on('queueEnd', (queue) => {
     queue.metadata.send({
         embeds: [
             embed
+                .setAuthor('')
                 .setDescription(`✅ | Queue finished!`)
                 .setImage('')
                 .setThumbnail('')
