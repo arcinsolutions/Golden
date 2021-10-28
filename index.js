@@ -138,15 +138,6 @@ client.player.on('connectionError', (queue, error) => {
 
 client.player.on('trackStart', (queue, track) => {
     try {
-        // const image = generate({ url: queue.current.url })
-        // console.log(queue.current.url)
-        // const buffer = image
-        // fs.writeFileSync(`./song.png`,  )
-
-        // queue.metadata.send({
-        //     files: [queue.current.thumbnail]
-        //   })
-
         queue.metadata.send({
             embeds: [
                 embed
@@ -174,6 +165,7 @@ client.player.on('trackAdd', (queue, track) => {
                 .setDescription(
                     `🎶 | Track **${track.title} by ${track.author}** queued!`
                 )
+                .setImage('')
                 .setThumbnail(track.thumbnail)
                 .setFooter(client.user.username, client.user.displayAvatarURL())
                 .setColor('DARK_ORANGE'),
@@ -188,6 +180,7 @@ client.player.on('botDisconnect', (queue) => {
                 .setDescription(
                     '❌ | I was manually disconnected from the voice channel, clearing queue!'
                 )
+                .setImage('')
                 .setThumbnail('')
                 .setFooter(client.user.username, client.user.displayAvatarURL())
                 .setColor('DARK_RED'),
@@ -202,6 +195,7 @@ client.player.on('channelEmpty', (queue) => {
                 .setDescription(
                     '❌ | Nobody is in the voice channel, leaving...'
                 )
+                .setImage('')
                 .setThumbnail('')
                 .setFooter(client.user.username, client.user.displayAvatarURL())
                 .setColor('DARK_RED'),
@@ -214,6 +208,7 @@ client.player.on('queueEnd', (queue) => {
         embeds: [
             embed
                 .setDescription(`✅ | Queue finished!`)
+                .setImage('')
                 .setThumbnail('')
                 .setFooter(client.user.username, client.user.displayAvatarURL())
                 .setColor('DARK_GREEN'),
