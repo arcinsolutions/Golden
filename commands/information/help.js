@@ -44,17 +44,23 @@ module.exports = {
                 )
             } else {
                 if (category == categoryOp) {
-                    embed.addField(
-                        `${name}`,
-                        `Description: ${description} **|** Category: ${category}`,
-                        false
-                    )
+                    embed
+                        .setTitle(`Commands with the Category ${category}`)
+                        .addField(
+                            `${name}`,
+                            `Description: ${description}`,
+                            false
+                        )
                 }
             }
         }
 
-        if(embed.fields.length == 0) {
-            embed.setDescription('**❌ | No Commands found with that Category!**').setColor('DARK_RED')
+        if (embed.fields.length == 0) {
+            embed
+                .setDescription(
+                    '**❌ | No Commands found with that Category!**'
+                )
+                .setColor('DARK_RED')
         }
 
         await interaction.reply({
