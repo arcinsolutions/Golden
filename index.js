@@ -1,6 +1,7 @@
 /** ++ Discord init ++ **/
 const { Client, Collection, Intents, MessageEmbed } = require('discord.js')
 const fs = require('fs')
+var colors = require('colors/safe');
 
 require('dotenv').config({ path: './config/.env' })
 
@@ -51,6 +52,11 @@ fs.readdirSync('./commands/').forEach((dir) => {
         .filter((file) => file.endsWith('.js'))
     for (const file of commandFiles) {
         const command = require(`./commands/${dir}/${file}`)
+
+        if (!command.category) {
+            console.log(colors.red.bold('❌ | No Category found in ' + command.data.name))
+            process.exit()
+        }
 
         client.commands.set(command.data.name, command)
     }
