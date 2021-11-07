@@ -54,7 +54,7 @@ module.exports = {
         try {
             if (!queue.connection) await queue.connect(member.voice.channel)
         } catch {
-            void client.player.deleteQueue(interaction.guildID)
+            void client.player.deleteQueue(interaction.guild.id)
             return void interaction.editReply({
                 embeds: [
                     embed
@@ -70,7 +70,7 @@ module.exports = {
             embeds: [
                 embed
                     .setDescription(
-                        `⏱ | Loading your ${
+                        `⏱ | Loading requested ${
                             searchResult.playlist ? 'playlist' : 'track'
                         }...`
                     )
