@@ -1,7 +1,7 @@
 /** ++ Discord init ++ **/
 const { Client, Collection, Intents, MessageEmbed } = require('discord.js')
 const fs = require('fs')
-var colors = require('colors/safe');
+var colors = require('colors/safe')
 
 require('dotenv').config({ path: './config/.env' })
 
@@ -54,7 +54,11 @@ fs.readdirSync('./commands/').forEach((dir) => {
         const command = require(`./commands/${dir}/${file}`)
 
         if (!command.category) {
-            console.log(colors.red.bold('❌ | No Category found in ' + command.data.name))
+            console.log(
+                colors.red.bold(
+                    '❌ | No Category found in ' + command.data.name
+                )
+            )
             process.exit()
         }
 
@@ -105,8 +109,6 @@ for (const file of eventFiles) {
 
 /** ++ Start ++ **/
 
-var colors = require('colors/safe')
-
 const imgText = `
  ██████╗  ██████╗ ██╗     ██████╗ ███████╗███╗   ██╗ 
 ██╔════╝ ██╔═══██╗██║     ██╔══██╗██╔════╝████╗  ██║ 
@@ -147,12 +149,9 @@ client.player.on('trackStart', (queue, track) => {
         queue.metadata.send({
             embeds: [
                 embed
-                    .setAuthor(
-                        `Now Playing: ${track.title} by ${track.author}`,
-                        '',
-                        track.url
+                    .setDescription(
+                        `Now Playing: **[${track.title} by ${track.author}](${track.url})**`
                     )
-                    .setDescription('')
                     .setImage(track.thumbnail)
                     .setThumbnail('')
                     .setFooter(
@@ -171,9 +170,8 @@ client.player.on('trackAdd', (queue, track) => {
     queue.metadata.send({
         embeds: [
             embed
-                .setAuthor('')
                 .setDescription(
-                    `🎶 | Track **${track.title} by ${track.author}** queued!`
+                    `🎶 | Track **[${track.title} by ${track.author}](${track.url})** queued!`
                 )
                 .setURL(track.url)
                 .setImage('')
@@ -188,7 +186,6 @@ client.player.on('botDisconnect', (queue) => {
     queue.metadata.send({
         embeds: [
             embed
-                .setAuthor('')
                 .setDescription(
                     '❌ | I was manually disconnected from the voice channel, clearing queue!'
                 )
@@ -204,7 +201,6 @@ client.player.on('channelEmpty', (queue) => {
     queue.metadata.send({
         embeds: [
             embed
-                .setAuthor('')
                 .setDescription(
                     '❌ | Nobody is in the voice channel, leaving...'
                 )
@@ -216,18 +212,18 @@ client.player.on('channelEmpty', (queue) => {
     })
 })
 
-client.player.on('queueEnd', (queue) => {
-    queue.metadata.send({
-        embeds: [
-            embed
-                .setAuthor('')
-                .setDescription(`✅ | Queue finished!`)
-                .setImage('')
-                .setThumbnail('')
-                .setFooter(client.user.username, client.user.displayAvatarURL())
-                .setColor('DARK_GREEN'),
-        ],
-    })
-})
+// client.player.on('queueEnd', (queue) => {
+//     queue.metadata.send({
+//         embeds: [
+//             embed
+//                 .setAuthor('')
+//                 .setDescription(`✅ | Queue finished!`)
+//                 .setImage('')
+//                 .setThumbnail('')
+//                 .setFooter(client.user.username, client.user.displayAvatarURL())
+//                 .setColor('DARK_GREEN'),
+//         ],
+//     })
+// })
 
 /** -- Music events */
