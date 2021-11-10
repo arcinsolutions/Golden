@@ -71,7 +71,7 @@ module.exports = {
                         },
                         {
                             name: 'CPU usage',
-                            value: `${process.cpuUsage(usage).user} %`,
+                            value: `${process.cpuUsage(usage).user/100} %`,
                             inline: true,
                         }
                     )
