@@ -1,6 +1,7 @@
 var colors = require('colors/safe');
 const fs = require('fs');
 const { getRandomActivity } = require('../functions/random');
+const { Uptime } = require("better-uptime")
 
 import('../functions/random.js')
 
@@ -56,6 +57,15 @@ module.exports = {
             client.user.setActivity(`${stats[0]} Guilds`, { type: 'LISTENING' });
             
             //** -- Activity -- */
+
+            /** ++ Uptime ++ */
+            new Uptime({
+              url: "https://betteruptime.com/api/v1/heartbeat/PJrVDLD1or9TAtHohh8ya4jM",
+              time: 5,
+              time_type: 'minute', //millisecond, minute, hour, day, week
+              callback: "console.log('your.domain successfully uptime!',link, time_type, task, time)" //callback function action to be performed each time it uptimes
+          })
+          /** -- Uptime -- */
         }
     }
 
