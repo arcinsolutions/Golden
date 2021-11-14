@@ -42,6 +42,7 @@ client.player = new Player(client, {
 
 /** ++ Command Handler ++ */
 
+// with subfolder
 client.commands = new Collection()
 client.categories = require('fs').readdirSync(`./commands`)
 var commandFiles = ''
@@ -69,16 +70,29 @@ fs.readdirSync('./commands/').forEach((dir) => {
 client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return
 
+    const ErrorEmbed = new MessageEmbed().setTimestamp().setColor('DARK_RED')
+
     const command = client.commands.get(interaction.commandName)
 
-    if (!command) return interaction.reply('please submit a Valid command!')
+    if (!command)
+        return interaction.editReply({
+            embeds: [
+                ErrorEmbed.setDescription(
+                    '**❌ | please submit a Valid command!**'
+                ),
+            ],
+        })
 
     try {
         await command.execute(interaction, client)
     } catch (error) {
         console.error(error)
-        await interaction.reply({
-            content: 'There was an error while executing this command!',
+        await interaction.editReply({
+            embeds: [
+                ErrorEmbed.setDescription(
+                    '**❌ | There was an error while executing this command!**'
+                ),
+            ],
             ephemeral: true,
         })
     }
@@ -131,8 +145,6 @@ client.login(process.env.TOKEN)
 /** -- Start -- **/
 
 /** ++ Music events ++ */
-const embed = new MessageEmbed().setTimestamp()
-
 client.player.on('error', (queue, error) => {
     console.log(
         `[${queue.guild.name}] Error emitted from the queue: ${error.message}`
@@ -145,36 +157,32 @@ client.player.on('connectionError', (queue, error) => {
 })
 
 client.player.on('trackStart', (queue, track) => {
-    try {
-        queue.metadata.send({
-            embeds: [
-                embed
-                    .setDescription(
-                        `Now Playing: **[${track.title} by ${track.author}](${track.url})**`
-                    )
-                    .setImage(track.thumbnail)
-                    .setThumbnail('')
-                    .setFooter(
-                        client.user.username,
-                        client.user.displayAvatarURL()
-                    )
-                    .setColor('DARK_GREEN'),
-            ],
-        })
-    } catch (e) {
-        console.log(e)
-    }
-})
+    const embed = new MessageEmbed().setTimestamp()
 
-client.player.on('trackAdd', (queue, track) => {
     queue.metadata.send({
         embeds: [
             embed
                 .setDescription(
-                    `🎶 | Track **[${track.title} by ${track.author}](${track.url})** queued!`
+                    `**🎶 | Now Playing [${track.title} by ${track.author}](${track.url})**`
+                )
+                .addField('Duration', `${track.duration} min.`, true)
+                .addField('Views', `${track.views}`, true)
+                .setImage(track.thumbnail)
+                .setFooter(client.user.username, client.user.displayAvatarURL())
+                .setColor('DARK_GREEN'),
+        ],
+    })
+})
+
+client.player.on('trackAdd', (queue, track) => {
+    const embed = new MessageEmbed().setTimestamp()
+    queue.metadata.send({
+        embeds: [
+            embed
+                .setDescription(
+                    `**🎶 | Track **[${track.title} by ${track.author}](${track.url})** queued!**`
                 )
                 .setURL(track.url)
-                .setImage('')
                 .setThumbnail(track.thumbnail)
                 .setFooter(client.user.username, client.user.displayAvatarURL())
                 .setColor('DARK_ORANGE'),
@@ -182,36 +190,68 @@ client.player.on('trackAdd', (queue, track) => {
     })
 })
 
+client.player.on('tracksAdd', (queue) => {
+    const embed = new MessageEmbed().setTimestamp()
+    var songs = ``
+
+    for (var i = 0; i <= 9; i++) {
+        songs += `\`${i + 1}.\` ** | [${queue.tracks[i].title} by ${
+            queue.tracks[i].author
+        }](${queue.tracks[i].url})**\n`
+    }
+
+    queue.metadata.send({
+        embeds: [
+            embed
+                .setTitle(`🎶 | Added the Playlist to the Queue`)
+                .setDescription(songs)
+                .setFooter(client.user.username, client.user.displayAvatarURL())
+                .setColor('DARK_ORANGE'),
+        ],
+    })
+})
+
 client.player.on('botDisconnect', (queue) => {
-    queue.metadata.send({
-        embeds: [
-            embed
-                .setDescription(
-                    '❌ | I was manually disconnected from the voice channel, clearing queue!'
-                )
-                .setImage('')
-                .setThumbnail('')
-                .setFooter(client.user.username, client.user.displayAvatarURL())
-                .setColor('DARK_RED'),
-        ],
-    })
+    try {
+        const embed = new MessageEmbed().setTimestamp()
+
+        queue.metadata.send({
+            embeds: [
+                embed
+                    .setDescription(
+                        '**❌ | I was manually disconnected from the voice channel, clearing queue!**'
+                    )
+                    .setFooter(
+                        client.user.username,
+                        client.user.displayAvatarURL()
+                    )
+                    .setColor('DARK_RED'),
+            ],
+        })
+    } catch (e) {
+        console.log(e)
+    }
+
+    queue.destroy()
 })
 
-client.player.on('channelEmpty', (queue) => {
-    queue.metadata.send({
-        embeds: [
-            embed
-                .setDescription(
-                    '❌ | Nobody is in the voice channel, leaving...'
-                )
-                .setImage('')
-                .setThumbnail('')
-                .setFooter(client.user.username, client.user.displayAvatarURL())
-                .setColor('DARK_RED'),
-        ],
-    })
-})
+// Disabled cause bot wont leave when empty!
+// client.player.on('channelEmpty', (queue) => {
+//     queue.metadata.send({
+//         embeds: [
+//             embed
+//                 .setDescription(
+//                     '❌ | Nobody is in the voice channel, leaving...'
+//                 )
+//                 .setImage('')
+//                 .setThumbnail('')
+//                 .setFooter(client.user.username, client.user.displayAvatarURL())
+//                 .setColor('DARK_RED'),
+//         ],
+//     })
+// })
 
+// Disabled cause bot wont leave when queue finished
 // client.player.on('queueEnd', (queue) => {
 //     queue.metadata.send({
 //         embeds: [
