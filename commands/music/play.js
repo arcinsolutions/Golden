@@ -43,9 +43,10 @@ module.exports = {
             })
 
         const queue = await client.player.createQueue(guild, {
-            leaveOnEnd: false,
-            leaveOnStop: false,
-            leaveOnEmpty: false,
+            // Temoraly disabled, bot will not delete the Queue after Kick!!!
+            // leaveOnEnd: false,
+            // leaveOnStop: false,
+            // leaveOnEmpty: false,
             metadata: channel,
             async onBeforeCreateStream(track, source, queue) {
                 if (track.url.includes('youtube.com')) {
