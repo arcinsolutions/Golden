@@ -2,12 +2,11 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
 const { QueryType } = require('discord-player')
 const path = require('path')
-const playdl = require('play-dl')
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('play')
-        .setDescription('Play a song!')
+        .setDescription('Play a song or a PlayList!')
         .addStringOption((option) =>
             option
                 .setName('song')
@@ -37,7 +36,7 @@ module.exports = {
                 console.log('he')
             })
         if (!searchResult || !searchResult.tracks.length)
-            return void interaction.editReply({
+            return interaction.editReply({
                 embeds: [
                     embed
                         .setDescription(`**❌ | No results were found!**`)
@@ -50,32 +49,6 @@ module.exports = {
             leaveOnStop: false,
             leaveOnEmpty: false,
             metadata: channel,
-            async onBeforeCreateStream(track, source, _queue) {
-                if (track.url.includes('youtube') || track.url.includes("youtu.be")) {
-                    try {
-                        return (await playdl.stream(track.url)).stream;
-                    } catch (err) {
-                        _queue.metadata.m.errorMessage("This video is restricted. Try with another link.")
-                        return
-                    }
-                } else if (track.url.includes('spotify')) {
-                    try {
-                        let songs = await client.player.search(`${track.author} ${track.title} `, {
-                                requestedBy: interaction.member,
-                            }).catch()
-                            .then(x => x.tracks[0]);
-                        return (await playdl.stream(songs.url)).stream;
-                    } catch (err) {
-                        console.log(err)
-                    }
-                } else if (track.url.includes('soundcloud')) {
-                    try {
-                        return (await playdl.stream(track.url)).stream;
-                    } catch (err) {
-                        console.log(err)
-                    }
-                }
-            }
         })
 
         const member =
@@ -84,8 +57,8 @@ module.exports = {
         try {
             if (!queue.connection) await queue.connect(member.voice.channel)
         } catch {
-            void client.player.deleteQueue(interaction.guild.id)
-            return void interaction.editReply({
+            client.player.deleteQueue(interaction.guild.id)
+            return interaction.editReply({
                 embeds: [
                     embed
                         .setDescription(
@@ -100,9 +73,9 @@ module.exports = {
             embeds: [
                 embed
                     .setDescription(
-                        `⏱ | Loading requested ${
+                        `**⏱ | Adding requested ${
                             searchResult.playlist ? 'playlist' : 'track'
-                        }...`
+                        }...**`
                     )
                     .setColor('DARK_GOLD'),
             ],
