@@ -61,9 +61,8 @@ module.exports = {
             /** ++ Uptime ++ */
             new Uptime({
               url: "https://betteruptime.com/api/v1/heartbeat/PJrVDLD1or9TAtHohh8ya4jM",
-              time: 5,
+              time: 3,
               time_type: 'minute', //millisecond, minute, hour, day, week
-              callback: "console.log('your.domain successfully uptime!',link, time_type, task, time)" //callback function action to be performed each time it uptimes
           })
           /** -- Uptime -- */
         }

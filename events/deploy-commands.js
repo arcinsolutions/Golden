@@ -25,7 +25,7 @@ const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
     //   body: commands
     // })
 
-    //Guild (Dev)
+    // Guild (Development)
     await rest.put(Routes.applicationGuildCommands(process.env.APPID, '863873035224612944'), {
       body: commands
     })
