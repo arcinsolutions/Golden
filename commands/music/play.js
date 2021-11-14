@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
 const { QueryType } = require('discord-player')
 const path = require('path')
+const playdl = require('play-dl')
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -26,15 +27,12 @@ module.exports = {
         const channel = interaction.guild.channels.cache.get(
             interaction.channel.id
         )
-        const query = interaction.options.getString('song')
-        const searchResult = await client.player
-            .search(query, {
-                requestedBy: interaction.user,
-                searchEngine: QueryType.AUTO,
-            })
-            .catch(() => {
-                console.log('he')
-            })
+        const request = interaction.options.getString('song')
+        const searchResult = await client.player.search(request, {
+            requestedBy: interaction.user,
+            searchEngine: QueryType.AUTO,
+        })
+
         if (!searchResult || !searchResult.tracks.length)
             return interaction.editReply({
                 embeds: [
@@ -49,6 +47,25 @@ module.exports = {
             leaveOnStop: false,
             leaveOnEmpty: false,
             metadata: channel,
+            async onBeforeCreateStream(track, source, queue) {
+                if (track.url.includes('youtube.com')) {
+                    // play directly if it's a youtube track
+                    return (await playdl.stream(track.url)).stream
+                } else {
+                    // search for the track on youtube with the track author & title using playdl.search()
+                    // i added "lyric" to the search query to avoid playing music video streams
+                    return (
+                        await playdl.stream(
+                            await playdl
+                                .search(
+                                    `${track.author} ${track.title} lyric`,
+                                    { limit: 1, source: { youtube: 'video' } }
+                                )
+                                .then((x) => x[0].url)
+                        )
+                    ).stream
+                }
+            },
         })
 
         const member =
