@@ -20,19 +20,19 @@ module.exports = {
             return void interaction.editReply({
                 embeds: [
                     embed
-                        .setDescription('❌ | No music is being played!')
+                        .setDescription('**❌ | No music is being played!**')
                         .setColor('DARK_RED'),
                 ],
             })
-        const currentTrack = queue.current
+        const track = queue.current
         const success = queue.skip()
         return void interaction.editReply({
             embeds: [
                 embed
                     .setDescription(
                         success
-                            ? `✅ | Skipped **${currentTrack}**!`
-                            : '❌ | Something went wrong!'
+                            ? `**✅ | Skipped [${track.title} by ${track.author}](${track.url})!**`
+                            : '**❌ | Something went wrong!**'
                     )
                     .setColor('DARK_GOLD'),
             ],
