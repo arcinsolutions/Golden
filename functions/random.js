@@ -24,7 +24,7 @@ module.exports = {
           random = module.exports.getRandomNumber(0,5);
           break;
       case 2:
-          client.user.setActivity(`${stats[1]} Members`, { type: 'LISTENING' });
+          client.user.setActivity(`with ${stats[1]} Members`, { type: 'PLAYING' });
           random = module.exports.getRandomNumber(0,5);
           break;
       case 3:
@@ -32,11 +32,11 @@ module.exports = {
           random = module.exports.getRandomNumber(0,5);
           break;
       case 4:
-          client.user.setActivity(`with @Spastencord#1289`, { type: 'Competing' });
+          client.user.setActivity(`@Spastencord#1289`, { type: 'WATCHING' });
           random = module.exports.getRandomNumber(0,5);
           break;
       default:
-          client.user.setActivity(`@Botis‽#6940`, { type: 'WATCHING' });
+          client.user.setActivity(`@Botis‽ (Boris)#0666`, { type: 'WATCHING' });
           random = module.exports.getRandomNumber(0,5);
           break;
   }
