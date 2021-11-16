@@ -3,6 +3,15 @@ const { Client, Collection, Intents, MessageEmbed } = require('discord.js')
 const fs = require('fs')
 var colors = require('colors/safe')
 
+const { setGoldenChannelPlayerThumbnail,
+    setGoldenChannerlPlayerTitle,
+    setGoldenChannerlPlayerQueue,
+    setGoldenChannelPlayerFooter,
+    resetGoldenChannelPlayer,
+    sendTimed
+ } = require('./functions/channel')
+
+
 require('dotenv').config({ path: './config/.env' })
 
 const client = new Client({
@@ -103,6 +112,12 @@ client.on('warn', console.warn)
 
 /** -- Command Handler -- */
 
+/** ++ Quick DB ++ */
+
+client.db = require('quick.db')
+
+/** -- Quick DB -- */
+
 /** ++ Event Handler ++ */
 
 var eventFiles
@@ -112,9 +127,9 @@ for (const file of eventFiles) {
     const event = require(`./events/${file}`)
 
     if (event.once) {
-        client.once(event.name, (...args) => event.execute(...args))
+        client.once(event.name, (...args) => event.execute(...args, client))
     } else {
-        client.on(event.name, (...args) => event.execute(...args))
+        client.on(event.name, (...args) => event.execute(...args, client))
     }
 }
 
