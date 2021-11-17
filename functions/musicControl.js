@@ -40,6 +40,7 @@ module.exports = {
             }, 5)    
 
         const track = queue.current
+        queue.setPaused(false)
         const success = queue.skip()
         /*return void interaction.channel.send({
             embeds: [
@@ -81,6 +82,7 @@ module.exports = {
             
         queue.clear()
         queue.stop()
+        resetGoldenChannelPlayer(interaction.guild)
     },
 
     playpause: async function(interaction, client) {
