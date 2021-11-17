@@ -3,14 +3,14 @@ const { Client, Collection, Intents, MessageEmbed } = require('discord.js')
 const fs = require('fs')
 var colors = require('colors/safe')
 
-const { setGoldenChannelPlayerThumbnail,
+const {
+    setGoldenChannelPlayerThumbnail,
     setGoldenChannerlPlayerTitle,
     setGoldenChannerlPlayerQueue,
     setGoldenChannelPlayerFooter,
     resetGoldenChannelPlayer,
-    sendTimed
- } = require('./functions/channel')
-
+    sendTimed,
+} = require('./functions/channel')
 
 require('dotenv').config({ path: './config/.env' })
 
@@ -174,56 +174,114 @@ client.player.on('connectionError', (queue, error) => {
 client.player.on('trackStart', (queue, track) => {
     const embed = new MessageEmbed().setTimestamp()
 
-    queue.metadata.send({
-        embeds: [
-            embed
-                .setDescription(
-                    `**🎶 | Now Playing [${track.title} by ${track.author}](${track.url})**`
-                )
-                .addField('Duration', `${track.duration} min.`, true)
-                .addField('Views', `${track.views}`, true)
-                .setImage(track.thumbnail)
-                .setFooter(client.user.username, client.user.displayAvatarURL())
-                .setColor('DARK_GREEN'),
-        ],
-    })
+    //https://www.reddit.com/r/Discord_Bots/comments/jel7r5/get_guild_by_id_in_discordjs/
+    /*console.log(track)
+    console.log(track.thumbnail)*/
+
+    setGoldenChannerlPlayerTitle(
+        queue.guild,
+        client,
+        `🎶 | Now Playing\n${track.title} by ${track.author}`
+    )
+    setGoldenChannelPlayerThumbnail(queue.guild, track.thumbnail)
+    setGoldenChannelPlayerFooter(
+        queue.guild,
+        `${queue.tracks.length} songs in queue | Volume: ${queue.volume}%`
+    )
+
+    if (queue.tracks[0] == undefined) {
+        setGoldenChannerlPlayerQueue(
+            queue.guild,
+            'Join a voice channel and queue songs by name or url in here.'
+        )
+    } else {
+        const tracks = queue.tracks
+            .slice(0)
+            .reverse()
+            .map((song, i) => {
+                if (queue.current.id != queue.tracks[0].id) {
+                    return `\`${queue.tracks.length - i}.\` ${song.title} - ${
+                        song.author
+                    } [${song.duration}]\n`
+                }
+            })
+        setGoldenChannerlPlayerQueue(queue.guild, tracks.join(''))
+
+        sendTimed(queue.metadata, {
+            embeds: [
+                embed
+                    .setDescription(
+                        `**🎶 | Track **[${track.title} by ${track.author}](${track.url})** queued!**`
+                    )
+                    .setURL(track.url)
+                    .setThumbnail(track.thumbnail)
+                    .setFooter(client.user.username, client.user.displayAvatarURL())
+                    .setColor('DARK_ORANGE'),
+            ],
+        }, 5)
+    }
+
+    if (
+        !client.db.has(queue.guild.id) &&
+        queue.metadata.id != client.db.get(queue.guild.id).channel
+    ) {
+        queue.metadata.send({
+            embeds: [
+                embed
+                    .setDescription(
+                        `**🎶 | Now Playing\n[${track.title} by ${track.author}](${track.url})**`
+                    )
+                    .addField('Duration', `${track.duration} min.`, true)
+                    .addField('Views', `${track.views}`, true)
+                    .setImage(track.thumbnail)
+                    .setFooter(
+                        client.user.username,
+                        client.user.displayAvatarURL()
+                    )
+                    .setColor('DARK_GREEN'),
+            ],
+        })
+    }
 })
 
 client.player.on('trackAdd', (queue, track) => {
     const embed = new MessageEmbed().setTimestamp()
-    queue.metadata.send({
-        embeds: [
-            embed
-                .setDescription(
-                    `**🎶 | Track **[${track.title} by ${track.author}](${track.url})** queued!**`
-                )
-                .setURL(track.url)
-                .setThumbnail(track.thumbnail)
-                .setFooter(client.user.username, client.user.displayAvatarURL())
-                .setColor('DARK_ORANGE'),
-        ],
-    })
+
+    // Request inside the music channel
+    if (client.db.has(queue.guild.id) && queue.metadata.id === client.db.get(queue.guild.id).channel) {
+
+        if(queue.tracks[0] === undefined) {
+            setGoldenChannerlPlayerQueue(queue.guild, 'Join a voice channel and queue songs by name or url in here.')
+
+        } else {
+
+            const tracks = queue.tracks.slice(0).reverse().map((song, i) => {
+                if(queue.current.id != queue.tracks[0].id) {
+                    return `${queue.tracks.length - i}. ${song.title} - ${song.author} [${song.duration}]\n`
+                }
+            })
+            setGoldenChannerlPlayerQueue(queue.guild, tracks.join(''))
+        }
+
+    // Request via command /play
+    } else {
+        queue.metadata.send({
+            embeds: [
+                embed
+                    .setDescription(
+                        `**🎶 | Track **[${track.title} by ${track.author}](${track.url})** queued!**`
+                    )
+                    .setURL(track.url)
+                    .setThumbnail(track.thumbnail)
+                    .setFooter(client.user.username, client.user.displayAvatarURL())
+                    .setColor('DARK_ORANGE'),
+            ],
+        })
+    }
 })
 
-client.player.on('tracksAdd', (queue) => {
-    const embed = new MessageEmbed().setTimestamp()
-    var songs = ``
-
-    for (var i = 0; i <= 9; i++) {
-        songs += `\`${i + 1}.\` ** | [${queue.tracks[i].title} by ${
-            queue.tracks[i].author
-        }](${queue.tracks[i].url})**\n`
-    }
-
-    queue.metadata.send({
-        embeds: [
-            embed
-                .setTitle(`🎶 | Added the Playlist to the Queue`)
-                .setDescription(songs)
-                .setFooter(client.user.username, client.user.displayAvatarURL())
-                .setColor('DARK_ORANGE'),
-        ],
-    })
+client.player.on('queueEnd', (queue) => {
+    resetGoldenChannelPlayer(queue.guild)
 })
 
 client.player.on('botDisconnect', (queue) => {

@@ -15,7 +15,7 @@ module.exports = {
 
         const guild = interaction.guild
 
-        console.log(interaction.message)
+        // console.log(interaction.message)
    
         switch (interaction.customId) {
             case "deleteGoldenChannelInGuild":
@@ -26,24 +26,22 @@ module.exports = {
                 const goldenChannel = await createGoldenChannelInsideGuild(guild)
                 populateGoldenChannelInsideGuild(goldenChannel.guild)
     
-                interaction.message.edit({
+                interaction.update({
                     embeds: [
-                        embed.setDescription(`✅ | I created a new Channel (${goldenChannel})`)
+                        embed.setDescription(`**✅ | I created a new Channel (${goldenChannel})**`).setColor('DARK_GREEN')
                     ],
                     components: []
                 })
                 break
     
             case "cancelDeleteGoldenChannelInGuild":
-                interaction.message.edit({ 
+                interaction.update({ 
                     embeds: [
-                        embed.setDescription(`✅ | I stay with the current Channel (<#${db.get(interaction.guildId).channel}>)`)
+                        embed.setDescription(`**✅ | I stay with the current Channel (<#${db.get(interaction.guildId).channel}>)**`).setColor('DARK_GREEN')
                     ],
                     components: []
                 })
                 break
         }
-    
-        return await interaction.deferUpdate()
     },
 }

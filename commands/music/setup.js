@@ -44,9 +44,9 @@ module.exports = {
                 embeds: [
                     embed
                         .setDescription(
-                            `❌ | I already have an Channel (<#${
+                            `**❌ | I already have an Channel (<#${
                                 client.db.get(guild.id).channel
-                            }>)\n\nshould i delete the Current one and replace it with a new one?`
+                            }>)**\nshould i delete the Current one and replace it with a new one?`
                         )
                         .setColor('DARK_ORANGE'),
                 ],

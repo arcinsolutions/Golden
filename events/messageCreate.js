@@ -92,18 +92,6 @@ module.exports = {
             }, 5)
         }
 
-        sendTimed(message.channel, {
-            embeds: [
-                embed
-                    .setDescription(
-                        `**⏱ | Adding requested ${
-                            searchResult.playlist ? 'playlist' : 'track'
-                        }...**`
-                    )
-                    .setColor('DARK_GOLD'),
-            ],
-        }, 5)
-
         searchResult.playlist
             ? queue.addTracks(searchResult.tracks)
             : queue.addTrack(searchResult.tracks[0])

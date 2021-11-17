@@ -48,8 +48,8 @@ module.exports = {
             )
 
         const goldenChannelEmbed = new MessageEmbed()
-            .setColor('#C04BF7')
-            .setTitle('Derzeit wird kein Lied abgespielt')
+            .setColor('DARK_BUT_NOT_BLACK')
+            .setTitle('no Song is being Played')
             .setDescription(
                 '[Bot Invite](https://example.com) | [Dashboard](https://www.golden.spasten.studio) | [Commands](https://example.com) | [Support](https://discord.gg/PX28nyVgdP)'
             )
@@ -61,7 +61,7 @@ module.exports = {
         )
         const goldenMessage = await goldenChannel.send({
             content:
-                'ㅤ\n__**Wiedergabeliste:**__\nVerbinde dich mit einem Sprachkanal\nund füge Songs über Titel oder URL ein.',
+                'ㅤ\n__**Queue:**__\nJoin a Voice Channel and add a Song or a Playlist',
             embeds: [goldenChannelEmbed],
             components: [goldenChannelControlComponents],
         })
@@ -129,7 +129,7 @@ module.exports = {
 
             goldenChannelPlayerMessage.edit({
                 //content: "ㅤ\n__Queue list:__\n1. KA SO NEN SONG"
-                content: `ㅤ\n**__Queue list:__**\n${queue}`,
+                content: `ㅤ\n**__Queue:__**\n${queue}`,
             })
         }
     },
@@ -149,7 +149,6 @@ module.exports = {
 
             goldenChannelPlayerMessage.embeds[0].author = {
                 name: title,
-                iconURL: client.user.displayAvatarURL(),
             }
             goldenChannelPlayerMessage.embeds[0].title = ''
             goldenChannelPlayerMessage.embeds[0].description = ''
@@ -177,7 +176,7 @@ module.exports = {
 
             goldenChannelPlayerMessage.embeds[0].author = {}
             goldenChannelPlayerMessage.embeds[0].title =
-                'Derzeit wird kein Lied abgespielt'
+                'no Song is being Played'
             goldenChannelPlayerMessage.embeds[0].description =
                 '[Invite](https://example.com) | [Dashboard](https://example.com) | [Commands](https://example.com) | [Support](https://example.com)'
             goldenChannelPlayerMessage.embeds[0].image.url =
@@ -185,7 +184,7 @@ module.exports = {
 
             goldenChannelPlayerMessage.edit({
                 content:
-                    'ㅤ\n__**Wiedergabeliste:**__\nVerbinde dich mit einem Sprachkanal\nund füge Songs über Titel oder URL ein.',
+                'ㅤ\n__**Queue:**__\nJoin a Voice Channel and add a Song or a Playlist',
                 embeds: [
                     new MessageEmbed(goldenChannelPlayerMessage.embeds[0]),
                 ],
