@@ -40,7 +40,8 @@ module.exports = {
             }, 5)    
 
         const track = queue.current
-        queue.setPaused(false)
+        if(queue.connection.paused)
+            queue.setPaused(false)
         const success = queue.skip()
         /*return void interaction.channel.send({
             embeds: [
