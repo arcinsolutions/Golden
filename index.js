@@ -250,6 +250,7 @@ client.player.on('trackAdd', (queue, track) => {
     // Request inside the music channel
     if (client.db.has(queue.guild.id) && queue.metadata.id === client.db.get(queue.guild.id).channel) {
 
+        // Queue management, when adding new songs
         if(queue.tracks[0] === undefined) {
             setGoldenChannerlPlayerQueue(queue.guild, 'Join a voice channel and queue songs by name or url in here.')
 

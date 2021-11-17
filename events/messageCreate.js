@@ -23,6 +23,17 @@ module.exports = {
             .setFooter(client.user.username, client.user.displayAvatarURL())
             .setTimestamp()
 
+            // If author isn't in a voice channel
+            if (!message.member.voice.channel) return sendTimed(message.channel, {
+                embeds: [
+                    embed
+                        .setDescription(
+                            `**❌ | You have to join a voice channel first**`
+                        )
+                        .setColor('DARK_RED'),
+                ],
+            }, 5)
+
             const guild = message.guild.id
             const channel = message.guild.channels.cache.get(
                 message.channel.id
@@ -46,9 +57,10 @@ module.exports = {
 
             const queue = await client.player.createQueue(guild, {
                 // Temoraly disabled, bot will not delete the Queue after Kick!!!
-                // leaveOnEnd: false,
-                // leaveOnStop: false,
-                // leaveOnEmpty: false,
+                //leaveOnEnd: false,
+                //leaveOnStop: false,
+                //leaveOnEmpty: true,
+                //eaveOnEmptyCooldown: 5000,
                 metadata: channel,
                 async onBeforeCreateStream(track, source, queue) {
                     if (track.url.includes('youtube.com')) {
@@ -77,15 +89,28 @@ module.exports = {
             const member =
             message.guild.members.cache.get(message.author.id) ??
             (await guild.members.fetch(message.author.id))
+
+            // Check again, since user might have left the channel
+            if (!message.member.voice.channel) return sendTimed(message.channel, {
+                embeds: [
+                    embed
+                        .setDescription(
+                            `**❌ | You have to join a voice channel first**`
+                        )
+                        .setColor('DARK_RED'),
+                ],
+            }, 5)
+
         try {
             if (!queue.connection) await queue.connect(member.voice.channel)
-        } catch {
+        } catch (e) {
             client.player.deleteQueue(message.guild.id)
+            console.log(e)
             return sendTimed(message.channel, {
                 embeds: [
                     embed
                         .setDescription(
-                            `**❌ | You are not in a voice channel!**`
+                            `**❌ | An error occured, please check bots console and try again**`
                         )
                         .setColor('DARK_RED'),
                 ],

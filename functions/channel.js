@@ -1,3 +1,4 @@
+const { bold } = require('colors/safe')
 const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js')
 const db = require('quick.db')
 module.exports = {
@@ -89,6 +90,26 @@ module.exports = {
             db.has(guild.id) &&
             guild.channels.cache.get(db.get(guild.id).channel) !== undefined
         )
+    },
+    
+    /* * * * * * * * * * * */
+
+    goldenPlayerExistsInGuild: async function (guild, client) {
+        if(db.has(guild.id)) {
+            const cachedChannel = client.channels.cache.get(db.get(guild.id).channel)
+            
+            try {
+                await cachedChannel.messages.fetch(db.get(guild.id).request)
+                return true;
+
+            } catch (e) {
+                return false;
+            }
+            
+       
+        }
+
+        return false;
     },
 
     /* * * * * * * * * * * */

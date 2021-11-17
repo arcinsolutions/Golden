@@ -2,14 +2,18 @@ var colors = require('colors/safe')
 const fs = require('fs')
 const { getRandomActivity } = require('../functions/random')
 const { Uptime } = require('better-uptime')
-const { resetGoldenChannelPlayer, goldenChannelExistsInGuild } = require('../functions/channel');
+const { 
+    resetGoldenChannelPlayer, 
+    goldenChannelExistsInGuild,
+    goldenPlayerExistsInGuild
+} = require('../functions/channel');
 
 import('../functions/random.js')
 
 module.exports = {
     name: 'ready',
     once: true,
-    execute(client) {
+    async execute(client) {
         const text = `  ${client.user.tag} is Online now!  `
         var underline = []
         underline[0] = ''
@@ -106,10 +110,13 @@ module.exports = {
 
         const registeredGuilds = client.db.all()
 
-        registeredGuilds.forEach((guild) => {
-            const cachedGuild = client.guilds.cache.get(guild.ID)
-            resetGoldenChannelPlayer(cachedGuild)
-        })
+        for(const guild of registeredGuilds) {
+            const guildId = guild.ID
+            const cachedGuild = client.guilds.cache.get(guildId)
+            if(await goldenPlayerExistsInGuild(cachedGuild, client)) {
+                resetGoldenChannelPlayer(cachedGuild)
+            }
+        }
 
         /** ++ Reset all channels to default ++  **/
     },

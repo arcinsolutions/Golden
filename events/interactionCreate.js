@@ -1,10 +1,16 @@
 const { MessageEmbed } = require('discord.js')
 const db = require('quick.db')
-const { goldenChannelExistsInGuild, deleteGoldenChannelInsideGuild, createGoldenChannelInsideGuild, populateGoldenChannelInsideGuild } = require('../functions/channel')
+const { 
+    goldenChannelExistsInGuild, 
+    deleteGoldenChannelInsideGuild, 
+    createGoldenChannelInsideGuild, 
+    populateGoldenChannelInsideGuild 
+} = require('../functions/channel')
+const { skip, playpause, stop } = require('../functions/musicControl')
 
 module.exports = {
     name: 'interactionCreate',
-    async execute(interaction) {
+    async execute(interaction, client) {
         //for Development 😉
         // console.log(`${interaction.user.tag} in #${interaction.channel.name} (${interaction.channel.id}) triggered an interaction (${interaction.commandName}).`);
 
@@ -42,6 +48,22 @@ module.exports = {
                     components: []
                 })
                 break
+
+            case "skip":
+                // PLAYER SKIP LOGIC
+                await interaction.deferUpdate()
+                skip(interaction, client)
+            break
+
+            case "playpause":
+                await interaction.deferUpdate()
+                playpause(interaction, client)
+            break
+
+            case "stop":
+                await interaction.deferUpdate()
+                stop(interaction, client)
+            break
         }
     },
 }
