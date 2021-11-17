@@ -80,7 +80,7 @@ module.exports = {
                 embeds: [
                     embed
                         .setDescription(
-                            `**❌ | Could not join your voice channel!**`
+                            `**❌ | You are not in a voice channel!**`
                         )
                         .setColor('DARK_RED'),
                 ],
