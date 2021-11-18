@@ -37,16 +37,9 @@ const client = new Client({
 })
 
 /** ++ Music init ++ */
-const { Player } = require('discord-player')
+const { Player } = require('jericho-player')
 
-client.player = new Player(client, {
-    ytdlOptions: {
-        quality: 'highest',
-        filter: 'audioonly',
-        highWaterMark: 1 << 25,
-        dlChunkSize: 0,
-    },
-})
+client.player = new Player(client) // TODO: set default volume? / set timeout sec
 /** -- Music init -- */
 
 /** ++ Command Handler ++ */
@@ -134,6 +127,18 @@ for (const file of eventFiles) {
 }
 
 /** -- Event Handler -- */
+/** -- Music Event Handler -- */
+
+const playerEvents = fs
+  .readdirSync('./events/music')
+  .filter((file) => file.endsWith('.js'))
+
+for (const PlayerEventsFile of playerEvents) {
+  const event = require(`./events/music/${PlayerEventsFile}`)
+  client.player.on(PlayerEventsFile.split('.')[0], event.bind(null, client))
+}
+
+/** -- Music Event Handler -- */
 /** -- Discord init -- **/
 
 /** ++ Start ++ **/
@@ -160,7 +165,7 @@ client.login(process.env.TOKEN)
 /** -- Start -- **/
 
 /** ++ Music events ++ */
-client.player.on('error', (queue, error) => {
+/*client.player.on('error', (queue, error) => {
     console.log(
         `[${queue.guild.name}] Error emitted from the queue: ${error.message}`
     )
@@ -175,8 +180,6 @@ client.player.on('trackStart', (queue, track) => {
     const embed = new MessageEmbed().setTimestamp()
 
     //https://www.reddit.com/r/Discord_Bots/comments/jel7r5/get_guild_by_id_in_discordjs/
-    /*console.log(track)
-    console.log(track.thumbnail)*/
 
     setGoldenChannerlPlayerTitle(
         queue.guild,
@@ -307,7 +310,7 @@ client.player.on('botDisconnect', (queue) => {
     }
 
     queue.destroy()
-})
+})*/
 
 // Disabled cause bot wont leave when empty!
 // client.player.on('channelEmpty', (queue) => {

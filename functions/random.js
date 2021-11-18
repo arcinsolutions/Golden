@@ -32,11 +32,11 @@ module.exports = {
           random = module.exports.getRandomNumber(0,5);
           break;
       case 4:
-          client.user.setActivity(`@Spastencord#1289`, { type: 'WATCHING' });
+          client.user.setActivity(`@Raved#8329`, { type: 'WATCHING' });
           random = module.exports.getRandomNumber(0,5);
           break;
       default:
-          client.user.setActivity(`@Botis‽ (Boris)#0666`, { type: 'WATCHING' });
+          client.user.setActivity(`@Botis‽#0666`, { type: 'WATCHING' });
           random = module.exports.getRandomNumber(0,5);
           break;
   }

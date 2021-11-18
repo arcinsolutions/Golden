@@ -1,8 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
-const { QueryType } = require('discord-player')
 const path = require('path')
-const playdl = require('play-dl')
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -19,89 +17,28 @@ module.exports = {
     async execute(interaction, client) {
         await interaction.deferReply()
 
-        const embed = new MessageEmbed()
-            .setFooter(client.user.username, client.user.displayAvatarURL())
-            .setTimestamp()
-
-        const guild = interaction.guild.id
-        const channel = interaction.guild.channels.cache.get(
-            interaction.channel.id
-        )
+        const guildId = interaction.guild.id
         const request = interaction.options.getString('song')
-        const searchResult = await client.player.search(request, {
-            requestedBy: interaction.user,
-            searchEngine: QueryType.AUTO,
-        })
 
-        if (!searchResult || !searchResult.tracks.length)
-            return interaction.editReply({
-                embeds: [
-                    embed
-                        .setDescription(`**❌ | No results were found!**`)
-                        .setColor('DARK_RED'),
-                ],
-            })
+        const Queue =
+            client.player.GetQueue(guildId) ??
+            client.player.CreateQueue(interaction)
+        const success = await Queue.play(
+            request,
+            interaction.member.voice.channel,
+            interaction.member
+        )
 
-        const queue = await client.player.createQueue(guild, {
-            // Temoraly disabled, bot will not delete the Queue after Kick!!!
-            // leaveOnEnd: false,
-            // leaveOnStop: false,
-            // leaveOnEmpty: false,
-            metadata: channel,
-            async onBeforeCreateStream(track, source, queue) {
-                if (track.url.includes('youtube.com')) {
-                    // play directly if it's a youtube track
-                    return (await playdl.stream(track.url)).stream
-                } else {
-                    // search for the track on youtube with the track author & title using playdl.search()
-                    // i added "lyric" to the search query to avoid playing music video streams
-                    return (
-                        await playdl.stream(
-                            await playdl
-                                .search(
-                                    `${track.author} ${track.title} lyric`,
-                                    { limit: 1, source: { youtube: 'video' } }
-                                )
-                                .then((x) => x[0].url)
-                        )
-                    ).stream
-                }
-            },
-        })
-
-        const member =
-            interaction.guild.members.cache.get(interaction.user.id) ??
-            (await guild.members.fetch(interaction.user.id))
-        try {
-            if (!queue.connection) await queue.connect(member.voice.channel)
-        } catch {
-            client.player.deleteQueue(interaction.guild.id)
-            return interaction.editReply({
-                embeds: [
-                    embed
-                        .setDescription(
-                            `**❌ | You are not in a voice channel!**`
-                        )
-                        .setColor('DARK_RED'),
-                ],
-            })
+        if (success) {
+            const ReturnEmbed = {
+                title: 'Searching for this song..',
+            }
+            return void (await interaction.editReply({ embeds: [ReturnEmbed] }))
         }
 
-        await interaction.editReply({
-            embeds: [
-                embed
-                    .setDescription(
-                        `**⏱ | Adding requested ${
-                            searchResult.playlist ? 'playlist' : 'track'
-                        }...**`
-                    )
-                    .setColor('DARK_GOLD'),
-            ],
-        })
-
-        searchResult.playlist
-            ? queue.addTracks(searchResult.tracks)
-            : queue.addTrack(searchResult.tracks[0])
-        if (!queue.playing) await queue.play()
+        const ErrorEmbed = {
+            title: "Songs can't be played. Please try again",
+        }
+        return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
     },
 }

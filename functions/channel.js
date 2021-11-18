@@ -203,6 +203,8 @@ module.exports = {
             goldenChannelPlayerMessage.embeds[0].image.url =
                 'https://cdn.hydra.bot/hydra_no_music.png'
 
+            goldenChannelPlayerMessage.embeds[0].footer = { text: `0 songs in queue | Volume: 95%` } // TODO: Volume..
+
             goldenChannelPlayerMessage.edit({
                 content:
                 'ㅤ\n__**Queue:**__\nJoin a Voice Channel and add a Song or a Playlist',

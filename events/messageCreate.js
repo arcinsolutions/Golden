@@ -3,23 +3,50 @@ const {
     deleteGoldenChannelInsideGuild,
     createGoldenChannelInsideGuild,
     populateGoldenChannelInsideGuild,
-    sendTimed
+    sendTimed,
 } = require('../functions/channel')
 
 const { MessageEmbed } = require('discord.js')
-const { QueryType } = require('discord-player')
+//const { QueryType } = require('discord-player')
 const playdl = require('play-dl')
 
 module.exports = {
     name: 'messageCreate',
     async execute(message, client) {
-        if (client.db.has(message.guild.id) && message.channel.id === client.db.get(message.guild.id).channel) {
-            
-            if (message.author.bot) return; // Cancel, if the bot is the author
+        if (
+            client.db.has(message.guild.id) &&
+            message.channel.id === client.db.get(message.guild.id).channel
+        ) {
+            if (message.author.bot) return // Cancel, if the bot is the author
 
             message.delete().catch() // User wrote message inside music channel..
 
-            const embed = new MessageEmbed()
+        const guildId = message.guild.id
+        const request = message.content
+
+        const Queue =
+            client.player.GetQueue(guildId) ??
+            client.player.CreateQueue(message)
+        const success = await Queue.play(
+            request,
+            message.member.voice.channel,
+            message.member
+        )
+
+        if (success) {
+            return;
+            /*const ReturnEmbed = {
+                title: 'Searching for this song..',
+            }
+            return void (await message.channel.send({ embeds: [ReturnEmbed] }))*/
+        }
+
+        const ErrorEmbed = {
+            title: "Songs can't be played. Please try again",
+        }
+        return void (await message.channel.send({ embeds: [ErrorEmbed] }))
+
+            /*const embed = new MessageEmbed()
             .setFooter(client.user.username, client.user.displayAvatarURL())
             .setTimestamp()
 
@@ -122,6 +149,7 @@ module.exports = {
             : queue.addTrack(searchResult.tracks[0])
         if (!queue.playing) await queue.play()
 
+        }*/
         }
     },
 }
