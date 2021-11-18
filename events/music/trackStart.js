@@ -12,9 +12,27 @@ module.exports = ('trackStart',
 
   const guild = track.requestedBy.guild;
 
+  if(queue.current == undefined)
+  {
   setGoldenChannelPlayerThumbnail(guild, track.thumbnail)
-  setGoldenChannerlPlayerTitle(guild, client, `🎶 | Now Playing\n${track.title} by ${track.channelId}`)
+  setGoldenChannerlPlayerTitle(guild, client, `🎶 | Now Playing:\n${track.title} by ${track.channelId}`)
   setGoldenChannelPlayerFooter(guild, `${queue.tracks.length-1} songs in queue | Volume: ${queue.volume}%`)
+  }
+  else
+  {
+    setGoldenChannelPlayerThumbnail(guild, queue.current.thumbnail)
+    setGoldenChannerlPlayerTitle(guild, client, `🎶 | Now Playing:\n${queue.current.title} by ${queue.current.channelId}`)
+    setGoldenChannelPlayerFooter(guild, `${queue.tracks.length-1} songs in queue | Volume: ${queue.volume}%`)
+  }
+
+  let tracksMap = ""
+
+  queue.tracks.forEach( (track, i) => {
+    if (i != 0)
+      tracksMap = `${i}. ${track.title} by ${track.channelId}\n` + tracksMap 
+  });
+
+  setGoldenChannerlPlayerQueue(guild, tracksMap)
 
   // TODO: Queue
 

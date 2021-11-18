@@ -148,6 +148,11 @@ module.exports = {
             const goldenChannelPlayerMessage =
                 await goldenChannel.messages.fetch(goldenChannelRequestId) // Fetched player embed
 
+            if (queue == '')
+            {
+                queue = 'Join a Voice Channel and add a Song or a Playlist'
+            }
+
             goldenChannelPlayerMessage.edit({
                 //content: "ㅤ\n__Queue list:__\n1. KA SO NEN SONG"
                 content: `ㅤ\n**__Queue:__**\n${queue}`,

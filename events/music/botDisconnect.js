@@ -11,5 +11,6 @@ module.exports =
         }`,
       )
       .setColor('RED')
+
     return void queue.message.channel.send({ embeds: [Embed] })
   })
