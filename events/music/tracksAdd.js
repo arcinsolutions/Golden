@@ -28,14 +28,17 @@ module.exports =
         .slice(0)
         .reverse()
         .map((track, i) => {
-              return `${queue.tracks.length - i}. ${track.title}\n`
+          if(track !== queue.tracks[0]) {
+              return `${queue.tracks.length+1 - i}. ${track.title}\n`
+            }
         }))
 
-        console.log(tracksMap[0].length)
         if(tracksMap[0].length === 0) {
-          console.log("KEINE QUEU WEIL NRU EIN SONG DREIN UND SO") // CURRENT QUEUE LIST
+          console.log("KEINE QUEUE WEIL NRU EIN SONG DREIN UND SO") // CURRENT QUEUE LIST
+          setGoldenChannerlPlayerQueue(guild, `JOIN CHANNEL TO ADD STUFF YOU KNOW HOW IT IS`)
         } else {
-          console.log(`0. ${tracks[0].title}\n` + tracksMap) // CURRENT QUEUE LIST
+          console.log(`${queue.tracks.length+1}. ${tracks[0].title}\n` + tracksMap) // CURRENT QUEUE LIST
+          setGoldenChannerlPlayerQueue(guild, `${queue.tracks.length}. ${tracks[0].title}\n` + tracksMap)
         }
       
 
