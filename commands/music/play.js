@@ -20,8 +20,12 @@ module.exports = {
         const guildId = interaction.guild.id
         let request = interaction.options.getString('song')
         if(!request.includes('https'))
-                request += ' lyric'
-
+                request += ' music lyric'
+/*
+        console.log(client.player.GetQueue(guildId))
+        console.log(client.player.CreateQueue(interaction))
+        console.log(client.player.GetQueue(guildId))
+*/
         const Queue =
             client.player.GetQueue(guildId) ??
             client.player.CreateQueue(interaction)
