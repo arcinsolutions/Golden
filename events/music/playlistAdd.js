@@ -22,10 +22,7 @@ module.exports =
 
         const queueLenght = queue.tracks.length
 
-        setGoldenChannelPlayerFooter(
-            guild,
-            `${queueLenght} songs in queue | Volume: ${queue.volume}%`
-        )
+        setGoldenChannelPlayerFooter(guild, queueLenght, queue.volume)
 
         let tracksMap = ''
         let i = 0

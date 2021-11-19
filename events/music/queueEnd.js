@@ -6,12 +6,7 @@ const {
 module.exports = ('queueEnd',
 (client, queue) => {
 
-  // TODO: Reset golden channel
-  const Embed = new MessageEmbed()
-    .setTitle('Music Player')
-    .setDescription('Queue has been Ended !!')
-    .setColor('RED');
+  const guild = client.guilds.cache.get(queue.guildId);
+  return void resetGoldenChannelPlayer(guild);
 
-  resetGoldenChannelPlayer(queue.guildid)
-  return void queue.message.channel.send({ embeds: [Embed] });
 });
