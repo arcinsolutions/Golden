@@ -38,8 +38,15 @@ const client = new Client({
 
 /** ++ Music init ++ */
 const { Player } = require('jericho-player')
-
-client.player = new Player(client) // TODO: set default volume? / set timeout sec
+// TODO: If bots starts disconnect all instances that are still connected !
+client.player = new Player(client, {
+    LeaveOnEnd: true,
+    LeaveOnEmpty: true,
+    LeaveOnBotEmpty: true,
+    LeaveOnEndTimedout: 300,
+    LeaveOnEmptyTimedout: 300,
+    LeaveOnBotOnlyTimedout: 300,
+}) // 300s = 3min
 /** -- Music init -- */
 
 /** ++ Command Handler ++ */
