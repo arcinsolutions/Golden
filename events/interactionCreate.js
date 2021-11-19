@@ -4,7 +4,8 @@ const {
     goldenChannelExistsInGuild, 
     deleteGoldenChannelInsideGuild, 
     createGoldenChannelInsideGuild, 
-    populateGoldenChannelInsideGuild 
+    populateGoldenChannelInsideGuild,
+    populateGoldenChannelPlayerInsideGuild
 } = require('../functions/channel')
 const { skip, playpause, stop } = require('../functions/musicControl')
 
@@ -30,7 +31,8 @@ module.exports = {
                     deleteGoldenChannelInsideGuild(guild) // Delete the current channel
     
                 const goldenChannel = await createGoldenChannelInsideGuild(guild)
-                populateGoldenChannelInsideGuild(goldenChannel.guild)
+                await populateGoldenChannelInsideGuild(goldenChannel.guild)
+                await populateGoldenChannelPlayerInsideGuild(guild, client)
     
                 interaction.update({
                     embeds: [
