@@ -21,30 +21,45 @@ module.exports = {
 
             message.delete().catch() // User wrote message inside music channel..
 
-        const guildId = message.guild.id
-        const request = message.content
+            const guildId = message.guild.id
+            let request = message.content
 
-        const Queue =
-            client.player.GetQueue(guildId) ??
-            client.player.CreateQueue(message)
-        const success = await Queue.play(
-            request,
-            message.member.voice.channel,
-            message.member
-        )
+            if(!request.includes('https'))
+                request += ' music lyric'
 
-        if (success) {
-            return;
-            /*const ReturnEmbed = {
+                console.log(`1. ${client.player.GetQueue(guildId)}`)
+
+                let Queue = client.player.GetQueue(guildId);
+
+                if(Queue === undefined || Queue.destroyed)
+                    Queue = client.player.CreateQueue(message)
+
+            
+
+           /* const Queue =
+                client.player.GetQueue(guildId) ??
+                client.player.CreateQueue(message)*/
+
+                console.log(`2. ${client.player.GetQueue(guildId)}`)
+
+            const success = await Queue.play(
+                request,
+                message.member.voice.channel,
+                message.member
+            )
+
+            if (success) {
+                return
+                /*const ReturnEmbed = {
                 title: 'Searching for this song..',
             }
             return void (await message.channel.send({ embeds: [ReturnEmbed] }))*/
-        }
+            }
 
-        const ErrorEmbed = {
-            title: "Songs can't be played. Please try again",
-        }
-        return void (await message.channel.send({ embeds: [ErrorEmbed] }))
+            const ErrorEmbed = {
+                title: "Songs can't be played. Please try again",
+            }
+            return void (await message.channel.send({ embeds: [ErrorEmbed] }))
 
             /*const embed = new MessageEmbed()
             .setFooter(client.user.username, client.user.displayAvatarURL())
