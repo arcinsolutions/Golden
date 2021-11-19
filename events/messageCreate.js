@@ -25,22 +25,12 @@ module.exports = {
             let request = message.content
 
             if(!request.includes('https'))
-                request += ' music lyric'
+                request += ' topic'
+                //request += ' music lyric'
 
-                console.log(`1. ${client.player.GetQueue(guildId)}`)
-
-                let Queue = client.player.GetQueue(guildId);
-
-                if(Queue === undefined || Queue.destroyed)
-                    Queue = client.player.CreateQueue(message)
-
-            
-
-           /* const Queue =
+            const Queue =
                 client.player.GetQueue(guildId) ??
-                client.player.CreateQueue(message)*/
-
-                console.log(`2. ${client.player.GetQueue(guildId)}`)
+                client.player.CreateQueue(message)
 
             const success = await Queue.play(
                 request,

@@ -7,7 +7,7 @@ const {
     populateGoldenChannelInsideGuild,
     populateGoldenChannelPlayerInsideGuild
 } = require('../functions/channel')
-const { skip, playpause, stop } = require('../functions/musicControl')
+const { skip, playpause, stop, shuffle } = require('../functions/musicControl')
 
 module.exports = {
     name: 'interactionCreate',

@@ -10,6 +10,7 @@ const {
 module.exports =
     ('tracksAdd',
     (client, queue, tracks) => {
+        
         const guild = tracks[0].requestedBy.guild
         //const guild = client.guilds.get(queue.message.guildId)
 

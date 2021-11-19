@@ -1,6 +1,6 @@
 const { MessageEmbed, ReactionUserManager } = require('discord.js')
 const { getVoiceConnection } = require('@discordjs/voice')
-const { isGoldenChannel, sendTimed } = require('../functions/channel')
+const { isGoldenChannel, sendTimed, resetGoldenChannelPlayer } = require('../functions/channel')
 
 module.exports = {
     skip: async function (interaction, client, skipAmount) {
@@ -21,7 +21,28 @@ module.exports = {
 
         const Queue = client.player.GetQueue(guild.id)
         if (!Queue || (Queue && !Queue.tracks[1])) {
-            const ErrorEmbed = {
+
+            const success = await Queue.destroy()
+            if (success && !isGoldenChannel(guild, channel)) {
+                const ReturnEmbed = {
+                    title: 'Songs has been Stopped',
+                }
+                resetGoldenChannelPlayer(guild)
+                return void (await interaction.editReply({ embeds: [ReturnEmbed] }))
+            } else if (success) {
+                return resetGoldenChannelPlayer(guild)
+            }
+           const ErrorEmbed = {
+               title: "Songs can't be Stopped",
+           }
+   
+           if (isGoldenChannel(guild, channel))
+               return void (await interaction.channel.send({
+                   embeds: [ErrorEmbed],
+               }))
+   
+           return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
+            /*const ErrorEmbed = {
                 title: 'Empty Queue',
                 description:
                     "No Songs are playing in `Queue`\nOR, Next Track is not Present in Queue\nSongs can't be `Skipped`",
@@ -32,7 +53,7 @@ module.exports = {
                     embeds: [ErrorEmbed],
                 }))
 
-            return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
+            return void (await interaction.editReply({ embeds: [ErrorEmbed] }))*/
         }
         const success = Queue.skip(skipAmount ?? undefined)
         if (success && !isGoldenChannel(guild, channel)) {
@@ -89,21 +110,16 @@ module.exports = {
             return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
         }
 
-        Queue.stop()
-
-        // const success = await Queue.stop()
-        // if (success && !isGoldenChannel(guild, channel)) {
-        //     const ReturnEmbed = {
-        //         title: 'Songs has been Stopped',
-        //     }
-        //     return void (await interaction.editReply({ embeds: [ReturnEmbed] }))
-        // } else if (success) {
-        //     // console.log(client.player.DeleteQueue(guild.id))
-        // //    console.log(await Queue.clear())
-        //     // Queue got successfully stopped inside the golden channel - no message to send!
-        //    // console.log("1: " + Queue.delete());
-        //     return
-        // }
+         const success = await Queue.destroy()
+         if (success && !isGoldenChannel(guild, channel)) {
+             const ReturnEmbed = {
+                 title: 'Songs has been Stopped',
+             }
+             resetGoldenChannelPlayer(guild)
+             return void (await interaction.editReply({ embeds: [ReturnEmbed] }))
+         } else if (success) {
+             return resetGoldenChannelPlayer(guild)
+         }
         const ErrorEmbed = {
             title: "Songs can't be Stopped",
         }
@@ -183,5 +199,52 @@ module.exports = {
             }
             return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
         }
+    },
+
+    shuffle: async function(interaction, client) {
+
+        const guild = interaction.guild;
+        const channel = interaction.channel;
+
+        var Queue = client.player.GetQueue(guild.id)
+        if (!Queue || (Queue && !Queue.playing)) {
+          const ErrorEmbed = {
+            title: 'Empty Queue',
+            description:
+              "No Songs are playing in `Queue`\nShuffle can't be implemented",
+          }
+
+          if (isGoldenChannel(guild, channel))
+            return void (await interaction.channel.send({
+                embeds: [ErrorEmbed],
+            }))
+
+          return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
+        }
+        const success = Queue.shuffle()
+        if (success) {
+          const ReturnEmbed = {
+            title: `Tracks Data has been Shuffled Completely`,
+          }
+
+          if (isGoldenChannel(guild, channel))
+            return void (await interaction.channel.send({
+                embeds: [ReturnEmbed],
+            }))
+
+          return void (await interaction.editReply({ embeds: [ReturnEmbed] }))
+        }
+        const ErrorEmbed = {
+          title: `Tracks Data can't be Shuffled`,
+        }
+
+        if (isGoldenChannel(guild, channel))
+            return void (await interaction.channel.send({
+                embeds: [ErrorEmbed],
+            }))
+
+
+        return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
+
     },
 }
