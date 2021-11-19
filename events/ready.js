@@ -114,7 +114,7 @@ module.exports = {
             const guildId = guild.ID
             const cachedGuild = client.guilds.cache.get(guildId)
             if(await goldenPlayerExistsInGuild(cachedGuild, client)) {
-                resetGoldenChannelPlayer(cachedGuild)
+                resetGoldenChannelPlayer(cachedGuild) // TODO: Abfrage, ob die PlayerMessage existiert, sonst fehler..
             }
         }
 
