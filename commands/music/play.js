@@ -18,7 +18,9 @@ module.exports = {
         await interaction.deferReply()
 
         const guildId = interaction.guild.id
-        const request = interaction.options.getString('song')
+        let request = interaction.options.getString('song')
+        if(!request.includes('https'))
+                request += ' lyric'
 
         const Queue =
             client.player.GetQueue(guildId) ??
