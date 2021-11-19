@@ -1,6 +1,7 @@
 const { bold } = require('colors/safe')
 const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js')
 const db = require('quick.db')
+
 module.exports = {
     createGoldenChannelInsideGuild: async function (guild) {
         const goldenChannel = await guild.channels.create(
@@ -21,6 +22,39 @@ module.exports = {
     },
 
     /* * * * * * * * * * * */
+
+
+    populateGoldenChannelPlayerInsideGuild: async function(guild, client) {
+
+        const queue = client.player.GetQueue(guild.id)
+
+        if(queue.current == undefined)
+  {
+  module.exports.setGoldenChannelPlayerThumbnail(guild, track.thumbnail)
+  module.exports.setGoldenChannerlPlayerTitle(guild, `🎶 | Now Playing:\n${track.title} by ${track.channelId}`)
+  module.exports.setGoldenChannelPlayerFooter(guild, queue.tracks.length-1, queue.volume)
+  }
+  else
+  {
+    module.exports.setGoldenChannelPlayerThumbnail(guild, queue.current.thumbnail)
+    module.exports.setGoldenChannerlPlayerTitle(guild, `🎶 | Now Playing:\n${queue.current.title} by ${queue.current.channelId}`)
+    module.exports.setGoldenChannelPlayerFooter(guild, queue.tracks.length-1, queue.volume)
+  }
+
+  let tracksMap = ""
+
+  queue.tracks.forEach( (track, i) => {
+    if (i != 0)
+      tracksMap = `${i}. ${track.title} by ${track.channelId}\n` + tracksMap 
+  });
+
+  module.exports.setGoldenChannerlPlayerQueue(guild, tracksMap)
+
+    },
+
+
+    /* * * * * * * * * * * */
+
 
     populateGoldenChannelInsideGuild: async function (guild) {
         const goldenChannelId = await db.get(guild.id).channel
@@ -89,6 +123,15 @@ module.exports = {
         return (
             db.has(guild.id) &&
             guild.channels.cache.get(db.get(guild.id).channel) !== undefined
+        )
+    },
+
+    /* * * * * * * * * * * */
+
+    isGoldenChannel: function (guild, channel) {
+        // Make sure that goldenChannelExistsInGuild() was called before this one
+        return (
+            (guild.channels.cache.get(db.get(guild.id).channel).id === channel.id)
         )
     },
     
@@ -162,7 +205,7 @@ module.exports = {
 
     /* * * * * * * * * * * */
 
-    setGoldenChannerlPlayerTitle: async function (guild, client, title) {
+    setGoldenChannerlPlayerTitle: async function (guild, title) {
         if (module.exports.goldenChannelExistsInGuild(guild)) {
             const goldenChannelId = await db.get(guild.id).channel // ID of the golden channel for this guild
             const goldenChannelRequestId = await db.get(guild.id).request // ID of the player Embed inside the golden channel
@@ -189,7 +232,7 @@ module.exports = {
 
     /* * * * * * * * * * * */
 
-    resetGoldenChannelPlayer: async function (guild) {
+    resetGoldenChannelPlayer: async function (guild, volume) {
         if (module.exports.goldenChannelExistsInGuild(guild)) {
             const goldenChannelId = await db.get(guild.id).channel // ID of the golden channel for this guild
             const goldenChannelRequestId = await db.get(guild.id).request // ID of the player Embed inside the golden channel
@@ -208,7 +251,9 @@ module.exports = {
             goldenChannelPlayerMessage.embeds[0].image.url =
                 'https://cdn.hydra.bot/hydra_no_music.png'
 
-            goldenChannelPlayerMessage.embeds[0].footer = { text: `0 songs in queue | Volume: 95%` } // TODO: Volume..
+                if(volume === undefined) 
+                    volume = 95;
+            goldenChannelPlayerMessage.embeds[0].footer = { text: `0 songs in queue | Volume: ${volume}%` } 
 
             goldenChannelPlayerMessage.edit({
                 content:
@@ -222,7 +267,7 @@ module.exports = {
 
     /* * * * * * * * * * * */
 
-    setGoldenChannelPlayerFooter: async function (guild, footer) {
+    setGoldenChannelPlayerFooter: async function (guild, songs, volume) {
         if (module.exports.goldenChannelExistsInGuild(guild)) {
             const goldenChannelId = await db.get(guild.id).channel // ID of the golden channel for this guild
             const goldenChannelRequestId = await db.get(guild.id).request // ID of the player Embed inside the golden channel
@@ -234,7 +279,14 @@ module.exports = {
                 await goldenChannel.messages.fetch(goldenChannelRequestId) // Fetched player embed
 
             //goldenChannelPlayerMessage.embeds[0].footer = { text: "0 songs in queu | Volume: 100%" }
-            goldenChannelPlayerMessage.embeds[0].footer = { text: footer }
+            
+            if(volume === undefined) 
+                volume = 95;
+
+            if(songs === undefined)
+                songs = 0;
+
+            goldenChannelPlayerMessage.embeds[0].footer = { text: `${songs} songs in queue | Volume: ${volume}%` } 
 
             goldenChannelPlayerMessage.edit({
                 embeds: [
