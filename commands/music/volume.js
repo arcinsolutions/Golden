@@ -36,7 +36,7 @@ module.exports = {
           return void (await interaction.editReply({ embeds: [ReturnEmbed] }));
         }
         Queue.volume = volumeAmount ?? 95;
-        setGoldenChannelPlayerFooter(interaction.guild, `${Queue.tracks.length} songs in queue | Volume: ${Queue.volume}%`);
+        setGoldenChannelPlayerFooter(interaction.guild, Queue.tracks.length, Queue.volume);
         const ReturnEmbed = {
           title: 'Volume Stats',
           description: `**Queue Volume/Changed Volume :** \`${Queue.volume}\``,
