@@ -5,6 +5,7 @@ const {
     createGoldenChannelInsideGuild,
     populateGoldenChannelInsideGuild,
     goldenChannelExistsInGuild,
+    populateGoldenChannelPlayerInsideGuild,
 } = require('../../functions/channel')
 const { MessageActionRow, MessageButton } = require('discord.js')
 
@@ -54,7 +55,8 @@ module.exports = {
             })
 
         const goldenChannel = await createGoldenChannelInsideGuild(guild)
-        populateGoldenChannelInsideGuild(guild)
+        await populateGoldenChannelInsideGuild(guild)
+        await populateGoldenChannelPlayerInsideGuild(guild, client)
 
         return interaction.editReply(`OK CHANNEL_CREATED ${goldenChannel}`)
     },
