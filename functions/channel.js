@@ -24,6 +24,9 @@ module.exports = {
     /* * * * * * * * * * * */
 
     populateGoldenChannelPlayerInsideGuild: async function (guild, client) {
+        
+         if(queue != undefined) {
+        
         const queue = client.player.GetQueue(guild.id)
 
         if (queue !== undefined) {
@@ -51,6 +54,7 @@ module.exports = {
         })
 
         module.exports.setGoldenChannerlPlayerQueue(guild, tracksMap)
+    }
     }
     },
 
