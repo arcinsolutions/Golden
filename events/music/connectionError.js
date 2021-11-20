@@ -8,6 +8,6 @@ module.exports =
       .setDescription(
         `\`${ErrorMessage}\` Error for Guild -\`${queue.message.guild.name}\``,
       )
-      .setColor('RED')
+      .setColor('DARK_RED')
     return void queue.message.channel.send({ embeds: [Embed] })
   })

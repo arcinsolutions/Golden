@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
 const path = require('path')
+const { sendTimed } = require('../../functions/channel')
 const { skip } = require('../../functions/musicControl')
 
 module.exports = {
@@ -17,6 +18,8 @@ module.exports = {
     category: path.basename(__dirname),
     async execute(interaction, client) {
         await interaction.deferReply()
-        return void (await skip(interaction, client, interaction.options.getInteger('amount')))
+        await interaction.editReply({ content: `Done`})
+        await skip(interaction, client, interaction.options.getInteger('amount'))
+        return interaction.deleteReply()
     },
 }

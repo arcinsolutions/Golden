@@ -5,6 +5,6 @@ module.exports = ('channelEmpty',
   const Embed = new MessageEmbed()
     .setTitle('Music Player')
     .setDescription(`Voice Channel is Empty Now - <#${VoiceChannel.id}>`)
-    .setColor('RED');
+    .setColor('DARK_RED');
   return void queue.message.channel.send({ embeds: [Embed] });
 });

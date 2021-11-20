@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
 const path = require('path')
+const { sendTimed } = require('../../functions/channel')
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -17,15 +18,29 @@ module.exports = {
     async execute(interaction, client) {
         await interaction.deferReply()
 
+        const embed = new MessageEmbed()
+            .setFooter(client.user.username, client.user.displayAvatarURL())
+            .setTimestamp()
+
+        if (!interaction.member.voice.channel)
+            return sendTimed(
+                interaction.channel,
+                {
+                    embeds: [
+                        embed
+                            .setDescription(
+                                `**❌ | <@${interaction.member.id}> You have to join a voice channel first**`
+                            )
+                            .setColor('DARK_RED'),
+                    ],
+                },
+                5
+            )
+
         const guildId = interaction.guild.id
         let request = interaction.options.getString('song')
-        if(!request.includes('https'))
-                request += ' music lyric'
-/*
-        console.log(client.player.GetQueue(guildId))
-        console.log(client.player.CreateQueue(interaction))
-        console.log(client.player.GetQueue(guildId))
-*/
+        if (!request.includes('https')) request += ' topic'
+
         const Queue =
             client.player.GetQueue(guildId) ??
             client.player.CreateQueue(interaction)
@@ -42,9 +57,18 @@ module.exports = {
             return void (await interaction.editReply({ embeds: [ReturnEmbed] }))
         }
 
-        const ErrorEmbed = {
-            title: "Songs can't be played. Please try again",
-        }
-        return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
+        return sendTimed(
+            interaction.channel,
+            {
+                embeds: [
+                    embed
+                        .setDescription(
+                            `**❌ | Song/s can't be played. Please try again**`
+                        )
+                        .setColor('DARK_RED'),
+                ],
+            },
+            5
+        )
     },
 }

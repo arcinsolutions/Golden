@@ -10,7 +10,7 @@ module.exports =
           VoiceChannel ? `<#${VoiceChannel.id}>` : 'Unknown/Deleted Channel'
         }`,
       )
-      .setColor('RED')
+      .setColor('DARK_RED')
 
     return void queue.message.channel.send({ embeds: [Embed] })
   })

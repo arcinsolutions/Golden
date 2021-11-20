@@ -15,7 +15,7 @@ module.exports =
             .setDescription(
                 `Bot has Added a Playlist with \`${tracks.length}\` Songs`
             )
-            .setColor('GREEN')
+            .setColor('DARK_GREEN')
 
         const guild = tracks[0].requestedBy.guild
         //const guild = client.guilds.get(queue.message.guildId)
