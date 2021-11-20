@@ -89,11 +89,11 @@ module.exports = {
             .setDescription(
                 '[Bot Invite](https://example.com) | [Dashboard](https://www.golden.spasten.studio) | [Commands](https://example.com) | [Support](https://discord.gg/PX28nyVgdP)'
             )
-            .setImage('https://cdn.discordapp.com/attachments/911271717492621343/911271896698482698/GoldTransparent.png')
+            .setImage('https://cdn.discordapp.com/attachments/911271717492621343/911757263184756796/empty.png')
         /*       */
 
         const goldenBanner = await goldenChannel.send(
-            'https://cdn.discordapp.com/attachments/888129386124038174/888129397293461574/hydra_banner.png'
+            'https://cdn.discordapp.com/attachments/911271717492621343/911750980960399441/banner2.png'
         )
         const goldenMessage = await goldenChannel.send({
             content:
@@ -246,9 +246,9 @@ module.exports = {
             goldenChannelPlayerMessage.embeds[0].title =
                 'no Song is being Played'
             goldenChannelPlayerMessage.embeds[0].description =
-                '[Invite](https://example.com) | [Dashboard](https://example.com) | [Commands](https://example.com) | [Support](https://example.com)'
+                '[Invite](https://www.spasten.studio/) | [Dashboard](https://www.spasten.studio/) | [Commands](https://www.spasten.studio/) | [Support](https://discord.gg/PX28nyVgdP)'
             goldenChannelPlayerMessage.embeds[0].image.url =
-                'https://cdn.hydra.bot/hydra_no_music.png'
+                'https://cdn.discordapp.com/attachments/911271717492621343/911757263184756796/empty.png'
 
             if (volume === undefined) volume = 95
             goldenChannelPlayerMessage.embeds[0].footer = {
