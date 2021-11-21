@@ -21,8 +21,8 @@ module.exports =
         let tracksMap = ''
         let i = 0
 
-        queue.tracks.forEach((track) => {
-            if (track.Id != 1) {
+        queue.tracks.forEach((track, index) => {
+            if (index != 0) {
                 tracksMap =
                     `\`${i + 1}.\` ${track.title} by ${track.channelId}\n` +
                     tracksMap
