@@ -26,7 +26,7 @@ module.exports = {
     populateGoldenChannelPlayerInsideGuild: async function (guild, client) {
         const queue = client.player.GetQueue(guild.id)
 
-        if (queue !== undefined) {
+        if (queue !== undefined && queue.current !== undefined) {
             module.exports.setGoldenChannelPlayerThumbnail(
                 guild,
                 queue.current.thumbnail
