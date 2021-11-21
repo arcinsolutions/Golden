@@ -1,130 +1,250 @@
-const { MessageEmbed } = require('discord.js')
-const { getVoiceConnection } = require('@discordjs/voice');
-const { sendTimed } = require('../functions/channel')
-const { resetGoldenChannelPlayer } = require('../functions/channel')
+const { MessageEmbed, ReactionUserManager } = require('discord.js')
+const { getVoiceConnection } = require('@discordjs/voice')
+const { isGoldenChannel, sendTimed, resetGoldenChannelPlayer } = require('../functions/channel')
 
 module.exports = {
-    skip: function (interaction, client) {
-        const embed = new MessageEmbed()
-            .setFooter(client.user.username, client.user.displayAvatarURL())
-            .setTimestamp()
+    skip: async function (interaction, client, skipAmount) {
+        const guild = interaction.guild
+        const channel = interaction.channel
 
-        const guild = interaction.guild;
-
-        if(getVoiceConnection(interaction.guild.id) !== undefined && getVoiceConnection(interaction.guild.id).joinConfig.channelId !== interaction.member.voice.channelId) {
-            return sendTimed(interaction.channel, {
-                embeds: [
-                    embed
-                        .setDescription(`**❌ | ${interaction.member}, please join my channel to skip songs!**`)
-                        .setColor('DARK_RED'),
-                ],
-            }, 5)
+        if(getVoiceConnection(guild.id) === undefined) {
+            return; // golden not in a voice channel rn - do nothing
+        } else if(getVoiceConnection(guild.id).joinConfig.channelId !== interaction.member.voice.channelId) {
+            const ReturnEmbed = {
+                title: 'Join My Channel',
+                description:
+                    "Please join my voice channel to use this interaction",
+            }
+            
+            return (await sendTimed(channel, { embeds: [ReturnEmbed] }, 5))
         }
 
-        
-        /*
-        if(client.voice.connections.some((connection) => connection.channel.id === interaction.member.voice.channelID)) {
-            console.log("SAME CHANNEL")
-        } else {
-            console.log("NOT SAME CHANNEL!")
-        }*/
+        const Queue = client.player.GetQueue(guild.id)
+        if (!Queue || (Queue && !Queue.tracks[1])) {
 
-        const queue = client.player.getQueue(guild.id)
-        if (!queue || !queue.playing)
-            return sendTimed(interaction.channel, {
-                embeds: [
-                    embed
-                        .setDescription(`**❌ | ${interaction.member}, no music is being played!**`)
-                        .setColor('DARK_RED'),
-                ],
-            }, 5)    
+            const success = await Queue.destroy()
+            if (success && !isGoldenChannel(guild, channel)) {
+                const ReturnEmbed = {
+                    title: 'Songs has been Stopped',
+                }
+                resetGoldenChannelPlayer(guild)
+                return (await interaction.editReply({ embeds: [ReturnEmbed] }))
+            } else if (success) {
+                return resetGoldenChannelPlayer(guild)
+            }
+           const ErrorEmbed = {
+               title: "Songs can't be Stopped",
+           }
+   
+           if (isGoldenChannel(guild, channel))
+               return (await interaction.channel.send({
+                   embeds: [ErrorEmbed],
+               }))
+   
+           return (await interaction.editReply({ embeds: [ErrorEmbed] }))
+            /*const ErrorEmbed = {
+                title: 'Empty Queue',
+                description:
+                    "No Songs are playing in `Queue`\nOR, Next Track is not Present in Queue\nSongs can't be `Skipped`",
+            }
 
-        const track = queue.current
-        if(queue.connection.paused)
-            queue.setPaused(false)
-        const success = queue.skip()
-        /*return void interaction.channel.send({
-            embeds: [
-                embed
-                    .setDescription(
-                        success
-                            ? `**✅ | Skipped [${track.title} by ${track.author}](${track.url})!**`
-                            : '**❌ | Something went wrong!**'
-                    )
-                    .setColor('DARK_GOLD'),
-            ],
-        })*/
+            if (isGoldenChannel(guild, channel))
+                return (await interaction.channel.send({
+                    embeds: [ErrorEmbed],
+                }))
+
+            return (await interaction.editReply({ embeds: [ErrorEmbed] }))*/
+        }
+        const success = Queue.skip(skipAmount ?? undefined)
+        if (success && !isGoldenChannel(guild, channel)) {
+            const ReturnEmbed = {
+                title: 'Songs has been Skipped',
+            }
+            return (await interaction.editReply({ embeds: [ReturnEmbed] }))
+        } else if (success) {
+            // Song skipped successfully inside the golden channel - no message to send!
+            return
+        }
+
+        const ErrorEmbed = {
+            title: "Songs can't be Skipped",
+        }
+
+        if (isGoldenChannel(guild, channel))
+            return (await interaction.channel.send({
+                emebds: [ErrorEmbed],
+            }))
+
+        return (await interaction.editReply({ embeds: [ErrorEmbed] }))
     },
 
     stop: async function (interaction, client) {
-        const embed = new MessageEmbed()
-            .setFooter(client.user.username, client.user.displayAvatarURL())
-            .setTimestamp()
-
-            if(getVoiceConnection(interaction.guild.id) !== undefined && getVoiceConnection(interaction.guild.id).joinConfig.channelId !== interaction.member.voice.channelId) {
-                return sendTimed(interaction.channel, {
-                    embeds: [
-                        embed
-                            .setDescription(`**❌ | ${interaction.member}, please join my channel to cancel my queue songs!**`)
-                            .setColor('DARK_RED'),
-                    ],
-                }, 5)
+        const guild = interaction.guild
+        const channel = interaction.channel
+        
+        if(getVoiceConnection(guild.id) === undefined) {
+            return; // golden not in a voice channel rn - do nothing
+        } else if(getVoiceConnection(guild.id).joinConfig.channelId !== interaction.member.voice.channelId) {
+            const ReturnEmbed = {
+                title: 'Join My Channel',
+                description:
+                    "Please join my voice channel to use this interaction",
             }
-
-        const queue = client.player.getQueue(interaction.guild.id)
-        if (!queue || !queue.playing)
-            return void interaction.channel.send({
-                embeds: [
-                    embed
-                        .setDescription('**❌ | There is no queue to cancel!**')
-                        .setColor('DARK_RED'),
-                ],
-            })
             
-        queue.clear()
-        queue.stop()
-        resetGoldenChannelPlayer(interaction.guild)
-    },
-
-    playpause: async function(interaction, client) {
-
-        const embed = new MessageEmbed()
-            .setFooter(client.user.username, client.user.displayAvatarURL())
-            .setTimestamp()
-
-            if(getVoiceConnection(interaction.guild.id) !== undefined && getVoiceConnection(interaction.guild.id).joinConfig.channelId !== interaction.member.voice.channelId) {
-                return sendTimed(interaction.channel, {
-                    embeds: [
-                        embed
-                            .setDescription(`**❌ | ${interaction.member}, please join my channel to pause and play songs!**`)
-                            .setColor('DARK_RED'),
-                    ],
-                }, 5)
-            }
-
-        const queue = client.player.getQueue(interaction.guild.id)
-        if (!queue || !queue.playing)
-            return void interaction.channel.send({
-                embeds: [
-                    embed
-                        .setDescription('**❌ | There is no music to play or pause!**')
-                        .setColor('DARK_RED'),
-                ],
-            })
-
-        if(queue.connection.paused) {
-            queue.setPaused(false)
-        } else {
-            queue.setPaused(true)
+            return (await sendTimed(channel, { embeds: [ReturnEmbed] }, 5))
         }
 
-        /*return void interaction.channel.send({
-            embeds: [
-                embed
-                    .setDescription(paused ? '⏸ | Paused!' : '**❌ | Something went wrong!**')
-                    .setColor(paused ? 'DARK_GREEN' : 'DARK_RED'),
-            ],
-        })*/
+        const Queue = client.player.GetQueue(guild.id)
+        if (!Queue || (Queue && !Queue.current)) {
+            const ErrorEmbed = {
+                title: 'Empty Queue',
+                description:
+                    "No Songs are playing in `Queue`\nSongs can't be `Stopped`",
+            }
+
+            if (isGoldenChannel(guild, channel))
+                return (await interaction.channel.send({
+                    embeds: [ErrorEmbed],
+                }))
+
+            return (await interaction.editReply({ embeds: [ErrorEmbed] }))
+        }
+
+         const success = await Queue.destroy()
+         if (success && !isGoldenChannel(guild, channel)) {
+             const ReturnEmbed = {
+                 title: 'Songs has been Stopped',
+             }
+             resetGoldenChannelPlayer(guild)
+             return (await interaction.editReply({ embeds: [ReturnEmbed] }))
+         } else if (success) {
+             return resetGoldenChannelPlayer(guild)
+         }
+        const ErrorEmbed = {
+            title: "Songs can't be Stopped",
+        }
+
+        if (isGoldenChannel(guild, channel))
+            return (await interaction.channel.send({
+                embeds: [ErrorEmbed],
+            }))
+
+        return (await interaction.editReply({ embeds: [ErrorEmbed] }))
+    },
+
+    playpause: async function (interaction, client) {
+        const guild = interaction.guild
+        const channel = interaction.channel
+
+        if(getVoiceConnection(guild.id) === undefined) {
+            return; // golden not in a voice channel rn - do nothing
+        } else if(getVoiceConnection(guild.id).joinConfig.channelId !== interaction.member.voice.channelId) {
+            const ReturnEmbed = {
+                title: 'Join My Channel',
+                description:
+                    "Please join my voice channel to use this interaction",
+            }
+            
+            return (await sendTimed(channel, { embeds: [ReturnEmbed] }, 5))
+        }
+
+        const Queue = client.player.GetQueue(guild.id)
+        if (!Queue || (Queue && !Queue.tracks[0])) {
+            const ErrorEmbed = {
+                title: 'Empty Queue',
+                description:
+                    "No Songs are playing in `Queue`\nOR, Next Track is not Present in Queue\nSongs can't be `Resumed/Un-Paused`",
+            }
+
+            if (isGoldenChannel(guild, channel))
+                return (await interaction.channel.send({
+                    embeds: [ErrorEmbed],
+                }))
+
+            return (await interaction.editReply({ embeds: [ErrorEmbed] }))
+        }
+
+        if (Queue.paused) {
+            const success = Queue.resume()
+            if (success && !isGoldenChannel(guild, channel)) {
+                const ReturnEmbed = {
+                    title: 'Songs has been Resumed/Un-Paused',
+                }
+                return (await interaction.editReply({
+                    embeds: [ReturnEmbed],
+                }))
+            } else if (success) {
+                // Success inside golden channel - no return needed
+                return
+            }
+            const ErrorEmbed = {
+                title: "Songs can't be Resumed/Un-Paused",
+            }
+            return (await interaction.editReply({ embeds: [ErrorEmbed] }))
+        } else {
+            const success = Queue.pause()
+            if (success && !isGoldenChannel(guild, channel)) {
+                const ReturnEmbed = {
+                    title: 'Songs has been Paused',
+                }
+                return (await interaction.editReply({
+                    embeds: [ReturnEmbed],
+                }))
+            } else if (success) {
+                // Success in golden channel - no return message needed
+                return
+            }
+            const ErrorEmbed = {
+                title: "Songs can't be Paused",
+            }
+            return (await interaction.editReply({ embeds: [ErrorEmbed] }))
+        }
+    },
+
+    shuffle: async function(interaction, client) {
+
+        const guild = interaction.guild;
+        const channel = interaction.channel;
+
+        var Queue = client.player.GetQueue(guild.id)
+        if (!Queue || (Queue && !Queue.playing)) {
+          const ErrorEmbed = {
+            title: 'Empty Queue',
+            description:
+              "No Songs are playing in `Queue`\nShuffle can't be implemented",
+          }
+
+          if (isGoldenChannel(guild, channel))
+            return (await interaction.channel.send({
+                embeds: [ErrorEmbed],
+            }))
+
+          return (await interaction.editReply({ embeds: [ErrorEmbed] }))
+        }
+        const success = Queue.shuffle()
+        if (success) {
+          const ReturnEmbed = {
+            title: `Tracks Data has been Shuffled Completely`,
+          }
+
+          if (isGoldenChannel(guild, channel))
+            return (await interaction.channel.send({
+                embeds: [ReturnEmbed],
+            }))
+
+          return (await interaction.editReply({ embeds: [ReturnEmbed] }))
+        }
+        const ErrorEmbed = {
+          title: `Tracks Data can't be Shuffled`,
+        }
+
+        if (isGoldenChannel(guild, channel))
+            return (await interaction.channel.send({
+                embeds: [ErrorEmbed],
+            }))
+
+
+        return (await interaction.editReply({ embeds: [ErrorEmbed] }))
 
     },
 }

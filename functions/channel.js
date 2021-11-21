@@ -1,6 +1,7 @@
 const { bold } = require('colors/safe')
 const { MessageActionRow, MessageButton, MessageEmbed } = require('discord.js')
 const db = require('quick.db')
+
 module.exports = {
     createGoldenChannelInsideGuild: async function (guild) {
         const goldenChannel = await guild.channels.create(
@@ -18,6 +19,39 @@ module.exports = {
 
         await db.set(guild.id, { channel: goldenChannel.id })
         return goldenChannel
+    },
+
+    /* * * * * * * * * * * */
+
+    populateGoldenChannelPlayerInsideGuild: async function (guild, client) {
+        const queue = client.player.GetQueue(guild.id)
+
+        if (queue !== undefined && queue.current !== undefined) {
+            module.exports.setGoldenChannelPlayerThumbnail(
+                guild,
+                queue.current.thumbnail
+            )
+            module.exports.setGoldenChannerlPlayerTitle(
+                guild,
+                `🎶 | Now Playing:\n${queue.current.title} by ${queue.current.channelId}`
+            )
+            module.exports.setGoldenChannelPlayerFooter(
+                guild,
+                queue.tracks.length - 1,
+                queue.volume
+            )
+
+            let tracksMap = ''
+
+            queue.tracks.forEach((track, i) => {
+                if (i != 0)
+                    tracksMap =
+                        `${i}. ${track.title} by ${track.channelId}\n` +
+                        tracksMap
+            })
+
+            module.exports.setGoldenChannerlPlayerQueue(guild, tracksMap)
+        }
     },
 
     /* * * * * * * * * * * */
@@ -50,15 +84,16 @@ module.exports = {
 
         const goldenChannelEmbed = new MessageEmbed()
             .setColor('DARK_BUT_NOT_BLACK')
-            .setTitle('no Song is being Played')
+            .setTitle('🎶 | no Song is being Played')
             .setDescription(
                 '[Bot Invite](https://example.com) | [Dashboard](https://www.golden.spasten.studio) | [Commands](https://example.com) | [Support](https://discord.gg/PX28nyVgdP)'
             )
-            .setImage('https://cdn.hydra.bot/hydra_no_music.png')
-        /*       */
+            .setImage(
+                'https://cdn.discordapp.com/attachments/911271717492621343/912002185267646544/bg4.png'
+            )
 
         const goldenBanner = await goldenChannel.send(
-            'https://cdn.discordapp.com/attachments/888129386124038174/888129397293461574/hydra_banner.png'
+            'https://cdn.discordapp.com/attachments/911271717492621343/911750980960399441/banner2.png'
         )
         const goldenMessage = await goldenChannel.send({
             content:
@@ -91,25 +126,33 @@ module.exports = {
             guild.channels.cache.get(db.get(guild.id).channel) !== undefined
         )
     },
-    
+
+    /* * * * * * * * * * * */
+
+    isGoldenChannel: function (guild, channel) {
+        // Make sure that goldenChannelExistsInGuild() was called before this one
+        return (
+            guild.channels.cache.get(db.get(guild.id).channel).id === channel.id
+        )
+    },
+
     /* * * * * * * * * * * */
 
     goldenPlayerExistsInGuild: async function (guild, client) {
-        if(db.has(guild.id)) {
-            const cachedChannel = client.channels.cache.get(db.get(guild.id).channel)
-            
+        if (db.has(guild.id)) {
+            const cachedChannel = client.channels.cache.get(
+                db.get(guild.id).channel
+            )
+
             try {
                 await cachedChannel.messages.fetch(db.get(guild.id).request)
-                return true;
-
+                return true
             } catch (e) {
-                return false;
+                return false
             }
-            
-       
         }
 
-        return false;
+        return false
     },
 
     /* * * * * * * * * * * */
@@ -148,6 +191,10 @@ module.exports = {
             const goldenChannelPlayerMessage =
                 await goldenChannel.messages.fetch(goldenChannelRequestId) // Fetched player embed
 
+            if (queue == '') {
+                queue = 'Join a Voice Channel and add a Song or a Playlist'
+            }
+
             goldenChannelPlayerMessage.edit({
                 //content: "ㅤ\n__Queue list:__\n1. KA SO NEN SONG"
                 content: `ㅤ\n**__Queue:__**\n${queue}`,
@@ -157,7 +204,7 @@ module.exports = {
 
     /* * * * * * * * * * * */
 
-    setGoldenChannerlPlayerTitle: async function (guild, client, title) {
+    setGoldenChannerlPlayerTitle: async function (guild, title) {
         if (module.exports.goldenChannelExistsInGuild(guild)) {
             const goldenChannelId = await db.get(guild.id).channel // ID of the golden channel for this guild
             const goldenChannelRequestId = await db.get(guild.id).request // ID of the player Embed inside the golden channel
@@ -172,7 +219,7 @@ module.exports = {
                 name: title,
             }
             goldenChannelPlayerMessage.embeds[0].title = ''
-            goldenChannelPlayerMessage.embeds[0].description = ''
+            goldenChannelPlayerMessage.embeds[0].description = '[Bot Invite](https://example.com) | [Dashboard](https://www.golden.spasten.studio) | [Commands](https://example.com) | [Support](https://discord.gg/PX28nyVgdP)'
 
             goldenChannelPlayerMessage.edit({
                 embeds: [
@@ -184,7 +231,7 @@ module.exports = {
 
     /* * * * * * * * * * * */
 
-    resetGoldenChannelPlayer: async function (guild) {
+    resetGoldenChannelPlayer: async function (guild, volume) {
         if (module.exports.goldenChannelExistsInGuild(guild)) {
             const goldenChannelId = await db.get(guild.id).channel // ID of the golden channel for this guild
             const goldenChannelRequestId = await db.get(guild.id).request // ID of the player Embed inside the golden channel
@@ -197,15 +244,19 @@ module.exports = {
 
             goldenChannelPlayerMessage.embeds[0].author = {}
             goldenChannelPlayerMessage.embeds[0].title =
-                'no Song is being Played'
+                '🎶 | no Song is being Played'
             goldenChannelPlayerMessage.embeds[0].description =
-                '[Invite](https://example.com) | [Dashboard](https://example.com) | [Commands](https://example.com) | [Support](https://example.com)'
-            goldenChannelPlayerMessage.embeds[0].image.url =
-                'https://cdn.hydra.bot/hydra_no_music.png'
+                '[Invite](https://www.spasten.studio/) | [Dashboard](https://www.spasten.studio/) | [Commands](https://www.spasten.studio/) | [Support](https://discord.gg/PX28nyVgdP)'
+            goldenChannelPlayerMessage.embeds[0].image = { url: 'https://cdn.discordapp.com/attachments/911271717492621343/912002185267646544/bg4.png' }
+
+            if (volume === undefined) volume = 95
+            goldenChannelPlayerMessage.embeds[0].footer = {
+                text: `0 songs in queue | Volume: ${volume}%`,
+            }
 
             goldenChannelPlayerMessage.edit({
                 content:
-                'ㅤ\n__**Queue:**__\nJoin a Voice Channel and add a Song or a Playlist',
+                    'ㅤ\n__**Queue:**__\nJoin a Voice Channel and add a Song or a Playlist',
                 embeds: [
                     new MessageEmbed(goldenChannelPlayerMessage.embeds[0]),
                 ],
@@ -215,7 +266,7 @@ module.exports = {
 
     /* * * * * * * * * * * */
 
-    setGoldenChannelPlayerFooter: async function (guild, footer) {
+    setGoldenChannelPlayerFooter: async function (guild, songs, volume) {
         if (module.exports.goldenChannelExistsInGuild(guild)) {
             const goldenChannelId = await db.get(guild.id).channel // ID of the golden channel for this guild
             const goldenChannelRequestId = await db.get(guild.id).request // ID of the player Embed inside the golden channel
@@ -227,7 +278,14 @@ module.exports = {
                 await goldenChannel.messages.fetch(goldenChannelRequestId) // Fetched player embed
 
             //goldenChannelPlayerMessage.embeds[0].footer = { text: "0 songs in queu | Volume: 100%" }
-            goldenChannelPlayerMessage.embeds[0].footer = { text: footer }
+
+            if (volume === undefined) volume = 95
+
+            if (songs === undefined) songs = 0
+
+            goldenChannelPlayerMessage.embeds[0].footer = {
+                text: `${songs} songs in queue | Volume: ${volume}%`,
+            }
 
             goldenChannelPlayerMessage.edit({
                 embeds: [

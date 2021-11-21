@@ -7,47 +7,49 @@ module.exports = {
         .setName('loop')
         .setDescription('let you change if the Song or Queue should be Looped!')
         .addStringOption((option) =>
-        option
-            .setName('page')
-            .setDescription('the Queue Page')
-            .setRequired(false)
-            .addChoice('Song', 'song')
-            .addChoice('Queue', 'queue')
-    ),
+            option
+                .setName('option')
+                .setDescription('the Loop option (Song|Queue|Off)')
+                .setRequired(true)
+                .addChoice('Off', 'off')
+                .addChoice('Song', 'song')
+                .addChoice('Queue', 'queue')
+        ),
 
     category: path.basename(__dirname),
     async execute(interaction, client) {
         await interaction.deferReply()
 
+        const queue = client.player.GetQueue(interaction.guild.id)
+
+        const loop = interaction.options.getString('option')
+
+        let succes = false
+
         const embed = new MessageEmbed()
-            .setColor('DARK_GREEN')
-            .setFooter(client.user.username, client.user.displayAvatarURL())
-            .setTimestamp()
+      .setTitle('Loop')
+      .setDescription(
+        `Error is caused by - \`${message}\`${
+          data ? `| Where your data was -> \`${data}\`` : ''
+        }`,
+      )
 
-        var page = interaction.options.getString('page')
+        if (queue != undefined)
+            switch (loop) {
+                case 'off':
+                    succes = queue.loop('off')
+                    break
+                case 'song':
+                    succes = queue.loop('song')
+                    break
+                case 'queue':
+                    succes = queue.loop('queue')
+                    break
+            }
 
-        const queue = client.player.getQueue(interaction.guild.id);
-        if (!queue || !queue.playing) return void interaction.editReply({ content: '❌ | No music is being played!' });
-        if (!page) page = 1;
-        const pageStart = 10 * (page - 1);
-        const pageEnd = pageStart + 10;
-        const currentTrack = queue.current;
-        const tracks = queue.tracks.slice(pageStart, pageEnd).map((m, i) => {
-            return `\`${i + pageStart + 1}.\` ** | [${m.title} by ${m.author}](${m.url})**`;
-        });
-
-
-        return void interaction.editReply({
-            embeds: [
-                embed
-                    .setDescription(`${tracks.join('\n')}${
-                        queue.tracks.length > pageEnd
-                            ? `\n...${queue.tracks.length - pageEnd} more track(s)`
-                            : ''
-                    }`)
-                    .addFields([{ name: 'Now Playing', value: `🎶 **|** **[${currentTrack.title} by ${currentTrack.author}](${currentTrack.url})**`}])
-                
-            ]
-        });
+        if(succes)
+            interaction.editReply({ embeds: [embed.setColor('DARK_GREEN').setDescription(`Done ${loop}`)]})
+        else
+            interaction.editReply({ embeds: [embed.setColor('DARK_RED').setDescription(`Error`)]})
     },
 }

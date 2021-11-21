@@ -3,15 +3,6 @@ const { Client, Collection, Intents, MessageEmbed } = require('discord.js')
 const fs = require('fs')
 var colors = require('colors/safe')
 
-const {
-    setGoldenChannelPlayerThumbnail,
-    setGoldenChannerlPlayerTitle,
-    setGoldenChannerlPlayerQueue,
-    setGoldenChannelPlayerFooter,
-    resetGoldenChannelPlayer,
-    sendTimed,
-} = require('./functions/channel')
-
 require('dotenv').config({ path: './config/.env' })
 
 const client = new Client({
@@ -37,16 +28,16 @@ const client = new Client({
 })
 
 /** ++ Music init ++ */
-const { Player } = require('discord-player')
-
+const { Player } = require('jericho-player')
+// TODO: If bots starts disconnect all instances that are still connected !
 client.player = new Player(client, {
-    ytdlOptions: {
-        quality: 'highest',
-        filter: 'audioonly',
-        highWaterMark: 1 << 25,
-        dlChunkSize: 0,
-    },
-})
+    LeaveOnEnd: false,
+    LeaveOnEmpty: false,
+    LeaveOnBotEmpty: false,
+    LeaveOnEndTimedout: 300,
+    LeaveOnEmptyTimedout: 300,
+    LeaveOnBotOnlyTimedout: 300,
+}) // 300s = 3min
 /** -- Music init -- */
 
 /** ++ Command Handler ++ */
@@ -134,6 +125,18 @@ for (const file of eventFiles) {
 }
 
 /** -- Event Handler -- */
+/** -- Music Event Handler -- */
+
+const playerEvents = fs
+  .readdirSync('./events/music')
+  .filter((file) => file.endsWith('.js'))
+
+for (const PlayerEventsFile of playerEvents) {
+  const event = require(`./events/music/${PlayerEventsFile}`)
+  client.player.on(PlayerEventsFile.split('.')[0], event.bind(null, client))
+}
+
+/** -- Music Event Handler -- */
 /** -- Discord init -- **/
 
 /** ++ Start ++ **/
@@ -160,7 +163,7 @@ client.login(process.env.TOKEN)
 /** -- Start -- **/
 
 /** ++ Music events ++ */
-client.player.on('error', (queue, error) => {
+/*client.player.on('error', (queue, error) => {
     console.log(
         `[${queue.guild.name}] Error emitted from the queue: ${error.message}`
     )
@@ -175,8 +178,6 @@ client.player.on('trackStart', (queue, track) => {
     const embed = new MessageEmbed().setTimestamp()
 
     //https://www.reddit.com/r/Discord_Bots/comments/jel7r5/get_guild_by_id_in_discordjs/
-    /*console.log(track)
-    console.log(track.thumbnail)*/
 
     setGoldenChannerlPlayerTitle(
         queue.guild,
@@ -307,7 +308,7 @@ client.player.on('botDisconnect', (queue) => {
     }
 
     queue.destroy()
-})
+})*/
 
 // Disabled cause bot wont leave when empty!
 // client.player.on('channelEmpty', (queue) => {
