@@ -31,9 +31,9 @@ const client = new Client({
 const { Player } = require('jericho-player')
 // TODO: If bots starts disconnect all instances that are still connected !
 client.player = new Player(client, {
-    LeaveOnEnd: true,
-    LeaveOnEmpty: true,
-    LeaveOnBotEmpty: true,
+    LeaveOnEnd: false,
+    LeaveOnEmpty: false,
+    LeaveOnBotEmpty: false,
     LeaveOnEndTimedout: 300,
     LeaveOnEmptyTimedout: 300,
     LeaveOnBotOnlyTimedout: 300,
