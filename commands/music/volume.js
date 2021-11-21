@@ -50,7 +50,7 @@ module.exports = {
         Queue.volume = volumeAmount ?? 95
         setGoldenChannelPlayerFooter(
             interaction.guild,
-            Queue.tracks.length,
+            Queue.tracks.length-1,
             Queue.volume
         )
         return (await interaction.editReply({ embeds: [embed.setDescription(`✅ | **Queue Volume/Current Volume :** \`${Queue.volume}\``).setColor('DARK_GREEN')] }))
