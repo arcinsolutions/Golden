@@ -29,7 +29,7 @@ module.exports = ('trackStart',
 
   queue.tracks.forEach( (track, i) => {
     if (i != 0)
-      tracksMap = `${i}. ${track.title} by ${track.channelId}\n` + tracksMap 
+      tracksMap = `\`${i}.\` ${track.title} by ${track.channelId}\n` + tracksMap 
   });
 
   setGoldenChannerlPlayerQueue(guild, tracksMap)
@@ -45,5 +45,5 @@ module.exports = ('trackStart',
     )
     .setColor('GREEN')
     .setImage(track.thumbnail);
-  return void queue.message.channel.send({ embeds: [Embed] });*/
+  return queue.message.channel.send({ embeds: [Embed] });*/
 });

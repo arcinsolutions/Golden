@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
 const path = require('path')
-const { sendTimed } = require('../../functions/channel')
+const { sleep } = require('../../functions/random')
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -22,20 +22,19 @@ module.exports = {
             .setFooter(client.user.username, client.user.displayAvatarURL())
             .setTimestamp()
 
-        if (!interaction.member.voice.channel)
-            return sendTimed(
-                interaction.channel,
-                {
-                    embeds: [
-                        embed
-                            .setDescription(
-                                `**❌ | <@${interaction.member.id}> You have to join a voice channel first**`
-                            )
-                            .setColor('DARK_RED'),
-                    ],
-                },
-                5
-            )
+        if (!interaction.member.voice.channel) {
+            await interaction.editReply({
+                embeds: [
+                    embed
+                        .setDescription(
+                            `**❌ | <@${interaction.member.id}> You have to join a voice channel first**`
+                        )
+                        .setColor('DARK_RED'),
+                ],
+            })
+            await sleep(10000)
+            return await interaction.deleteReply()
+        }
 
         const guildId = interaction.guild.id
         let request = interaction.options.getString('song')
@@ -51,24 +50,25 @@ module.exports = {
         )
 
         if (success) {
-            const ReturnEmbed = {
-                title: 'Searching for this song..',
-            }
-            return void (await interaction.editReply({ embeds: [ReturnEmbed] }))
-        }
-
-        return sendTimed(
-            interaction.channel,
-            {
+            return await interaction.editReply({
                 embeds: [
                     embed
-                        .setDescription(
-                            `**❌ | Song/s can't be played. Please try again**`
-                        )
-                        .setColor('DARK_RED'),
+                        .setDescription(`**✅ | Searching for this song..**`)
+                        .setColor('DARK_GREEN'),
                 ],
-            },
-            5
-        )
+            })
+        }
+
+        await interaction.editReply({
+            embeds: [
+                embed
+                    .setDescription(
+                        `**❌ | Please open a Ticket on our Support Server.**`
+                    )
+                    .setColor('DARK_RED'),
+            ],
+        })
+        await sleep(10000)
+        return await interaction.deleteReply()
     },
 }

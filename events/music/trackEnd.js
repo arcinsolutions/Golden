@@ -1,8 +1,7 @@
-const { MessageEmbed } = require('discord.js');
+const { resetGoldenChannelPlayer } = require('../../functions/channel');
 
 module.exports = ('trackEnd',
 (client, queue, track) => {
-  return;
   /*const Embed = new MessageEmbed()
     .setTitle('Music Player')
     .setDescription(
@@ -10,5 +9,8 @@ module.exports = ('trackEnd',
     )
     .setColor('RED')
     .setImage(track.thumbnail);
-  return void queue.message.channel.send({ embeds: [Embed] });*/
+  return queue.message.channel.send({ embeds: [Embed] });*/
+
+  const guild = client.guilds.cache.get(queue.guildId);
+  return resetGoldenChannelPlayer(guild);
 });

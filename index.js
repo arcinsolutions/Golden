@@ -3,15 +3,6 @@ const { Client, Collection, Intents, MessageEmbed } = require('discord.js')
 const fs = require('fs')
 var colors = require('colors/safe')
 
-const {
-    setGoldenChannelPlayerThumbnail,
-    setGoldenChannerlPlayerTitle,
-    setGoldenChannerlPlayerQueue,
-    setGoldenChannelPlayerFooter,
-    resetGoldenChannelPlayer,
-    sendTimed,
-} = require('./functions/channel')
-
 require('dotenv').config({ path: './config/.env' })
 
 const client = new Client({

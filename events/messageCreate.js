@@ -1,8 +1,4 @@
 const {
-    goldenChannelExistsInGuild,
-    deleteGoldenChannelInsideGuild,
-    createGoldenChannelInsideGuild,
-    populateGoldenChannelInsideGuild,
     sendTimed,
 } = require('../functions/channel')
 

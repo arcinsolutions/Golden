@@ -1,7 +1,6 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
 const path = require('path')
-const { sendTimed } = require('../../functions/channel')
 const { skip } = require('../../functions/musicControl')
 
 module.exports = {

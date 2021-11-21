@@ -34,8 +34,7 @@ module.exports = {
             ephemeral: true,
         })
 
-        const embed = new MessageEmbed()
-            .setTimestamp()
+        const embed = new MessageEmbed().setTimestamp()
 
         const guild = interaction.guild
 
@@ -47,7 +46,7 @@ module.exports = {
                         .setDescription(
                             `**❌ | I already have an Channel (<#${
                                 client.db.get(guild.id).channel
-                            }>)**\nshould i delete the Current one and replace it with a new one?`
+                            }>)**\nshould i delete the Current one and replace it with a new one?**`
                         )
                         .setColor('DARK_ORANGE'),
                 ],
@@ -58,6 +57,10 @@ module.exports = {
         await populateGoldenChannelInsideGuild(guild)
         await populateGoldenChannelPlayerInsideGuild(guild, client)
 
-        return interaction.editReply(`OK CHANNEL_CREATED ${goldenChannel}`)
+        return interaction.editReply({
+            embeds: [
+                embed.setDescription(`**OK, i created the Channel for you (${goldenChannel})**`).setColor('DARK_GREEN'),
+            ],
+        })
     },
 }

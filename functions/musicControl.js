@@ -16,7 +16,7 @@ module.exports = {
                     "Please join my voice channel to use this interaction",
             }
             
-            return void (await sendTimed(channel, { embeds: [ReturnEmbed] }, 5))
+            return (await sendTimed(channel, { embeds: [ReturnEmbed] }, 5))
         }
 
         const Queue = client.player.GetQueue(guild.id)
@@ -28,7 +28,7 @@ module.exports = {
                     title: 'Songs has been Stopped',
                 }
                 resetGoldenChannelPlayer(guild)
-                return void (await interaction.editReply({ embeds: [ReturnEmbed] }))
+                return (await interaction.editReply({ embeds: [ReturnEmbed] }))
             } else if (success) {
                 return resetGoldenChannelPlayer(guild)
             }
@@ -37,11 +37,11 @@ module.exports = {
            }
    
            if (isGoldenChannel(guild, channel))
-               return void (await interaction.channel.send({
+               return (await interaction.channel.send({
                    embeds: [ErrorEmbed],
                }))
    
-           return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
+           return (await interaction.editReply({ embeds: [ErrorEmbed] }))
             /*const ErrorEmbed = {
                 title: 'Empty Queue',
                 description:
@@ -49,18 +49,18 @@ module.exports = {
             }
 
             if (isGoldenChannel(guild, channel))
-                return void (await interaction.channel.send({
+                return (await interaction.channel.send({
                     embeds: [ErrorEmbed],
                 }))
 
-            return void (await interaction.editReply({ embeds: [ErrorEmbed] }))*/
+            return (await interaction.editReply({ embeds: [ErrorEmbed] }))*/
         }
         const success = Queue.skip(skipAmount ?? undefined)
         if (success && !isGoldenChannel(guild, channel)) {
             const ReturnEmbed = {
                 title: 'Songs has been Skipped',
             }
-            return void (await interaction.editReply({ embeds: [ReturnEmbed] }))
+            return (await interaction.editReply({ embeds: [ReturnEmbed] }))
         } else if (success) {
             // Song skipped successfully inside the golden channel - no message to send!
             return
@@ -71,11 +71,11 @@ module.exports = {
         }
 
         if (isGoldenChannel(guild, channel))
-            return void (await interaction.channel.send({
+            return (await interaction.channel.send({
                 emebds: [ErrorEmbed],
             }))
 
-        return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
+        return (await interaction.editReply({ embeds: [ErrorEmbed] }))
     },
 
     stop: async function (interaction, client) {
@@ -91,7 +91,7 @@ module.exports = {
                     "Please join my voice channel to use this interaction",
             }
             
-            return void (await sendTimed(channel, { embeds: [ReturnEmbed] }, 5))
+            return (await sendTimed(channel, { embeds: [ReturnEmbed] }, 5))
         }
 
         const Queue = client.player.GetQueue(guild.id)
@@ -103,11 +103,11 @@ module.exports = {
             }
 
             if (isGoldenChannel(guild, channel))
-                return void (await interaction.channel.send({
+                return (await interaction.channel.send({
                     embeds: [ErrorEmbed],
                 }))
 
-            return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
+            return (await interaction.editReply({ embeds: [ErrorEmbed] }))
         }
 
          const success = await Queue.destroy()
@@ -116,7 +116,7 @@ module.exports = {
                  title: 'Songs has been Stopped',
              }
              resetGoldenChannelPlayer(guild)
-             return void (await interaction.editReply({ embeds: [ReturnEmbed] }))
+             return (await interaction.editReply({ embeds: [ReturnEmbed] }))
          } else if (success) {
              return resetGoldenChannelPlayer(guild)
          }
@@ -125,11 +125,11 @@ module.exports = {
         }
 
         if (isGoldenChannel(guild, channel))
-            return void (await interaction.channel.send({
+            return (await interaction.channel.send({
                 embeds: [ErrorEmbed],
             }))
 
-        return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
+        return (await interaction.editReply({ embeds: [ErrorEmbed] }))
     },
 
     playpause: async function (interaction, client) {
@@ -145,7 +145,7 @@ module.exports = {
                     "Please join my voice channel to use this interaction",
             }
             
-            return void (await sendTimed(channel, { embeds: [ReturnEmbed] }, 5))
+            return (await sendTimed(channel, { embeds: [ReturnEmbed] }, 5))
         }
 
         const Queue = client.player.GetQueue(guild.id)
@@ -157,11 +157,11 @@ module.exports = {
             }
 
             if (isGoldenChannel(guild, channel))
-                return void (await interaction.channel.send({
+                return (await interaction.channel.send({
                     embeds: [ErrorEmbed],
                 }))
 
-            return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
+            return (await interaction.editReply({ embeds: [ErrorEmbed] }))
         }
 
         if (Queue.paused) {
@@ -170,7 +170,7 @@ module.exports = {
                 const ReturnEmbed = {
                     title: 'Songs has been Resumed/Un-Paused',
                 }
-                return void (await interaction.editReply({
+                return (await interaction.editReply({
                     embeds: [ReturnEmbed],
                 }))
             } else if (success) {
@@ -180,14 +180,14 @@ module.exports = {
             const ErrorEmbed = {
                 title: "Songs can't be Resumed/Un-Paused",
             }
-            return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
+            return (await interaction.editReply({ embeds: [ErrorEmbed] }))
         } else {
             const success = Queue.pause()
             if (success && !isGoldenChannel(guild, channel)) {
                 const ReturnEmbed = {
                     title: 'Songs has been Paused',
                 }
-                return void (await interaction.editReply({
+                return (await interaction.editReply({
                     embeds: [ReturnEmbed],
                 }))
             } else if (success) {
@@ -197,7 +197,7 @@ module.exports = {
             const ErrorEmbed = {
                 title: "Songs can't be Paused",
             }
-            return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
+            return (await interaction.editReply({ embeds: [ErrorEmbed] }))
         }
     },
 
@@ -215,11 +215,11 @@ module.exports = {
           }
 
           if (isGoldenChannel(guild, channel))
-            return void (await interaction.channel.send({
+            return (await interaction.channel.send({
                 embeds: [ErrorEmbed],
             }))
 
-          return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
+          return (await interaction.editReply({ embeds: [ErrorEmbed] }))
         }
         const success = Queue.shuffle()
         if (success) {
@@ -228,23 +228,23 @@ module.exports = {
           }
 
           if (isGoldenChannel(guild, channel))
-            return void (await interaction.channel.send({
+            return (await interaction.channel.send({
                 embeds: [ReturnEmbed],
             }))
 
-          return void (await interaction.editReply({ embeds: [ReturnEmbed] }))
+          return (await interaction.editReply({ embeds: [ReturnEmbed] }))
         }
         const ErrorEmbed = {
           title: `Tracks Data can't be Shuffled`,
         }
 
         if (isGoldenChannel(guild, channel))
-            return void (await interaction.channel.send({
+            return (await interaction.channel.send({
                 embeds: [ErrorEmbed],
             }))
 
 
-        return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
+        return (await interaction.editReply({ embeds: [ErrorEmbed] }))
 
     },
 }

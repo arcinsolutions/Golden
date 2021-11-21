@@ -7,6 +7,6 @@ module.exports = ('queueEnd',
 (client, queue) => {
 
   const guild = client.guilds.cache.get(queue.guildId);
-  return void resetGoldenChannelPlayer(guild);
+  return resetGoldenChannelPlayer(guild);
 
 });

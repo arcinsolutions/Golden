@@ -24,7 +24,7 @@ module.exports =
         queue.tracks.forEach((track) => {
             if (track.Id != 1) {
                 tracksMap =
-                    `${i + 1}. ${track.title} by ${track.channelId}\n` +
+                    `\`${i + 1}.\` ${track.title} by ${track.channelId}\n` +
                     tracksMap
                 i++
             }
@@ -33,7 +33,7 @@ module.exports =
         tracks.forEach((track) => {
             if (queue.tracks != '') {
                 tracksMap =
-                    `${i + 1}. ${track.title} by ${track.channelId}\n` +
+                    `\`${i + 1}.\` ${track.title} by ${track.channelId}\n` +
                     tracksMap
                 i++
             }
@@ -57,5 +57,5 @@ module.exports =
                 }\``
             )
             .setColor('GREEN')
-        return void queue.message.channel.send({ embeds: [Embed] })
+        return queue.message.channel.send({ embeds: [Embed] })
     })

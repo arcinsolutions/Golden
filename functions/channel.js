@@ -24,7 +24,6 @@ module.exports = {
     /* * * * * * * * * * * */
 
     populateGoldenChannelPlayerInsideGuild: async function (guild, client) {
-
         const queue = client.player.GetQueue(guild.id)
 
         if (queue !== undefined) {
@@ -41,18 +40,18 @@ module.exports = {
                 queue.tracks.length - 1,
                 queue.volume
             )
-        
 
-        let tracksMap = ''
+            let tracksMap = ''
 
-        queue.tracks.forEach((track, i) => {
-            if (i != 0)
-                tracksMap =
-                    `${i}. ${track.title} by ${track.channelId}\n` + tracksMap
-        })
+            queue.tracks.forEach((track, i) => {
+                if (i != 0)
+                    tracksMap =
+                        `${i}. ${track.title} by ${track.channelId}\n` +
+                        tracksMap
+            })
 
-        module.exports.setGoldenChannerlPlayerQueue(guild, tracksMap)
-    }
+            module.exports.setGoldenChannerlPlayerQueue(guild, tracksMap)
+        }
     },
 
     /* * * * * * * * * * * */
@@ -85,12 +84,13 @@ module.exports = {
 
         const goldenChannelEmbed = new MessageEmbed()
             .setColor('DARK_BUT_NOT_BLACK')
-            .setTitle('no Song is being Played')
+            .setTitle('🎶 | no Song is being Played')
             .setDescription(
                 '[Bot Invite](https://example.com) | [Dashboard](https://www.golden.spasten.studio) | [Commands](https://example.com) | [Support](https://discord.gg/PX28nyVgdP)'
             )
-            .setImage('https://cdn.discordapp.com/attachments/911271717492621343/911757263184756796/empty.png')
-        /*       */
+            .setImage(
+                'https://cdn.discordapp.com/attachments/911271717492621343/911757263184756796/empty.png'
+            )
 
         const goldenBanner = await goldenChannel.send(
             'https://cdn.discordapp.com/attachments/911271717492621343/911750980960399441/banner2.png'
@@ -219,7 +219,7 @@ module.exports = {
                 name: title,
             }
             goldenChannelPlayerMessage.embeds[0].title = ''
-            goldenChannelPlayerMessage.embeds[0].description = ''
+            goldenChannelPlayerMessage.embeds[0].description = '[Bot Invite](https://example.com) | [Dashboard](https://www.golden.spasten.studio) | [Commands](https://example.com) | [Support](https://discord.gg/PX28nyVgdP)'
 
             goldenChannelPlayerMessage.edit({
                 embeds: [
@@ -244,7 +244,7 @@ module.exports = {
 
             goldenChannelPlayerMessage.embeds[0].author = {}
             goldenChannelPlayerMessage.embeds[0].title =
-                'no Song is being Played'
+                '🎶 | no Song is being Played'
             goldenChannelPlayerMessage.embeds[0].description =
                 '[Invite](https://www.spasten.studio/) | [Dashboard](https://www.spasten.studio/) | [Commands](https://www.spasten.studio/) | [Support](https://discord.gg/PX28nyVgdP)'
             goldenChannelPlayerMessage.embeds[0].image.url =
