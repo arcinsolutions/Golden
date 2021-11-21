@@ -89,7 +89,7 @@ module.exports = {
                 '[Bot Invite](https://example.com) | [Dashboard](https://www.golden.spasten.studio) | [Commands](https://example.com) | [Support](https://discord.gg/PX28nyVgdP)'
             )
             .setImage(
-                'https://cdn.discordapp.com/attachments/911271717492621343/911757263184756796/empty.png'
+                'https://cdn.discordapp.com/attachments/911271717492621343/912002185267646544/bg4.png'
             )
 
         const goldenBanner = await goldenChannel.send(
@@ -247,8 +247,7 @@ module.exports = {
                 '🎶 | no Song is being Played'
             goldenChannelPlayerMessage.embeds[0].description =
                 '[Invite](https://www.spasten.studio/) | [Dashboard](https://www.spasten.studio/) | [Commands](https://www.spasten.studio/) | [Support](https://discord.gg/PX28nyVgdP)'
-            goldenChannelPlayerMessage.embeds[0].image.url =
-                'https://cdn.discordapp.com/attachments/911271717492621343/911757263184756796/empty.png'
+            goldenChannelPlayerMessage.embeds[0].image = { url: 'https://cdn.discordapp.com/attachments/911271717492621343/912002185267646544/bg4.png' }
 
             if (volume === undefined) volume = 95
             goldenChannelPlayerMessage.embeds[0].footer = {
