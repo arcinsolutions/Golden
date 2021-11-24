@@ -1,7 +1,7 @@
 ## Features:
-> - Slash Commands\
-> - plays Music from Spotify, Soundcloud, YouTube\
-> - Music Channel\
+> - Slash Commands
+> - plays Music from Spotify, Soundcloud, YouTube
+> - Music Channel
 #### More will come soon
 
 ## How to Use:
