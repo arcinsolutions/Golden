@@ -1,6 +1,27 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
 const path = require('path')
+const {
+    createGoldenChannelInsideGuild,
+    populateGoldenChannelInsideGuild,
+    goldenChannelExistsInGuild,
+    populateGoldenChannelPlayerInsideGuild,
+} = require('../../functions/channel')
+const { MessageActionRow, MessageButton } = require('discord.js')
+
+const deleteGoldenChannelComponents = new MessageActionRow()
+    .addComponents(
+        new MessageButton()
+            .setCustomId('deleteGoldenChannelInGuild')
+            .setLabel('Yeah, go for it')
+            .setStyle('DANGER')
+    )
+    .addComponents(
+        new MessageButton()
+            .setCustomId('cancelDeleteGoldenChannelInGuild')
+            .setLabel("Nah, I'm fine")
+            .setStyle('SUCCESS')
+    )
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -8,28 +29,38 @@ module.exports = {
     .setDescription('Setup channel for Music related stuff!'),
 
     category: path.basename(__dirname),
-  async execute (interaction, client) {
-    const embed = new MessageEmbed()
-      .setFooter(client.user.username, client.user.displayAvatarURL())
-      .setTimestamp()
+    async execute(interaction, client) {
+        await interaction.deferReply({
+            ephemeral: true,
+        })
 
-    let channel = "";
-    const sent = await interaction.reply({
-      embeds: [
-        embed.setDescription(
-          `**Creating new Channel...**`
-        )
-        .setColor('RED')
-      ],
-      fetchReply: true
-    }).then(interaction.guild.channels.create('golden-music').then(thisChannel => {thisChannel.message('Test')}))
+        const embed = new MessageEmbed().setTimestamp()
 
-    interaction.editReply({
-      embeds: [
-        embed.setDescription(
-          `**Channel created: <@test>**`
-        ).setColor('DARK_GREEN')
-      ]
-    })
-  }
+        const guild = interaction.guild
+
+        if (goldenChannelExistsInGuild(guild))
+            // If guild exists in database and its music channel id exists
+            return interaction.editReply({
+                embeds: [
+                    embed
+                        .setDescription(
+                            `**❌ | I already have an Channel (<#${
+                                client.db.get(guild.id).channel
+                            }>)**\nshould i delete the Current one and replace it with a new one?**`
+                        )
+                        .setColor('DARK_ORANGE'),
+                ],
+                components: [deleteGoldenChannelComponents],
+            })
+
+        const goldenChannel = await createGoldenChannelInsideGuild(guild)
+        await populateGoldenChannelInsideGuild(guild)
+        await populateGoldenChannelPlayerInsideGuild(guild, client)
+
+        return interaction.editReply({
+            embeds: [
+                embed.setDescription(`**OK, i created the Channel for you (${goldenChannel})**`).setColor('DARK_GREEN'),
+            ],
+        })
+    },
 }

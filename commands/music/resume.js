@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
 const path = require('path')
+const { sleep } = require('../../functions/random')
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -15,22 +16,60 @@ module.exports = {
             .setFooter(client.user.username, client.user.displayAvatarURL())
             .setTimestamp()
 
-        const queue = client.player.getQueue(interaction.guild.id)
-        if (!queue || !queue.playing)
-            return void interaction.editReply({
+        if (!interaction.member.voice.channel) {
+            await interaction.editReply({
                 embeds: [
                     embed
-                        .setDescription('**❌ | No music is being played!**')
+                        .setDescription(
+                            `**❌ | <@${interaction.member.id}> You have to join a voice channel first**`
+                        )
                         .setColor('DARK_RED'),
                 ],
             })
-        const paused = queue.setPaused(false)
-        return void interaction.editReply({
+            await sleep(10000)
+            return await interaction.deleteReply()
+        }
+
+        const guildId = interaction.guild.id
+
+        const Queue = client.player.GetQueue(guildId)
+        if (!Queue || (Queue && !Queue.tracks[0])) {
+            await interaction.editReply({
+                embeds: [
+                    embed
+                        .setDescription(
+                            `**❌ | The Queue is Empty or the Next Track isn´t Present in Queue!**`
+                        )
+                        .setColor('DARK_RED'),
+                ],
+            })
+            await sleep(10000)
+            return await interaction.deleteReply()
+        }
+        const success = Queue.resume()
+        if (success) {
+            await interaction.editReply({
+                embeds: [
+                    embed
+                        .setDescription(
+                            `**✅ | Songs has been Resumed/Un-Paused**`
+                        )
+                        .setColor('DARK_GREEN'),
+                ],
+            })
+            await sleep(10000)
+            return await interaction.deleteReply()
+        }
+        await interaction.editReply({
             embeds: [
                 embed
-                    .setDescription(paused ? '▶ | Resumed!' : '**❌ | Something went wrong!**')
-                    .setColor(paused ? 'DARK_GREEN' : 'DARK_RED'),
+                    .setDescription(
+                        `**❌ | Please open a Ticket on our Support Server.**`
+                    )
+                    .setColor('DARK_RED'),
             ],
         })
+        await sleep(10000)
+        return await interaction.deleteReply()
     },
 }

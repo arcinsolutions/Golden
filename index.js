@@ -28,16 +28,16 @@ const client = new Client({
 })
 
 /** ++ Music init ++ */
-const { Player } = require('discord-player')
-
+const { Player } = require('jericho-player')
+// TODO: If bots starts disconnect all instances that are still connected !
 client.player = new Player(client, {
-    ytdlOptions: {
-        quality: 'highest',
-        filter: 'audioonly',
-        highWaterMark: 1 << 25,
-        dlChunkSize: 0,
-    },
-})
+    LeaveOnEnd: false,
+    LeaveOnEmpty: false,
+    LeaveOnBotEmpty: false,
+    LeaveOnEndTimedout: 300,
+    LeaveOnEmptyTimedout: 300,
+    LeaveOnBotOnlyTimedout: 300,
+}) // 300s = 3min
 /** -- Music init -- */
 
 /** ++ Command Handler ++ */
@@ -119,6 +119,18 @@ for (const file of eventFiles) {
 }
 
 /** -- Event Handler -- */
+/** -- Music Event Handler -- */
+
+const playerEvents = fs
+  .readdirSync('./events/music')
+  .filter((file) => file.endsWith('.js'))
+
+for (const PlayerEventsFile of playerEvents) {
+  const event = require(`./events/music/${PlayerEventsFile}`)
+  client.player.on(PlayerEventsFile.split('.')[0], event.bind(null, client))
+}
+
+/** -- Music Event Handler -- */
 /** -- Discord init -- **/
 
 /** ++ Start ++ **/
@@ -145,7 +157,7 @@ client.login(process.env.TOKEN)
 /** -- Start -- **/
 
 /** ++ Music events ++ */
-client.player.on('error', (queue, error) => {
+/*client.player.on('error', (queue, error) => {
     console.log(
         `[${queue.guild.name}] Error emitted from the queue: ${error.message}`
     )
@@ -159,19 +171,72 @@ client.player.on('connectionError', (queue, error) => {
 client.player.on('trackStart', (queue, track) => {
     const embed = new MessageEmbed().setTimestamp()
 
-    queue.metadata.send({
-        embeds: [
-            embed
-                .setDescription(
-                    `**🎶 | Now Playing [${track.title} by ${track.author}](${track.url})**`
-                )
-                .addField('Duration', `${track.duration} min.`, true)
-                .addField('Views', `${track.views}`, true)
-                .setImage(track.thumbnail)
-                .setFooter(client.user.username, client.user.displayAvatarURL())
-                .setColor('DARK_GREEN'),
-        ],
-    })
+    //https://www.reddit.com/r/Discord_Bots/comments/jel7r5/get_guild_by_id_in_discordjs/
+
+    setGoldenChannerlPlayerTitle(
+        queue.guild,
+        client,
+        `🎶 | Now Playing\n${track.title} by ${track.author}`
+    )
+    setGoldenChannelPlayerThumbnail(queue.guild, track.thumbnail)
+    setGoldenChannelPlayerFooter(
+        queue.guild,
+        `${queue.tracks.length} songs in queue | Volume: ${queue.volume}%`
+    )
+
+    if (queue.tracks[0] == undefined) {
+        setGoldenChannerlPlayerQueue(
+            queue.guild,
+            'Join a voice channel and queue songs by name or url in here.'
+        )
+    } else {
+        const tracks = queue.tracks
+            .slice(0)
+            .reverse()
+            .map((song, i) => {
+                if (queue.current.id != queue.tracks[0].id) {
+                    return `\`${queue.tracks.length - i}.\` ${song.title} - ${
+                        song.author
+                    } [${song.duration}]\n`
+                }
+            })
+        setGoldenChannerlPlayerQueue(queue.guild, tracks.join(''))
+
+        sendTimed(queue.metadata, {
+            embeds: [
+                embed
+                    .setDescription(
+                        `**🎶 | Track **[${track.title} by ${track.author}](${track.url})** queued!**`
+                    )
+                    .setURL(track.url)
+                    .setThumbnail(track.thumbnail)
+                    .setFooter(client.user.username, client.user.displayAvatarURL())
+                    .setColor('DARK_ORANGE'),
+            ],
+        }, 5)
+    }
+
+    if (
+        !client.db.has(queue.guild.id) &&
+        queue.metadata.id != client.db.get(queue.guild.id).channel
+    ) {
+        queue.metadata.send({
+            embeds: [
+                embed
+                    .setDescription(
+                        `**🎶 | Now Playing\n[${track.title} by ${track.author}](${track.url})**`
+                    )
+                    .addField('Duration', `${track.duration} min.`, true)
+                    .addField('Views', `${track.views}`, true)
+                    .setImage(track.thumbnail)
+                    .setFooter(
+                        client.user.username,
+                        client.user.displayAvatarURL()
+                    )
+                    .setColor('DARK_GREEN'),
+            ],
+        })
+    }
 })
 
 client.player.on('trackAdd', (queue, track) => {
@@ -233,7 +298,7 @@ client.player.on('botDisconnect', (queue) => {
     }
 
     queue.destroy()
-})
+})*/
 
 // Disabled cause bot wont leave when empty!
 // client.player.on('channelEmpty', (queue) => {

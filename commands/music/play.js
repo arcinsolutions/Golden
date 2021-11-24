@@ -1,8 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
-const { QueryType } = require('discord-player')
 const path = require('path')
-const playdl = require('play-dl')
+const { sleep } = require('../../functions/random')
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -23,66 +22,39 @@ module.exports = {
             .setFooter(client.user.username, client.user.displayAvatarURL())
             .setTimestamp()
 
-        const guild = interaction.guild.id
-        const channel = interaction.guild.channels.cache.get(
-            interaction.channel.id
-        )
-        const request = interaction.options.getString('song')
-        const searchResult = await client.player.search(request, {
-            requestedBy: interaction.user,
-            searchEngine: QueryType.AUTO,
-        })
-
-        if (!searchResult || !searchResult.tracks.length)
-            return interaction.editReply({
-                embeds: [
-                    embed
-                        .setDescription(`**❌ | No results were found!**`)
-                        .setColor('DARK_RED'),
-                ],
-            })
-
-        const queue = await client.player.createQueue(guild, {
-            // Temoraly disabled, bot will not delete the Queue after Kick!!!
-            // leaveOnEnd: false,
-            // leaveOnStop: false,
-            // leaveOnEmpty: false,
-            metadata: channel,
-            async onBeforeCreateStream(track, source, queue) {
-                if (track.url.includes('youtube.com')) {
-                    // play directly if it's a youtube track
-                    return (await playdl.stream(track.url)).stream
-                } else {
-                    // search for the track on youtube with the track author & title using playdl.search()
-                    // i added "lyric" to the search query to avoid playing music video streams
-                    return (
-                        await playdl.stream(
-                            await playdl
-                                .search(
-                                    `${track.author} ${track.title} lyric`,
-                                    { limit: 1, source: { youtube: 'video' } }
-                                )
-                                .then((x) => x[0].url)
-                        )
-                    ).stream
-                }
-            },
-        })
-
-        const member =
-            interaction.guild.members.cache.get(interaction.user.id) ??
-            (await guild.members.fetch(interaction.user.id))
-        try {
-            if (!queue.connection) await queue.connect(member.voice.channel)
-        } catch {
-            client.player.deleteQueue(interaction.guild.id)
-            return interaction.editReply({
+        if (!interaction.member.voice.channel) {
+            await interaction.editReply({
                 embeds: [
                     embed
                         .setDescription(
-                            `**❌ | Could not join your voice channel!**`
+                            `**❌ | <@${interaction.member.id}> You have to join a voice channel first**`
                         )
                         .setColor('DARK_RED'),
+                ],
+            })
+            await sleep(10000)
+            return await interaction.deleteReply()
+        }
+
+        const guildId = interaction.guild.id
+        let request = interaction.options.getString('song')
+        if (!request.includes('https')) request += ' topic'
+
+        const Queue =
+            client.player.GetQueue(guildId) ??
+            client.player.CreateQueue(interaction)
+        const success = await Queue.play(
+            request,
+            interaction.member.voice.channel,
+            interaction.member
+        )
+
+        if (success) {
+            return await interaction.editReply({
+                embeds: [
+                    embed
+                        .setDescription(`**✅ | Searching for this song..**`)
+                        .setColor('DARK_GREEN'),
                 ],
             })
         }
@@ -91,17 +63,12 @@ module.exports = {
             embeds: [
                 embed
                     .setDescription(
-                        `**⏱ | Adding requested ${
-                            searchResult.playlist ? 'playlist' : 'track'
-                        }...**`
+                        `**❌ | Please open a Ticket on our Support Server.**`
                     )
-                    .setColor('DARK_GOLD'),
+                    .setColor('DARK_RED'),
             ],
         })
-
-        searchResult.playlist
-            ? queue.addTracks(searchResult.tracks)
-            : queue.addTrack(searchResult.tracks[0])
-        if (!queue.playing) await queue.play()
+        await sleep(10000)
+        return await interaction.deleteReply()
     },
 }

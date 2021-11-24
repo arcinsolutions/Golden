@@ -1,2 +1,5 @@
 node_modules
 config/.env
+config/norm.env
+config/dev.env
+json.sqlite
