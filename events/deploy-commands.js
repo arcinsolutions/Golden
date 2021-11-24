@@ -20,15 +20,15 @@ const rest = new REST({ version: '9' }).setToken(process.env.TOKEN);
 
 (async () => {
   try {
-    //Global
-    // await rest.put(Routes.applicationCommands(process.env.APPID), {
-    //   body: commands
-    // })
-
-    // Guild (Development)
-    await rest.put(Routes.applicationGuildCommands(process.env.APPID, process.env.GUILDID), {
+    // Global
+    await rest.put(Routes.applicationCommands(process.env.APPID), {
       body: commands
     })
+
+    // Guild (Development)
+    // await rest.put(Routes.applicationGuildCommands(process.env.APPID, process.env.GUILDID), {
+    //   body: commands
+    // })
 
     let underline = ''
     const text = 'Successfully registered slash commands.'
