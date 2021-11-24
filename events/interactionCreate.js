@@ -11,7 +11,7 @@ const { skip, playpause, stop, shuffle } = require('../functions/musicControl')
 
 module.exports = {
     name: 'interactionCreate',
-    async execute(interaction, client) {
+    execute(interaction) {
         //for Development 😉
         // console.log(`${interaction.user.tag} in #${interaction.channel.name} (${interaction.channel.id}) triggered an interaction (${interaction.commandName}).`);
 

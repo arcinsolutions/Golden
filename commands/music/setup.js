@@ -24,9 +24,9 @@ const deleteGoldenChannelComponents = new MessageActionRow()
     )
 
 module.exports = {
-    data: new SlashCommandBuilder()
-        .setName('setup')
-        .setDescription('Setup the music channel'),
+  data: new SlashCommandBuilder()
+    .setName('setup')
+    .setDescription('Setup channel for Music related stuff!'),
 
     category: path.basename(__dirname),
     async execute(interaction, client) {

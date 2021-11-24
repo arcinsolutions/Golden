@@ -103,12 +103,6 @@ client.on('warn', console.warn)
 
 /** -- Command Handler -- */
 
-/** ++ Quick DB ++ */
-
-client.db = require('quick.db')
-
-/** -- Quick DB -- */
-
 /** ++ Event Handler ++ */
 
 var eventFiles
@@ -118,9 +112,9 @@ for (const file of eventFiles) {
     const event = require(`./events/${file}`)
 
     if (event.once) {
-        client.once(event.name, (...args) => event.execute(...args, client))
+        client.once(event.name, (...args) => event.execute(...args))
     } else {
-        client.on(event.name, (...args) => event.execute(...args, client))
+        client.on(event.name, (...args) => event.execute(...args))
     }
 }
 
@@ -247,43 +241,39 @@ client.player.on('trackStart', (queue, track) => {
 
 client.player.on('trackAdd', (queue, track) => {
     const embed = new MessageEmbed().setTimestamp()
-
-    // Request inside the music channel
-    if (client.db.has(queue.guild.id) && queue.metadata.id === client.db.get(queue.guild.id).channel) {
-
-        // Queue management, when adding new songs
-        if(queue.tracks[0] === undefined) {
-            setGoldenChannerlPlayerQueue(queue.guild, 'Join a voice channel and queue songs by name or url in here.')
-
-        } else {
-
-            const tracks = queue.tracks.slice(0).reverse().map((song, i) => {
-                if(queue.current.id != queue.tracks[0].id) {
-                    return `${queue.tracks.length - i}. ${song.title} - ${song.author} [${song.duration}]\n`
-                }
-            })
-            setGoldenChannerlPlayerQueue(queue.guild, tracks.join(''))
-        }
-
-    // Request via command /play
-    } else {
-        queue.metadata.send({
-            embeds: [
-                embed
-                    .setDescription(
-                        `**🎶 | Track **[${track.title} by ${track.author}](${track.url})** queued!**`
-                    )
-                    .setURL(track.url)
-                    .setThumbnail(track.thumbnail)
-                    .setFooter(client.user.username, client.user.displayAvatarURL())
-                    .setColor('DARK_ORANGE'),
-            ],
-        })
-    }
+    queue.metadata.send({
+        embeds: [
+            embed
+                .setDescription(
+                    `**🎶 | Track **[${track.title} by ${track.author}](${track.url})** queued!**`
+                )
+                .setURL(track.url)
+                .setThumbnail(track.thumbnail)
+                .setFooter(client.user.username, client.user.displayAvatarURL())
+                .setColor('DARK_ORANGE'),
+        ],
+    })
 })
 
-client.player.on('queueEnd', (queue) => {
-    resetGoldenChannelPlayer(queue.guild)
+client.player.on('tracksAdd', (queue) => {
+    const embed = new MessageEmbed().setTimestamp()
+    var songs = ``
+
+    for (var i = 0; i <= 9; i++) {
+        songs += `\`${i + 1}.\` ** | [${queue.tracks[i].title} by ${
+            queue.tracks[i].author
+        }](${queue.tracks[i].url})**\n`
+    }
+
+    queue.metadata.send({
+        embeds: [
+            embed
+                .setTitle(`🎶 | Added the Playlist to the Queue`)
+                .setDescription(songs)
+                .setFooter(client.user.username, client.user.displayAvatarURL())
+                .setColor('DARK_ORANGE'),
+        ],
+    })
 })
 
 client.player.on('botDisconnect', (queue) => {

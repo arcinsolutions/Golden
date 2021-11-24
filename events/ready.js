@@ -1,12 +1,7 @@
-var colors = require('colors/safe')
-const fs = require('fs')
-const { getRandomActivity } = require('../functions/random')
-const { Uptime } = require('better-uptime')
-const { 
-    resetGoldenChannelPlayer, 
-    goldenChannelExistsInGuild,
-    goldenPlayerExistsInGuild
-} = require('../functions/channel');
+var colors = require('colors/safe');
+const fs = require('fs');
+const { getRandomActivity } = require('../functions/random');
+const { Uptime } = require("better-uptime")
 
 import('../functions/random.js')
 
@@ -116,8 +111,43 @@ module.exports = {
             if(cachedGuild !== undefined && await goldenPlayerExistsInGuild(cachedGuild, client)) {
                 resetGoldenChannelPlayer(cachedGuild) // TODO: Abfrage, ob die PlayerMessage existiert, sonst fehler..
             }
-        }
+            
+            console.log(colors.green(`            ╭${underline[0]}╮`));
+            console.log('' + colors.green(`            │${colors.red.bold(text)}│`));
+            console.log(colors.green('            ├' + underline[0] + '┤'));
 
-        /** ++ Reset all channels to default ++  **/
-    },
-}
+            console.log(colors.green('            │ ') + colors.bold.underline('Stats:') + " ".repeat(-7+text.length) + colors.green('│ '));
+            console.log(colors.green('            │ ') + ' Guilds:   ' + stats[0] + ' '.repeat(text.length-stats[0].length-12) + colors.green('│ '));
+            console.log(colors.green('            │ ') + ' User:     ' + stats[1] + " ".repeat(text.length-stats[1].length-12) + colors.green('│ '));
+            console.log(colors.green('            │ ') + ' Channels: ' + stats[2] + " ".repeat(text.length-stats[2].length-12) + colors.green('│ '));
+            console.log(colors.green('            ├' + underline[1] + '┤'));
+            console.log(colors.green('            │ ') + ' Commands: ' + stats[3] + " ".repeat(text.length-stats[3].length-12) + colors.green('│ '));
+            console.log(colors.green('            │ ') + ' Events:   ' + stats[4] + " ".repeat(text.length-stats[4].length-12) + colors.green('│ '));
+            console.log(colors.green('            ╰' + underline[0] + '╯'));
+
+
+            //** ++ Activity ++ */ 
+
+            setInterval(()=>{
+                try{
+                    getRandomActivity(client)
+                }catch (e) {
+                  console.log(e);
+                }
+              }, 10*60*100)
+
+            client.user.setActivity(`${stats[0]} Guilds`, { type: 'LISTENING' });
+            
+            //** -- Activity -- */
+
+            /** ++ Uptime ++ */
+            new Uptime({
+              url: "https://betteruptime.com/api/v1/heartbeat/PJrVDLD1or9TAtHohh8ya4jM",
+              time: 3,
+              time_type: 'minute', //millisecond, minute, hour, day, week
+          })
+          /** -- Uptime -- */
+        }
+    }
+
+    
