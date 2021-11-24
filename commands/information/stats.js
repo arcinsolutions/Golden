@@ -31,7 +31,6 @@ module.exports = {
         interaction.editReply({
             embeds: [
                 embed
-                    .setTitle(`**${client.user.username} - Stats**`)
                     .setDescription('')
                     .addFields(
                         {
