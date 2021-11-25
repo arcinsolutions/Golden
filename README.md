@@ -16,4 +16,7 @@
 > [**Jericho-Player**](https://github.com/SidisLiveYT/Jericho-Player) by [SidisLiveYT](https://github.com/SidisLiveYT)
 > 
 
+## Links
+[Discord-Server](https://discord.gg/PX28nyVgdP)
+Website coming soon
 # ™ and © 2021 The Golden Authors. All Rights Reserved.
