@@ -17,6 +17,7 @@
 > 
 
 ## Links
-[Discord-Server](https://discord.gg/PX28nyVgdP)
+>[Discord-Server](https://discord.gg/PX28nyVgdP)
+
 Website coming soon
 # ™ and © 2021 The Golden Authors. All Rights Reserved.
