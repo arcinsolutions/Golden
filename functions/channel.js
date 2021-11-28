@@ -94,7 +94,7 @@ module.exports = {
             .setFooter(`0 songs in queue | Volume: 95%`)
 
         const goldenBanner = await goldenChannel.send(
-            'https://cdn.discordapp.com/attachments/911271717492621343/911750980960399441/banner2.png'
+            'https://cdn.discordapp.com/attachments/911271717492621343/914553180883406898/bg2v3.png'
         )
         const goldenMessage = await goldenChannel.send({
             content:
