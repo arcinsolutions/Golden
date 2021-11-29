@@ -21,3 +21,8 @@
 
 Website coming soon
 # ™ and © 2021 The Golden Authors. All Rights Reserved.
+<br />
+
+<p align="center">
+  <img style="width: 75px;" src="https://cds.spasten.studio/static/spasten_studio_black.svg">
+</p>
