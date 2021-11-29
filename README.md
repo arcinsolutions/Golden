@@ -20,9 +20,11 @@
 >[Discord-Server](https://discord.gg/PX28nyVgdP)
 
 Website coming soon
-# ™ and © 2021 The Golden Authors. All Rights Reserved.
-<br />
-
-<p align="center">
+<br/>
+<br/>
+  <div align="center">
+    ™ and © 2021 The Golden Authors. All Rights Reserved.
+    </div>
+  <div align="center">
   <img style="width: 75px;" src="https://cds.spasten.studio/static/spasten_studio_black.svg">
-</p>
+    </div>
