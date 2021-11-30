@@ -6,16 +6,9 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName('help')
         .setDescription('Replies with a nice Menu!'),
-    // .addStringOption((option) =>
-    //     option
-    //         .setName('category')
-    //         .setDescription('the Category you want to see the Commands')
-    //         .setRequired(false)
-    // ),
 
     category: path.basename(__dirname),
     async execute(interaction, client) {
-        // const categoryOp = interaction.options.getString('category')
         let i = 0
 
         const commandsNames = client.commands.map((description) => {
@@ -97,7 +90,7 @@ module.exports = {
         else previous = false
 
         let next = true
-        if (i == categories.length) next = true
+        if (i == categories.length-1) next = true
         else next = false
 
         const buttons = new MessageActionRow().addComponents(
