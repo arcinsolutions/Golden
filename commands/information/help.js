@@ -30,10 +30,10 @@ module.exports = {
         await interaction.reply({
             embeds: [embed],
             components: [buttons],
-            ephemeral: true
+            ephemeral: true,
         })
 
-        const filter = (i) => i.customId === 'previous' || i.customId === 'next'
+        const filter = (i) => (i.customId === 'previous' || i.customId === 'next') && i.user.id === interaction.user.id
 
         const collector = interaction.channel.createMessageComponentCollector({
             filter,
@@ -42,17 +42,28 @@ module.exports = {
         collector.on('collect', async (button) => {
             if (button.customId === 'previous') {
                 await (i-=1)
+                try
+                {
                 await button.update({
                     embeds: [this.setEmbed(client, categories[i])],
                     components: [this.setButton(categories, i)],
                 })
+            } catch (e)
+            {
+                console.error(e)
+            }
             }
             if (button.customId === 'next') {
                 await (i+=1)
-                await button.update({
+                try {
+                    await button.update({
                     embeds: [this.setEmbed(client, categories[i])],
                     components: [this.setButton(categories, i)],
                 })
+                } catch (e) {
+                    console.error(e)
+                }
+                
             }
         })
     },
