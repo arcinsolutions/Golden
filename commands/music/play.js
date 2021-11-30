@@ -68,13 +68,16 @@ module.exports = {
         }
 
         if (success) {
-            return await interaction.editReply({
+            await interaction.editReply({
                 embeds: [
                     embed
-                        .setDescription(`**✅ | Searching for this song..**`)
+                        .setDescription(`**✅ | Adding requested Song/Playlist**`)
                         .setColor('DARK_GREEN'),
                 ],
             })
+            await sleep(10000)
+            return await interaction.deleteReply()
+            
         } else {
             await interaction.editReply({
                 embeds: [
