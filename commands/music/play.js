@@ -2,6 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders')
 const { MessageEmbed } = require('discord.js')
 const path = require('path')
 const { sleep } = require('../../functions/random')
+const { getPreview, getTracks } = require('spotify-url-info')
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -38,16 +39,33 @@ module.exports = {
 
         const guildId = interaction.guild.id
         let request = interaction.options.getString('song')
-        if (!request.includes('https')) request += ' topic'
 
         const Queue =
             client.player.GetQueue(guildId) ??
             client.player.CreateQueue(interaction)
-        const success = await Queue.play(
-            request,
-            interaction.member.voice.channel,
-            interaction.member
-        )
+
+        let success = true
+
+        if (await !request.includes('https')) {
+            request += ' topic'
+            success = await this.requestPlay(Queue, request, interaction)
+        }
+
+        if (await request.includes('spotify')) {
+            if (await request.includes('track')) {
+                const track = await getPreview(request)
+                request = `${track.title} by ${track.artist}`
+                success = await this.requestPlay(Queue, request, interaction)
+            } else {
+                const tracks = await getTracks(request)
+                tracks.forEach(async (song) => {
+                    const track = await getPreview(song.external_urls.spotify)
+                    request = `${track.title} by ${track.artist}`
+                    success = await this.requestPlay(Queue, request, interaction)
+                    if (!success) return
+                })
+            }
+        }
 
         if (success) {
             return await interaction.editReply({
@@ -57,18 +75,22 @@ module.exports = {
                         .setColor('DARK_GREEN'),
                 ],
             })
+        } else {
+            await interaction.editReply({
+                embeds: [
+                    embed
+                        .setDescription(
+                            `**❌ | Please open a Ticket on our Support Server.**`
+                        )
+                        .setColor('DARK_RED'),
+                ],
+            })
+            await sleep(10000)
+            return await interaction.deleteReply()
         }
+    },
 
-        await interaction.editReply({
-            embeds: [
-                embed
-                    .setDescription(
-                        `**❌ | Please open a Ticket on our Support Server.**`
-                    )
-                    .setColor('DARK_RED'),
-            ],
-        })
-        await sleep(10000)
-        return await interaction.deleteReply()
+    requestPlay: async function (Queue, song, message) {
+        return Queue.play(song, message.member.voice.channel, message.member)
     },
 }

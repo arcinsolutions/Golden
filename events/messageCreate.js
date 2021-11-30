@@ -1,8 +1,8 @@
-const {
-    sendTimed,
-} = require('../functions/channel')
+const { sendTimed } = require('../functions/channel')
 
 const { MessageEmbed } = require('discord.js')
+const { getPreview, getTracks } = require('spotify-url-info');
+const { on } = require('nodemon');
 
 module.exports = {
     name: 'messageCreate',
@@ -37,40 +37,58 @@ module.exports = {
             const guildId = message.guild.id
             let request = message.content
 
-            if (!request.includes('https')) request += ' topic'
-            //request += ' music lyric'
-
             const Queue =
                 client.player.GetQueue(guildId) ??
                 client.player.CreateQueue(message)
 
-            const success = await Queue.play(
-                request,
-                message.member.voice.channel,
-                message.member
-            )
+            let success = true
+
+            if (await !request.includes('https')) 
+            {
+                request += ' topic'
+                success = await this.requestPlay(Queue, request, message)
+            }
+
+            if (await request.includes('spotify')) {
+                if (await request.includes('track')) {
+                    const track = await getPreview(request)
+                    request = `${track.title} by ${track.artist}`
+                    success = await this.requestPlay(Queue, request, message)
+                } else {
+                    const tracks = await getTracks(request)
+                    tracks.forEach(async (song) => {
+                        const track = await getPreview(
+                            song.external_urls.spotify
+                        )
+                        request = `${track.title} by ${track.artist}`
+                        success = await this.requestPlay(Queue, request, message)
+                        if(!success)
+                            return
+                    })
+                }
+            }
 
             if (success) {
                 return
-                /*const ReturnEmbed = {
-                title: 'Searching for this song..',
+            } else {
+                return sendTimed(
+                    message.channel,
+                    {
+                        embeds: [
+                            embed
+                                .setDescription(
+                                    `**❌ | Song/s can't be played. Please try again**`
+                                )
+                                .setColor('DARK_RED'),
+                        ],
+                    },
+                    5
+                )
             }
-            return void (await message.channel.send({ embeds: [ReturnEmbed] }))*/
-            }
-
-            return sendTimed(
-                message.channel,
-                {
-                    embeds: [
-                        embed
-                            .setDescription(
-                                `**❌ | Song/s can't be played. Please try again**`
-                            )
-                            .setColor('DARK_RED'),
-                    ],
-                },
-                5
-            )
         }
+    },
+
+    requestPlay: async function (Queue, song, message) {
+        return Queue.play(song, message.member.voice.channel, message.member)
     },
 }
