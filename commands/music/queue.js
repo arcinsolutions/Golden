@@ -1,65 +1,135 @@
 const { SlashCommandBuilder } = require('@discordjs/builders')
-const { MessageEmbed } = require('discord.js')
+const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js')
 const path = require('path')
 
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('queue')
-        .setDescription('let you see the current Queue')
-        .addIntegerOption((option) =>
-            option
-                .setName('amount')
-                .setDescription('amountt')
-                .setRequired(false)
-        ),
+        .setDescription('let you see the current Queue'),
 
     category: path.basename(__dirname),
     async execute(interaction, client) {
-        await interaction.deferReply()
+        await interaction.deferReply({ ephemeral: true})
+        let page = 0
 
-        const guildId = interaction.guild.id;
-        const amount = interaction.options.getInteger('amount') // KA WAS DAS MACHT
+        const guildId = await interaction.guild.id
 
-        const Queue = client.player.GetQueue(guildId)
-        if (!Queue || (Queue && !Queue.current)) {
-            const ErrorEmbed = {
-                title: 'Empty Queue',
-                description:
-                    "No Songs are playing in `Queue`\nSong can't be `Fetched from Queue`",
+        await interaction.editReply({
+            embeds: [this.QueSetEmbed(client, guildId, page)],
+            components: [this.QueSetButtons(client, guildId, page)],
+        })
+
+
+        /** ++ Button Collector ++ */
+        const filter = (button) =>
+            (button.customId === 'quePrevious' || button.customId === 'queNext') &&
+            button.user.id === interaction.user.id && interaction.id === button.message.interaction.id
+
+        const collector = interaction.channel.createMessageComponentCollector({
+            filter,
+        })
+        collector.on('collect', async (button) => {
+            switch (button.customId) {
+            case 'quePrevious':
+                await (page --)
+                await button.update({
+                    embeds: [this.QueSetEmbed(client, guildId, page)],
+                    components: [this.QueSetButtons(client, guildId, page)],
+                })
+                break
+
+            case 'queNext':
+                await (page ++)
+                await button.update({
+                    embeds: [this.QueSetEmbed(client, guildId, page)],
+                    components: [this.QueSetButtons(client, guildId, page)],
+                })
+                break
             }
-            return void (await interaction.editReply({ embeds: [ErrorEmbed] }))
-        }
-        var Index =
-        amount &&
-            Number(amount) &&
-            Number(amount) < Queue.tracks.length &&
-            Number(amount) > 0
-                ? Number(amount)
-                : 0
+        })
+        /** -- Button Collector -- */
+    },
 
-        var StringArrays = Queue.tracks.map(
-            (track, index) =>
-                `**Track Index :** \`${index}\`\n**Track ID :** \`${track.Id}\`\n**Name :** \`${track.title}\`\n**Author :** \`${track.channelId}\`\n**Duration :** \`${track.human_duration}\`\n**URl :** [Track Url](${track.url})\n`
-        )
-        StringArrays = StringArrays.slice(Index, Index + 5)
-        StringArrays = StringArrays.filter(Boolean)
-        if (Queue.tracks.length > StringArrays.length) {
-            StringArrays.push(
-                `More \`${Number(
-                    Queue.tracks.length - (5 + Index)
-                )}+\` Tracks are Present in Queue`
+    QueSetEmbed: function (client, guildId, page) {
+        const queue = client.player.GetQueue(guildId)
+        const embed = new MessageEmbed()
+            .setTitle('**🎶 | Queue:**')
+            .setFooter(client.user.username, client.user.displayAvatarURL())
+            .setTimestamp()
+            .setColor('DARK_GREEN')
+
+        if (!queue || !queue.playing)
+            return embed
+                .setDescription('**❌ | No music is being played!**')
+                .setColor('DARK_RED')
+
+        if (page <= 0) page = 0
+        
+        const pageStart = 10 * (page)
+        const pageEnd = pageStart + 10
+        const tracks = queue.tracks
+            .slice(pageStart, pageEnd)
+            .map((track, i) => {
+                let pos = i + pageStart + 1
+                if (pos == 1)
+                    return `\`Now Playing.\` ** | [${track.title} by ${track.channelId}](${track.url})**`
+                else
+                    return `\`${i + pageStart + 0}.\` ** | [${track.title} by ${
+                        track.channelId
+                    }](${track.url})**`
+            })
+
+        embed
+            .setDescription(
+                `${tracks.join('\n')}${
+                    queue.tracks.length > pageEnd
+                        ? `\nand... \`${
+                              queue.tracks.length - pageEnd
+                          }\` more track(s)`
+                        : ''
+                }`
             )
-        }
-        const ReturnEmbed = {
-            title: 'Current Queue Stats',
-            description: `__**Current ${Index + 1}/${
-                Queue.tracks.length
-            } Tracks Data**__\n\n${StringArrays.join('\n')}`,
-            field: {
-                title: `Queue Progress Bar`,
-                value: Queue.createProgressBar('queue'),
-            },
-        }
-        return void (await interaction.editReply({ embeds: [ReturnEmbed] }))
+            .setColor('DARK_GREEN')
+
+        return embed
+    },
+
+    QueSetButtons: function (client, guildId, page) {
+        const queue = client.player.GetQueue(guildId)
+
+        let previous = false
+        if (page <= 0.1) previous = true
+        else previous = false
+
+        if (!queue || !queue.playing) return
+
+        let next = true
+
+        // const currPage = (page/10)+1
+        const currPage = page++
+        if (currPage >= (Math.floor((queue.tracks.length-1)/10))) next = true
+        else next = false
+
+        const pages = `Page: ${currPage+1} / ${Math.floor((queue.tracks.length-1)/10)+1}`
+
+        const buttons = new MessageActionRow().addComponents(
+            new MessageButton()
+                .setCustomId('quePrevious')
+                .setLabel('Previous')
+                .setStyle('PRIMARY')
+                .setDisabled(previous),
+            new MessageButton()
+                .setCustomId('quePages')
+                .setLabel(pages)
+                .setStyle('SUCCESS')
+                .setDisabled(true),
+            new MessageButton()
+                .setCustomId('queNext')
+                .setLabel('Next')
+                .setStyle('PRIMARY')
+                .setDisabled(next)
+        )
+
+        return buttons
     },
 }
