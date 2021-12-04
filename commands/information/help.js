@@ -24,8 +24,8 @@ module.exports = {
                 categories.push(commands.Category)
         })
 
-        const embed = this.setEmbed(client, categories[i])
-        const buttons = this.setButton(categories, i)
+        const embed = this.HelpSetEmbed(client, categories[i])
+        const buttons = this.HelpSetButton(categories, i)
 
         await interaction.reply({
             embeds: [embed],
@@ -33,42 +33,49 @@ module.exports = {
             ephemeral: true,
         })
 
-        const filter = (i) => (i.customId === 'previous' || i.customId === 'next') && i.user.id === interaction.user.id
+        /** ++ Button Collector ++ */
+        const filter = (button) =>
+            (button.customId === 'helpPrevious' || button.customId === 'helpNext') &&
+            button.user.id === interaction.user.id && interaction.id === button.message.interaction.id
 
         const collector = interaction.channel.createMessageComponentCollector({
             filter,
         })
-
         collector.on('collect', async (button) => {
-            if (button.customId === 'previous') {
-                await (i-=1)
-                try
-                {
-                await button.update({
-                    embeds: [this.setEmbed(client, categories[i])],
-                    components: [this.setButton(categories, i)],
-                })
-            } catch (e)
-            {
-                console.error(e)
-            }
-            }
-            if (button.customId === 'next') {
-                await (i+=1)
-                try {
-                    await button.update({
-                    embeds: [this.setEmbed(client, categories[i])],
-                    components: [this.setButton(categories, i)],
-                })
-                } catch (e) {
-                    console.error(e)
-                }
-                
+            switch (button.customId) {
+                case 'helpPrevious':
+                    await (i -= 1)
+                    try {
+                        await button.update({
+                            embeds: [
+                                this.HelpSetEmbed(client, categories[i]),
+                            ],
+                            components: [this.HelpSetButton(categories, i)],
+                        })
+                    } catch (e) {
+                        console.error(e)
+                    }
+                    break
+
+                case 'helpNext':
+                    await (i += 1)
+                    try {
+                        await button.update({
+                            embeds: [
+                                this.HelpSetEmbed(client, categories[i]),
+                            ],
+                            components: [this.HelpSetButton(categories, i)],
+                        })
+                    } catch (e) {
+                        console.error(e)
+                    }
+                    break
             }
         })
+        /** -- Button Collector */
     },
 
-    setEmbed: function (client, category) {
+    HelpSetEmbed: function (client, category) {
         const embed = new MessageEmbed()
             .setFooter(client.user.username, client.user.displayAvatarURL())
             .setTimestamp()
@@ -95,18 +102,18 @@ module.exports = {
         return embed
     },
 
-    setButton: function(categories, i){
+    HelpSetButton: function (categories, i) {
         let previous = false
         if (i == 0) previous = true
         else previous = false
 
         let next = true
-        if (i == categories.length-1) next = true
+        if (i == categories.length - 1) next = true
         else next = false
 
         const buttons = new MessageActionRow().addComponents(
             new MessageButton()
-                .setCustomId('previous')
+                .setCustomId('helpPrevious')
                 .setLabel('Previous')
                 .setStyle('PRIMARY')
                 .setDisabled(previous),
@@ -116,12 +123,12 @@ module.exports = {
                 .setStyle('SECONDARY')
                 .setDisabled(true),
             new MessageButton()
-                .setCustomId('next')
+                .setCustomId('helpNext')
                 .setLabel('Next')
                 .setStyle('PRIMARY')
                 .setDisabled(next)
         )
 
         return buttons
-    }
+    },
 }
