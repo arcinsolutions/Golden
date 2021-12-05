@@ -1913,9 +1913,9 @@ picomatch@^2.0.4, picomatch@^2.2.1:
   integrity sha512-lY1Q/PiJGC2zOv/z391WOTD+Z02bCgsFfvxoXXf6h7kv9o+WmsmzYqrAwY63sNgOxE4xEdq0WyUnXfKeBrSvYw==
 
 play-dl@^1.2.6, play-dl@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/play-dl/-/play-dl-1.4.0.tgz#8cc0c23876cdd9fb3a25e8fcc34381dddc5f22f6"
-  integrity sha512-CLFJWGtaTa0S4S41gSZ74A+OniDmzy8+CATR2Tp6lFzoxkszlYhkhh2AXW01g3OfcGHWsLR1OKo4DHN8i/Ozow==
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/play-dl/-/play-dl-1.4.4.tgz#72d546218e099cfb81ce8010942ca785de02fccb"
+  integrity sha512-LsB3oi6oo1YwNLQ4O5blUybctPr5f30oODi29OGpp8Ea+o9eV9dGm5/qZ5VuLsSefIO9k8Kxhw1XaOKQBlqUig==
 
 playdl-music-extractor@^2.4.6:
   version "2.4.6"
@@ -2317,9 +2317,9 @@ supports-color@^7.1.0:
     has-flag "^4.0.0"
 
 table@^6.0.9:
-  version "6.7.3"
-  resolved "https://registry.yarnpkg.com/table/-/table-6.7.3.tgz#255388439715a738391bd2ee4cbca89a4d05a9b7"
-  integrity sha512-5DkIxeA7XERBqMwJq0aHZOdMadBx4e6eDoFRuyT5VR82J0Ycg2DwM6GfA/EQAhJ+toRTaS1lIdSQCqgrmhPnlw==
+  version "6.7.5"
+  resolved "https://registry.yarnpkg.com/table/-/table-6.7.5.tgz#f04478c351ef3d8c7904f0e8be90a1b62417d238"
+  integrity sha512-LFNeryOqiQHqCVKzhkymKwt6ozeRhlm8IL1mE8rNUurkir4heF6PzMyRgaTa4tlyPTGGgXuvVOF/OLWiH09Lqw==
   dependencies:
     ajv "^8.0.1"
     lodash.truncate "^4.4.2"
