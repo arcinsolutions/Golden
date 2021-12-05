@@ -1,8 +1,7 @@
 const { sendTimed } = require('../functions/channel')
 
 const { MessageEmbed } = require('discord.js')
-const { getPreview, getTracks } = require('spotify-url-info');
-const { on } = require('nodemon');
+const { getPreview, getTracks } = require('spotify-url-info')
 
 module.exports = {
     name: 'messageCreate',
@@ -43,8 +42,7 @@ module.exports = {
 
             let success = true
 
-            if (await !request.includes('https')) 
-            {
+            if (await !request.includes('https')) {
                 request += ' topic'
                 success = await this.requestPlay(Queue, request, message)
             }
@@ -61,11 +59,16 @@ module.exports = {
                             song.external_urls.spotify
                         )
                         request = `${track.title} by ${track.artist}`
-                        success = await this.requestPlay(Queue, request, message)
-                        if(!success)
-                            return
+                        success = await this.requestPlay(
+                            Queue,
+                            request,
+                            message
+                        )
+                        if (!success) return
                     })
                 }
+            } else {
+                success = await this.requestPlay(Queue, request, message)
             }
 
             if (success) {

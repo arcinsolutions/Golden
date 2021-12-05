@@ -61,23 +61,30 @@ module.exports = {
                 tracks.forEach(async (song) => {
                     const track = await getPreview(song.external_urls.spotify)
                     request = `${track.title} by ${track.artist}`
-                    success = await this.requestPlay(Queue, request, interaction)
+                    success = await this.requestPlay(
+                        Queue,
+                        request,
+                        interaction
+                    )
                     if (!success) return
                 })
             }
+        } else {
+            success = await this.requestPlay(Queue, request, interaction)
         }
 
         if (success) {
             await interaction.editReply({
                 embeds: [
                     embed
-                        .setDescription(`**✅ | Adding requested Song/Playlist**`)
+                        .setDescription(
+                            `**✅ | Adding requested Song/Playlist**`
+                        )
                         .setColor('DARK_GREEN'),
                 ],
             })
             await sleep(10000)
             return await interaction.deleteReply()
-            
         } else {
             await interaction.editReply({
                 embeds: [
