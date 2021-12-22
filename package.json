@@ -1,12 +1,12 @@
 {
-  "name": "golden-recode",
-  "version": "1.0.0",
-  "description": "",
+  "name": "golden",
+  "version": "4.0.0",
+  "description": "A Premium Discord Bot with a lot of functions and wihtout any Paywalls!",
   "main": "./src/golden.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Botis",
   "license": "ISC",
   "dependencies": {
     "@devsnowflake/quick.db": "^2.0.3",
