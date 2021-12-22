@@ -50,6 +50,16 @@ module.exports = {
               inline: true,
             },
             {
+              name: "\u200B",
+              value: `\u200B`,
+              inline: true,
+            },
+            {
+              name: "CPU usage",
+              value: `${process.cpuUsage(usage).user / 100} %`,
+              inline: true,
+            },
+            {
               name: "RAM usage",
               value: `${
                 Math.round(
@@ -59,8 +69,23 @@ module.exports = {
               inline: true,
             },
             {
-              name: "CPU usage",
-              value: `${process.cpuUsage(usage).user / 100} %`,
+              name: "\u200B",
+              value: `\u200B`,
+              inline: true,
+            },
+            {
+              name: "Servers",
+              value: `${client.guilds.cache.size}`,
+              inline: true,
+            },
+            {
+              name: "Channels",
+              value: `${client.channels.cache.size}`,
+              inline: true,
+            },
+            {
+              name: "Users",
+              value: `${client.users.cache.size}`,
               inline: true,
             }
           )
