@@ -1,6 +1,7 @@
 const { resetChannel, channelEmbedExists } = require('../../modules/channelModule/channelModule')
 const { getAll } = require('../../modules/databaseModule/databaseModule')
 const { setRandomActivities } = require('../../modules/activityModule/activityModule');
+const { Uptime } = require('better-uptime');
 
 module.exports = {
     name: 'ready',
@@ -20,5 +21,10 @@ module.exports = {
             }
         }
 
+        new Uptime({
+            url: process.env.URL,
+            time: 3,
+            time_type: 'minute', //millisecond, minute, hour, day, week
+        })
     }
 }
