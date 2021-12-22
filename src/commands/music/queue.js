@@ -1,44 +1,137 @@
-const { MessageEmbed } = require("discord.js");
-const { SlashCommandBuilder } = require("@discordjs/builders");
-const { replyInteractionEmbed } = require("../../modules/channelModule/channelModule")
+const {
+  MessageActionRow,
+  MessageEmbed,
+  MessageButton
+} = require('discord.js');
+const {
+  SlashCommandBuilder
+} = require('@discordjs/builders');
+const {
+  replyInteractionEmbed,
+} = require('../../modules/channelModule/channelModule');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("queue")
-    .setDescription("View queu")
-    .addStringOption((option) =>
-            option
-                .setName('page')
-                .setDescription('Set page')
-                .setRequired(false)
-        ),
+    .setName('queue')
+    .setDescription('View queue'),
 
   async execute(interaction, client) {
+    let page = 0;
+
     const player = interaction.client.manager.get(interaction.guild.id);
-    if (!player) return replyInteractionEmbed(interaction, '', 'Play a track before using this command.', 'RED');
+    if (!player)
+      return replyInteractionEmbed(
+        interaction,
+        'ERROR',
+        'Please request a Song before using this Command.',
+        'RED'
+      );
 
     const queue = player.queue;
+
+    await interaction.reply({
+      embeds: [this.QueSetEmbed(queue, interaction.guild.id, page)],
+      components: [this.QueSetButtons(queue, interaction.guild.id, page)],
+      ephemeral: true,
+    });
+
+    /** ++ Button Collector ++ */
+    const filter = (button) =>
+      (button.customId === 'quePrevious' || button.customId === 'queNext') &&
+      button.user.id === interaction.user.id &&
+      interaction.id === button.message.interaction.id;
+
+    const collector = interaction.channel.createMessageComponentCollector({
+      filter,
+    });
+    collector.on('collect', async (button) => {
+      switch (button.customId) {
+        case 'quePrevious':
+          await page--;
+          await button.update({
+            embeds: [this.QueSetEmbed(queue, interaction.guild.id, page)],
+            components: [this.QueSetButtons(queue, interaction.guild.id, page)],
+          });
+          break;
+
+        case 'queNext':
+          await page++;
+          await button.update({
+            embeds: [this.QueSetEmbed(queue, interaction.guild.id, page)],
+            components: [this.QueSetButtons(queue, interaction.guild.id, page)],
+          });
+          break;
+      }
+    });
+    /** -- Button Collector -- */
+  },
+
+  QueSetEmbed: function (queue, guildId, page) {
     const embed = new MessageEmbed()
-      .setAuthor(`Queue for ${interaction.guild.name}`);
+      .setTitle('**🎶 | Queue:**')
+      .setTimestamp()
+      .setColor('DARK_GREEN');
 
-    // change for the amount of tracks per page
-    const multiple = 10;
-    const page = interaction.options.getString('page') !== null && Number(interaction.options.getString('page')) ? Number(interaction.options.getString('page')) : 1;
+    if (page <= 0) page = 0;
+    const pageStart = 10 * page;
+    const pageEnd = pageStart + 10;
 
-    const end = page * multiple;
-    const start = end - multiple;
+    let tracks = `\`Now Playing.\` ** | [${queue.current.title} by ${queue.current.author}](${queue.current.url})**\n`
 
-    const tracks = queue.slice(start, end);
+    queue.slice(pageStart, pageEnd).map((track, i) => {
+      console.log(track);
+      let pos = i + pageStart + 1;
+      return tracks += `\n\`${pos}.\` ** | [${track.title} by ${
+					track.author
+				}](${track.url})**`
+    });
 
-    if (queue.current) embed.addField("Current", `[${queue.current.title}](${queue.current.uri})`);
+    embed
+      .setDescription(
+        `${tracks}${
+					queue.size > pageEnd
+						? `\nand... \`${queue.totalSize - pageEnd}\` more track(s)`
+						: ''
+				}`
+      )
+      .setColor('DARK_GREEN');
 
-    if (!tracks.length) embed.setDescription(`No tracks in ${page > 1 ? `page ${page}` : "the queue"}.`);
-    else embed.setDescription(tracks.map((track, i) => `${start + (++i)} - [${track.title}](${track.uri})`).join("\n"));
+    return embed;
+  },
 
-    const maxPages = Math.ceil(queue.length / multiple);
+  QueSetButtons: function (queue, guildId, page) {
+    let previous = false;
+    if (page <= 0.1) previous = true;
+    else previous = false;
+    let next = true;
 
-    embed.setFooter(`Page ${page > maxPages ? maxPages : page} of ${maxPages}`);
+    // const currPage = (page/10)+1
+    const currPage = page++;
+    if (currPage >= Math.floor((queue.totalSize - 1) / 10)) next = true;
+    else next = false;
 
-    return replyInteractionEmbed(interaction, embed);
+    const pages = `Page: ${currPage + 1} / ${
+			Math.floor((queue.totalSize - 1) / 10) + 1
+		}`;
+
+    const buttons = new MessageActionRow().addComponents(
+      new MessageButton()
+      .setCustomId('quePrevious')
+      .setLabel('Previous')
+      .setStyle('PRIMARY')
+      .setDisabled(previous),
+      new MessageButton()
+      .setCustomId('quePages')
+      .setLabel(pages)
+      .setStyle('SUCCESS')
+      .setDisabled(true),
+      new MessageButton()
+      .setCustomId('queNext')
+      .setLabel('Next')
+      .setStyle('PRIMARY')
+      .setDisabled(next)
+    );
+
+    return buttons;
   },
 };
