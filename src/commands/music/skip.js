@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { replyInteractionEmbed } = require("../../modules/channelModule/channelModule")
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -7,17 +8,17 @@ module.exports = {
 
   async execute(interaction, client) {
     const player = interaction.client.manager.get(interaction.guild.id);
-      if (!player) return interaction.reply("there is no player for this guild.");
+      if (!player) return replyInteractionEmbed(interaction, '', 'Play a track before using this command.', 'RED');
   
       const { channel } = interaction.member.voice;
-      if (!channel) return interaction.reply("you need to join a voice channel.");
-      if (channel.id !== player.voiceChannel) return interaction.reply("you're not in the same voice channel.");
-
-      if (!player.queue.current) return interaction.reply("there is no music playing.")
+      if (!channel) return replyInteraction(interaction, '', 'Join a voice channel first.', 'RED');
+      if (channel.id !== player.voiceChannel) return replyInteractionEmbed(interaction, '', 'I\'ve to be in the same voice channel with you for requesting tracks.', 'RED');
+  
+      if (!player.queue.current) return replyInteractionEmbed(interaction, '', 'There is no music playing.', 'RED');
 
       const { title } = player.queue.current;
 
       player.stop();
-      return interaction.reply(`${title} was skipped.`)
+      return replyInteractionEmbed(interaction, '', `${title} was skipped.`, 'GREEN');
   },
 };

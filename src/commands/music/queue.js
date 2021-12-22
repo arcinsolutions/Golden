@@ -1,5 +1,6 @@
 const { MessageEmbed } = require("discord.js");
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { replyInteractionEmbed } = require("../../modules/channelModule/channelModule")
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -14,7 +15,7 @@ module.exports = {
 
   async execute(interaction, client) {
     const player = interaction.client.manager.get(interaction.guild.id);
-    if (!player) return interaction.reply("there is no player for this guild.");
+    if (!player) return replyInteractionEmbed(interaction, '', 'Play a track before using this command.', 'RED');
 
     const queue = player.queue;
     const embed = new MessageEmbed()
@@ -38,6 +39,6 @@ module.exports = {
 
     embed.setFooter(`Page ${page > maxPages ? maxPages : page} of ${maxPages}`);
 
-    return interaction.reply({ embeds: [embed] });
+    return replyInteractionEmbed(interaction, embed);
   },
 };

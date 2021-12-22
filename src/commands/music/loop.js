@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { replyInteractionEmbed, setEmbed } = require("../../modules/channelModule/channelModule");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -9,30 +10,33 @@ module.exports = {
                 .setName('option')
                 .setDescription('the Loop option (Song|Queue|Off)')
                 .setRequired(true)
-                .addChoice('Song', 'song')
+                .addChoice('Track', 'track')
                 .addChoice('Queue', 'queue')
         ),
 
   async execute(interaction, client) {
     const player = interaction.client.manager.get(interaction.guild.id);
-    if (!player) return interaction.reply("there is no player for this guild.");
+    if (!player) return replyInteractionEmbed(interaction, '', 'Play a track before using this command.', 'RED');
 
     const { channel } = interaction.member.voice;
 
-    if (!channel) return interaction.reply("you need to join a voice channel.");
-    if (channel.id !== player.voiceChannel) return interaction.reply("you're not in the same voice channel.");
+    if (!channel) return replyInteractionEmbed(interaction, '', 'Join a voice channel first.', 'RED');
+    if (channel.id !== player.voiceChannel) return replyInteractionEmbed(interaction, '', 'I\'ve to be in the same voice channel with you for requesting tracks.', 'RED');
 
     const option = interaction.options.getString('option');
 
-    if(option === 'song') {
+    if(option === 'track') {
         player.setTrackRepeat(!player.trackRepeat);
         const trackRepeat = player.trackRepeat ? "enabled" : "disabled";
-        return interaction.reply(`${trackRepeat} track repeat.`);
-    }
+        setEmbed(interaction.guild, player);
+        return replyInteractionEmbed(interaction, '', `${trackRepeat} track repeat.`, 'GREEN');
+        
+    } else {
 
     player.setQueueRepeat(!player.queueRepeat);
     const queueRepeat = player.queueRepeat ? "enabled" : "disabled";
-    return interaction.reply(`${queueRepeat} queue repeat.`);
-   
+    setEmbed(interaction.guild, player);
+    return replyInteractionEmbed(interaction, '', `${queueRepeat} queue repeat.`, 'GREEN');
+  }
   },
 };

@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { updateVolume } = require('../../modules/channelModule/channelModule')
+const { replyInteractionEmbed, setEmbed } = require('../../modules/channelModule/channelModule');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -15,20 +15,20 @@ module.exports = {
   async execute(interaction, client) {
     const player = interaction.client.manager.get(interaction.guild.id);
 
-    if (!player) return interaction.reply("there is no player for this guild.");
-    if (interaction.options.getInteger('amount') === null) return interaction.reply(`the player volume is \`${player.volume}\`.`)
+    if (!player) return replyInteractionEmbed(interaction, '', 'Play a track before using this command.', 'RED');
+    if (interaction.options.getInteger('amount') === null) return replyInteractionEmbed(interaction, '', `Currently playing at ${player.volume}% volume.`, 'GREEN');
 
     const { channel } = interaction.member.voice;
     
-    if (!channel) return interaction.reply("you need to join a voice channel.");
-    if (channel.id !== player.voiceChannel) return interaction.reply("you're not in the same voice channel.");
+    if (!channel) return replyInteractionEmbed(interaction, '', 'Join a voice channel first.', 'RED');
+    if (channel.id !== player.voiceChannel) return replyInteractionEmbed(interaction, '', 'I\'ve to be in the same voice channel with you for requesting tracks.', 'RED');
 
     const volume = interaction.options.getInteger('amount');
     
-    if (!volume || volume < 1 || volume > 100) return interaction.reply("you need to give me a volume between 1 and 100.");
+    if (!volume || volume < 1 || volume > 100) return replyInteractionEmbed(interaction, '', 'Give me a value between 1 and 100.', 'RED');
 
     player.setVolume(volume);
-    updateVolume(interaction.guild, player.queue.length, volume)
-    return interaction.reply(`set the player volume to \`${volume}\`.`);
+    setEmbed(interaction.guild, player);
+    return replyInteractionEmbed(interaction, '', `Set the player volume to ${volume}.`, 'GREEN');
   },
 };

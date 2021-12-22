@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { resetChannel } = require('../../modules/channelModule/channelModule')
+const { resetChannel, replyInteractionEmbed } = require('../../modules/channelModule/channelModule');
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -8,15 +8,15 @@ module.exports = {
 
   async execute(interaction, client) {
     const player = interaction.client.manager.get(interaction.guild.id);
-    if (!player) return interaction.reply("there is no player for this guild.");
+    if (!player) return replyInteractionEmbed(interaction, '', 'Play a track before using this command.', 'RED');
 
     const { channel } = interaction.member.voice;
     
-    if (!channel) return interaction.reply("you need to join a voice channel.");
-    if (channel.id !== player.voiceChannel) return interaction.reply("you're not in the same voice channel.");
+    if (!channel) return replyInteraction(interaction, '', 'Join a voice channel first.', 'RED');
+    if (channel.id !== player.voiceChannel) return replyInteractionEmbed(interaction, '', 'I\'ve to be in the same voice channel with you for requesting tracks.', 'RED');
     
     player.destroy();
     resetChannel(interaction.guild);
-    return interaction.reply("destroyed the player.");
+    return replyInteractionEmbed(interaction, '', 'Stopped playing and cleared queue.', 'GREEN');
   },
 };
