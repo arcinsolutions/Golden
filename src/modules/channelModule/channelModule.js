@@ -11,6 +11,7 @@ const {
   embedDescription,
   embedEmptyQueue,
 } = require("../../../data/config.json");
+const { createEmbed } = require('../embedModule/embedModule');
 
 const { MessageActionRow, MessageEmbed, MessageButton } = require("discord.js");
 const format = require("format-duration");
@@ -35,7 +36,7 @@ module.exports = {
     const channelId = await getGuildChannel(guildId);
     const channel = await guild.channels.cache.get(channelId);
 
-    await channel.send(channelHeader);
+    const channelHero = await channel.send(channelHeader);
 
     const channelControlComponent = new MessageActionRow()
       .addComponents(
@@ -58,6 +59,12 @@ module.exports = {
       )
       .addComponents(
         new MessageButton()
+          .setCustomId("shuffle")
+          .setEmoji("🔀")
+          .setStyle("SECONDARY")
+      )
+      .addComponents(
+        new MessageButton()
           .setLabel("Source")
           .setStyle("LINK")
           .setURL("https://golden.spasten.studio/")
@@ -69,21 +76,22 @@ module.exports = {
       .setTitle(embedNoSongPlayingTitle)
       .setDescription(embedDescription)
       .setImage(channelEmbedThumbnail)
-      .setFooter(`0 songs in queue | Volume: 100%`);
+      .setFooter(`0 songs in queue | Volume: 100%  | Loop: Disabled`);
 
     const channelEmbedMessage = await channel.send({
       content: embedEmptyQueue,
       embeds: [channelEmbed],
       components: [channelControlComponent],
-    });
+    }).catch(e => {});
 
-    return channelEmbedMessage;
+    return { channelHero: channelHero, channelEmbed: channelEmbedMessage };
   },
 
   deleteChannel: async function (guild) {
     const guildId = guild.id;
     const channelId = await getGuildChannel(guildId);
     const channel = await guild.channels.cache.get(channelId);
+    if(channel === undefined) return
 
     return channel.delete();
   },
@@ -108,15 +116,7 @@ module.exports = {
     );
   },
 
-  setEmbed: async function (
-    guild,
-    title,
-    url,
-    queue,
-    thumbnail,
-    queueLength,
-    volume
-  ) {
+  setEmbed: async function (guild, player) {
     if (await module.exports.channelExists(guild)) {
       const channelId = await getGuildChannel(guild.id); // ID of the golden channel for this guild
       const channelEmbedId = await getGuildChannelEmbed(guild.id); // ID of the player Embed inside the golden channel
@@ -125,23 +125,21 @@ module.exports = {
       const channelEmbed = await channel.messages.fetch(channelEmbedId); // Fetched player embed
 
       if (channelEmbed.embeds[0] === undefined)
-        return channel.send(
-          "Sorry but it seems like the channel is broken. Please create a new one!"
-        ); // e.g. embed was removed from message manually
+        return channel.send({ embeds: [createEmbed('Broken channel', 'Sorry but it seems like the channel is broken. Please create a new one!', 'RED', 'https://cdn.discordapp.com/attachments/922836431045525525/922841155098533928/warn.png')] }) // e.g. embed was removed from message manually
 
-      channelEmbed.embeds[0].title = title;
+        const duration = player.queue.current.isStream ? "LIVE" : format(player.queue.current.duration);
+      
+      channelEmbed.embeds[0].title = `🎶 | Now playing: ${player.queue.current.title} by ${player.queue.current.author} [${duration}]`;
 
       const currComponents = channelEmbed.components[0];
       if (currComponents !== undefined) {
-        if (url !== "") {
+        if (player.queue.current.uri !== "") {
           for (const button of currComponents.components) {
             if (button.style === "LINK") {
               button.disabled = false;
-              button.url = url;
+              button.url = player.queue.current.uri;
             }
           }
-
-          //channelEmbed.embeds[0].url = url
         } else {
           for (const button of currComponents.components) {
             if (button.style === "LINK") {
@@ -149,64 +147,64 @@ module.exports = {
               button.url = "https://golden.spasten.studio";
             }
           }
-
-          //channelEmbed.embeds[0].url = ""
         }
       }
 
-      if (thumbnail === null) {
-        // if there's no thumbnail (e.g. SoundCloud or radio link)
+      if (player.queue.current.thumbnail === null) { // if there's no thumbnail (e.g. SoundCloud or radio link)
         channelEmbed.embeds[0].image.url = channelEmbedThumbnail;
       } else {
-        channelEmbed.embeds[0].image.url = thumbnail;
+        channelEmbed.embeds[0].image.url = await player.queue.current.displayThumbnail("maxresdefault"); // TODO: check if 404, sometimes maxresdefault doesn't exist, then use hqdefault or smth
       }
 
+      const loop = player.trackRepeat ? "Track" : player.queueRepeat ? "Queue" : "Disabled";
+      const paused = player.paused ? "| Paused" : "";
+
       channelEmbed.embeds[0].footer = {
-        text: `${queueLength} songs in queue | Volume: ${volume}%`,
+        text: `${player.queue.length} song${player.queue.length === 1 ? "" : "s"} in queue | Volume: ${player.volume}% | Loop: ${loop} ${paused}`,
       };
 
       channelEmbed.edit({
-        content: queue,
+        content: module.exports.generateQueue(player.queue),
         embeds: [new MessageEmbed(channelEmbed.embeds[0])],
         components: [new MessageActionRow(currComponents)],
       });
     }
   },
 
-  updateVolume: async function (guild, queueLength, volume) {
-    if (await module.exports.channelExists(guild)) {
-      const channelId = await getGuildChannel(guild.id);
-      const channelEmbedId = await getGuildChannelEmbed(guild.id);
+  resetChannel: async function (guild, volume) {
+    if (volume === undefined) volume = 100;
 
-      const channel = await guild.channels.cache.get(channelId);
-      const channelEmbed = await channel.messages.fetch(channelEmbedId);
+    if (await module.exports.channelExists(guild)) {
+      const channelId = await getGuildChannel(guild.id); // ID of the golden channel for this guild
+      const channelEmbedId = await getGuildChannelEmbed(guild.id); // ID of the player Embed inside the golden channel
+
+      const channel = await guild.channels.cache.get(channelId); // Fetched channel
+      const channelEmbed = await channel.messages.fetch(channelEmbedId); // Fetched player embed
 
       if (channelEmbed.embeds[0] === undefined)
-        return channel.send(
-          "Sorry but it seems like the channel is broken. Please create a new one!"
-        ); // e.g. embed was removed from message manually
+      return channel.send({ embeds: [createEmbed('Broken channel', 'Sorry but it seems like the channel is broken. Please create a new one!', 'RED', 'https://cdn.discordapp.com/attachments/922836431045525525/922841155098533928/warn.png')] }) // e.g. embed was removed from message manually
 
+      channelEmbed.embeds[0].title = embedNoSongPlayingTitle;
+
+      const currComponents = channelEmbed.components[0];
+          for (const button of currComponents.components) {
+            if (button.style === "LINK") {
+              button.disabled = true;
+              button.url = "https://golden.spasten.studio";
+            }
+        }
+
+      channelEmbed.embeds[0].image = { url: channelEmbedThumbnail };
       channelEmbed.embeds[0].footer = {
-        text: `${queueLength} songs in queue | Volume: ${volume}%`,
+        text: `0 songs in queue | Volume: ${volume}% | Loop: Disabled`,
       };
 
       channelEmbed.edit({
+        content: embedEmptyQueue,
         embeds: [new MessageEmbed(channelEmbed.embeds[0])],
+        components: [new MessageActionRow(currComponents)],
       });
     }
-  },
-
-  resetChannel: async function (guild, volume) {
-    if (volume === undefined) volume = 100;
-    module.exports.setEmbed(
-      guild,
-      embedNoSongPlayingTitle,
-      "",
-      embedEmptyQueue,
-      channelEmbedThumbnail,
-      0,
-      volume
-    );
   },
 
   sendTemporaryMessage: async function (channel, content, time) {
@@ -214,6 +212,25 @@ module.exports = {
       setTimeout(() => msg.delete().catch((e) => {}), time);
     });
   },
+
+  replyInteractionEmbed: async function(interaction, title, description, color, thumbnailUrl) {
+    if(interaction.channel.id === getGuildChannel(interaction.guild.id)) {
+      await interaction.reply({ embeds: [createEmbed(title, description, color, thumbnailUrl)] });
+      setTimeout(() => interaction.deleteReply().catch((e) => {}), 10000);
+    } else {
+      await interaction.reply({ embeds: [createEmbed(title, description, color, thumbnailUrl)], ephemeral: true });
+    }
+  },
+
+  replyInteractionMessage: async function(interaction, message) {
+    if(interaction.channel.id === getGuildChannel(interaction.guild.id)) {
+      await interaction.reply(message);
+      setTimeout(() => interaction.deleteReply().catch((e) => {}), 10000);
+    } else {
+      await interaction.reply({ content: message, ephemeral: true });
+    }
+  },
+
 
   generateQueue: function (queue) {
     if (queue.length < 1) return embedEmptyQueue;

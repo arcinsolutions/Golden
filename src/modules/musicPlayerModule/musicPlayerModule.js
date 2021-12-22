@@ -8,31 +8,11 @@ module.exports = {
     if (!player.playing && !player.paused && !player.queue.size) player.play();
 
     if (player.queue.length >= 1) {
-      const duration = player.queue.current.isStream
-        ? "LIVE"
-        : format(player.queue.current.duration);
-      setEmbed(
-        guild,
-        `🎶 | Now playing: ${player.queue.current.title} by ${player.queue.current.author} [${duration}]`,
-        player.queue.current.uri,
-        generateQueue(player.queue),
-        player.queue.current.displayThumbnail("maxresdefault"),
-        player.queue.length,
-        player.volume
-      );
+      setEmbed(guild, player);
     } else {
       if (track.thumbail === undefined && track.resolve !== undefined)
         await track.resolve("thumbnail"); // fetch thumbnail
-      const duration = track.isStream ? "LIVE" : format(track.duration);
-      setEmbed(
-        guild,
-        `🎶 | Now playing: ${track.title} by ${track.author} [${duration}]`,
-        track.uri,
-        generateQueue(player.queue),
-        track.displayThumbnail("maxresdefault"),
-        player.queue.length,
-        player.volume
-      );
+        setEmbed(guild, player);
     }
   },
 
@@ -48,32 +28,11 @@ module.exports = {
       player.play();
 
     if (player.queue.length >= 1) {
-      // this song is now the song playing!
       if (player.queue.current.thumbnail === undefined)
         await firstTrack.resolve("thumbnail"); // fetch thumbnail
-      setEmbed(
-        guild,
-        `🎶 | Now playing: ${player.queue.current.title} by ${
-          player.queue.current.author
-        } [${format(player.queue.current.duration)}]`,
-        player.queue.current.uri,
-        generateQueue(player.queue),
-        player.queue.current.displayThumbnail("maxresdefault"),
-        player.queue.length,
-        player.volume
-      );
+        setEmbed(guild, player);
     } else {
-      setEmbed(
-        guild,
-        `🎶 | Now playing: ${firstTrack.title} by ${
-          firstTrack.author
-        } [${format(rfirstTrack.duration)}]`,
-        firstTrack.uri,
-        generateQueue(player.queue),
-        firstTrack.displayThumbnail("maxresdefault"),
-        player.queue.length,
-        player.volume
-      );
+      setEmbed(guild, player);
     }
   },
 
@@ -82,33 +41,10 @@ module.exports = {
 
     if (!player.playing && !player.paused && !player.queue.size) player.play();
 
-    if (player.queue.length >= 1) {
-      // this song is now the song playing!
-      const duration = player.queue.current.isStream
-        ? "LIVE"
-        : format(player.queue.current.duration);
-      setEmbed(
-        guild,
-        `🎶 | Now playing: ${player.queue.current.title} by ${player.queue.current.author} [${duration}]`,
-        player.queue.current.uri,
-        generateQueue(player.queue),
-        player.queue.current.displayThumbnail("maxresdefault"),
-        player.queue.length,
-        player.volume
-      );
+    if (player.queue.length >= 1) { // TODO ???
+      setEmbed(guild, player);
     } else {
-      const duration = track.isStream
-        ? "LIVE"
-        : format(track.duration);
-      setEmbed(
-        guild,
-        `🎶 | Now playing: ${track.title} by ${track.author} [${duration}]`,
-        track.uri,
-        generateQueue(player.queue),
-        track.displayThumbnail("maxresdefault"),
-        player.queue.length,
-        player.volume
-      );
+      setEmbed(guild, player);
     }
 
     return track;
