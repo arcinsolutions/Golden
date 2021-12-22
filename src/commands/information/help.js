@@ -9,38 +9,26 @@ module.exports = {
 
 	async execute(interaction, client) {
 		let i = 0;
+		const commands = [];
 
-		fs.readdirSync(__dirname + '/../../commands/').forEach((dir) => {
+		const categories = fs.readdirSync('./src/commands/');
+		categories.forEach((dir) => {
 			const commandFiles = fs
-				.readdirSync(__dirname + `/../../commands/${dir}/`)
+				.readdirSync(`./src/commands/${dir}/`)
 				.filter((file) => file.endsWith('.js'));
 
 			for (const file of commandFiles) {
-				const command = require(`../../commands/${dir}/${file}`);
-				commands.push(command.data.toJSON() + dir);
+				const command = require(`../${dir}/${file}`);
+				const commandData = {
+					name: command.data.name,
+					description: command.data.description,
+					category: dir,
+				};
+				commands.push(commandData);
 			}
 		});
 
-        console.log(commands);
-
-		var categories = fs.readdirSync('src/commands');
-
-		categories.forEach((element) => {
-			console.log(element.readdirSync);
-		});
-
-		console.log(categories);
-
-		const commandsNames = client.commands;
-		commandsNames.forEach((command) => {
-			console.log(categories[0]);
-			console.log(command.data.name);
-			if (command.data.name == fs.readFileSync(`src/commands/music`))
-				console.log(command.data.name);
-			//     categories.push(command.Category)
-		});
-
-		const embed = this.HelpSetEmbed(client, categories[i]);
+		const embed = this.HelpSetEmbed(commands, categories[i]);
 		const buttons = this.HelpSetButton(categories, i);
 
 		await interaction.reply({
@@ -64,7 +52,7 @@ module.exports = {
 					await (i -= 1);
 					try {
 						await button.update({
-							embeds: [this.HelpSetEmbed(client, categories[i])],
+							embeds: [this.HelpSetEmbed(commands, categories[i])],
 							components: [this.HelpSetButton(categories, i)],
 						});
 					} catch (e) {
@@ -76,7 +64,7 @@ module.exports = {
 					await (i += 1);
 					try {
 						await button.update({
-							embeds: [this.HelpSetEmbed(client, categories[i])],
+							embeds: [this.HelpSetEmbed(commands, categories[i])],
 							components: [this.HelpSetButton(categories, i)],
 						});
 					} catch (e) {
@@ -88,25 +76,24 @@ module.exports = {
 		/** -- Button Collector */
 	},
 
-	HelpSetEmbed: function (client, category) {
+	HelpSetEmbed: function (commands, category) {
 		const embed = new MessageEmbed()
-			.setFooter(client.user.username, client.user.displayAvatarURL())
 			.setTimestamp()
 			.setTitle('**Help Menu**')
 			.setColor('DARK_GREEN');
 
-		const commandsNames = client.commands.map((description) => {
+		const commandsNames = commands.map((description) => {
 			let temp = {
-				Name: description.data.name,
-				Description: description.data.description,
+				Name: description.name,
+				Description: description.description,
 				Category: description.category,
 			};
 			return temp;
 		});
 
 		for (var i = 0; i < commandsNames.length; i++) {
-			const name = commandsNames[i].Name.toString();
-			const description = commandsNames[i].Description.toString();
+			const name = commandsNames[i].Name;
+			const description = commandsNames[i].Description;
 			if (category == commandsNames[i].Category) {
 				embed.addField(`${name}`, `Description: ${description}`, false);
 			}
