@@ -9,6 +9,7 @@ module.exports = {
   createGuild: function (guildId) {
     return db.set(guildId, {
       musicChannel: "",
+      musicChannelHero: "",
       musicChannelEmbed: "",
     });
   },
@@ -39,12 +40,21 @@ module.exports = {
     return db.set(`${guildId}.musicChannelEmbed`, messageId);
   },
 
+  setGuildChannelHero: function (guildId, messageId) {
+    module.exports.createGuildIfNotExists(guildId);
+    return db.set(`${guildId}.musicChannelHero`, messageId);
+  },
+
   getGuildChannel: function (guildId) {
     return db.get(`${guildId}.musicChannel`);
   },
 
   getGuildChannelEmbed: function (guildId) {
     return db.get(`${guildId}.musicChannelEmbed`);
+  },
+
+  getGuildChannelHero: function (guildId) {
+    return db.get(`${guildId}.musicChannelHero`);
   },
 
   hasGuildChannel: function (guildId, channelType) {

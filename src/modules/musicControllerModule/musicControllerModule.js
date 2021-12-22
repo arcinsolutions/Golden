@@ -1,15 +1,17 @@
 const {
   resetChannel,
-  sendTemporaryMessage
+  sendTemporaryMessage,
+  setEmbed
 } = require("../channelModule/channelModule");
 const {
   trackLoaded,
   playlistLoaded,
   searchResult
 } = require("../musicPlayerModule/musicPlayerModule");
+const { createEmbed } = require('../embedModule/embedModule')
 
 module.exports = {
-  playPause: function (interaction) {
+  playPause: async function (interaction) {
     const player = interaction.client.manager.get(interaction.guild.id);
     if (!player) return;
 
@@ -19,7 +21,9 @@ module.exports = {
     if (!voiceChannel) return;
     if (voiceChannel.id !== player.voiceChannel) return;
 
-    player.paused ? player.pause(false) : player.pause(true);
+    await player.paused ? player.pause(false) : player.pause(true);
+
+    setEmbed(interaction.guild, player);
   },
 
   stop: function (interaction) {
@@ -51,15 +55,35 @@ module.exports = {
     player.stop();
   },
 
-  playTrack: async function (client, guild, channel, voiceChannel, content, author) {
+  shuffle: function(interaction) {
+    const player = interaction.client.manager.get(interaction.guild.id);
+    if (!player) return;
+
+    const { channel } = interaction.member.voice;
+
+    if (!channel) return;
+    if (channel.id !== player.voiceChannel) return;
+
+    if (player.queue.length < 2) return;
+
+    player.queue.shuffle();
+
+    setEmbed(interaction.guild, player);
+  },
+
+  playTrack: async function (client, guild, channel, voiceChannel, content, author, interaction) {
+
     if (!voiceChannel)
-      return sendTemporaryMessage(channel, "you need to join a voice channel.", 10000);
+      return sendTemporaryMessage(channel, { embeds: [createEmbed('', 'Join a voice channel before requesting tracks.', 'RED')] }, 10000);
 
     const player = await client.manager.create({
       guild: guild.id,
       voiceChannel: voiceChannel.id,
       textChannel: channel.id,
     });
+    
+    if (voiceChannel.id !== player.voiceChannel) 
+      return sendTemporaryMessage(channel, { embeds: [createEmbed('', 'I\'ve to be in the same voice channel with you for requesting tracks.', 'RED')] }, 10000);
 
     if (player.state !== "CONNECTED") player.connect();
 
@@ -73,7 +97,7 @@ module.exports = {
         throw res.exception;
       }
     } catch (err) {
-      return sendTemporaryMessage(channel, `there was an error while searching: ${err.message}`, 10000);
+      return sendTemporaryMessage(channel,  { embeds: [createEmbed('', `Zhere was an error while searching: ${err.message}`, 'RED')] }, 10000);
     }
 
     switch (res.loadType) {
@@ -81,7 +105,7 @@ module.exports = {
         if (!player.queue.current) player.destroy();
         return sendTemporaryMessage(
           channel,
-          `couldn't find what you were looking for`,
+          { embeds: [createEmbed('', 'I couldn\'t find what you were looking for.', 'RED')] },
           10000
         );
 

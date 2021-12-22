@@ -2,12 +2,12 @@ const {
   getGuildChannel,
   setGuildChannel,
   setGuildChannelEmbed,
+  setGuildChannelHero,
 } = require("../../modules/databaseModule/databaseModule");
 const {
   createChannel,
   deleteChannel,
   populateChannel,
-  generateQueue,
   setEmbed,
 } = require("../../modules/channelModule/channelModule");
 
@@ -15,7 +15,9 @@ const {
   playPause,
   stop,
   skip,
+  shuffle
 } = require("../../modules/musicControllerModule/musicControllerModule");
+const { createEmbed } = require("../../modules/embedModule/embedModule");
 
 module.exports = {
   name: "interactionCreate",
@@ -27,7 +29,7 @@ module.exports = {
         // channel setup components
         case "cancelDeleteChannel":
           return interaction.update({
-            content: `Good, I'll stick with the current Channel <#${getGuildChannel(interaction.guild.id)}>`,
+            embeds: [createEmbed('Channel creation cancelled', `Okay, I'll stick with my current channel <#${getGuildChannel(interaction.guild.id)}>`, 'GREY', 'https://cdn.discordapp.com/attachments/922836431045525525/922846375312498698/pop.png')],
             components: [],
           });
 
@@ -36,31 +38,24 @@ module.exports = {
 
           const channel = await createChannel(interaction.guild);
           await setGuildChannel(interaction.guild.id, channel.id);
-          const channelEmbed = await populateChannel(interaction.guild);
+          const { channelHero, channelEmbed } = await populateChannel(interaction.guild);
+          if(channelHero && channelEmbed === undefined) return interaction.deferUpdate();
           setGuildChannelEmbed(interaction.guild.id, channelEmbed.id);
+          setGuildChannelHero(interaction.guild.id, channelHero.id);
 
-          client.manager.players.filter(async (item) => {
-            if (item.guild !== interaction.guild.id) return;
+          client.manager.players.filter(async (player) => {
+            if (player.guild !== interaction.guild.id) return;
 
-            const guild = await client.guilds.fetch(item.guild);
+            const guild = await client.guilds.fetch(player.guild);
             if (guild === undefined) return;
-            const formattedQueue = await generateQueue(item.queue);
 
-            setEmbed(
-              guild,
-              item.queue.current.title,
-              item.queue.current.uri,
-              formattedQueue,
-              item.queue.current.displayThumbnail("maxresdefault"),
-              item.queue.length,
-              item.volume
-            );
+            setEmbed(guild, player);
           });
 
           return interaction.update({
-            content: `I've created my new channel here ${channel}`,
-            components: [],
-          });
+            embeds: [createEmbed('Channel creation successful', `I\'ve created my new channel successfully ${channel}\nJust send any track url or name into the channel and I'll do the rest.`, 'GREEN', 'https://cdn.discordapp.com/attachments/922836431045525525/922846375312498698/pop.png')],
+            components: []
+          })
 
         // music control components
         case "playpause":
@@ -76,6 +71,11 @@ module.exports = {
         case "skip":
           await interaction.deferUpdate();
           skip(interaction);
+          break;
+
+        case "shuffle":
+          await interaction.deferUpdate();
+          shuffle(interaction);
           break;
       }
 
@@ -94,7 +94,7 @@ module.exports = {
       } catch (error) {
         console.error(error);
         await interaction.reply({
-          content: `There was an issue executing the command: \`${error.toString()}\` Please check bots console for more details`,
+          content: `There was an issue executing the command: \`${error.toString()}\` Please report this error to an developer`,
           ephemeral: true,
         });
       }
