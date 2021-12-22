@@ -55,6 +55,7 @@ module.exports = {
         client.commands.set(command.data.name, command);
         commands.push(command.data.toJSON());
       }
+    });
 
       // Deploy commands
 
@@ -83,6 +84,5 @@ module.exports = {
           console.error(error);
         }
       })();
-    });
   },
 };
