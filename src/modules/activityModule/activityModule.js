@@ -10,11 +10,11 @@ module.exports = {
 
       activity.name = activity.name.replace(
         "/guildCacheSize/",
-        client.users.cache.size
+        client.guilds.cache.size
       );
       activity.name = activity.name.replace(
         "/userCacheSize/",
-        client.guilds.cache.size
+        client.users.cache.size
       );
       activity.name = activity.name.replace(
         "/channelCacheSize/",
