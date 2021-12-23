@@ -244,7 +244,7 @@ module.exports = {
       if (track === undefined) continue;
 
       if (i > 25) {
-        formattedQueueArray.push(`\n And **${queue.length - i}** more tracks`);
+        formattedQueueArray.push(`\nAnd **${queue.length - i}** more tracks`);
         formattedQueueArray.push("\n__**Queue:**__");
         return formattedQueueArray.reverse().join("");
       }

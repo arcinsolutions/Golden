@@ -97,7 +97,7 @@ module.exports = {
         throw res.exception;
       }
     } catch (err) {
-      return sendTemporaryMessage(channel,  { embeds: [createEmbed('', `Zhere was an error while searching: ${err.message}`, 'RED')] }, 10000);
+      return sendTemporaryMessage(channel,  { embeds: [createEmbed('', `There was an error while searching: ${err.message}`, 'RED')] }, 10000);
     }
 
     switch (res.loadType) {
