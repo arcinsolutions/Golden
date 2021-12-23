@@ -1,21 +1,14 @@
-const {
-  MessageActionRow,
-  MessageEmbed,
-  MessageButton
-} = require('discord.js');
-const {
-  SlashCommandBuilder
-} = require('@discordjs/builders');
+const { MessageActionRow, MessageEmbed, MessageButton } = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const {
   replyInteractionEmbed,
 } = require('../../modules/channelModule/channelModule');
 
 module.exports = {
-  data: new SlashCommandBuilder()
-    .setName('queue')
-    .setDescription('View queue'),
+  data: new SlashCommandBuilder().setName('queue').setDescription('View queue'),
 
-  async execute(interaction, client) {
+  async execute(interaction, client)
+  {
     let page = 0;
 
     const player = interaction.client.manager.get(interaction.guild.id);
@@ -44,8 +37,10 @@ module.exports = {
     const collector = interaction.channel.createMessageComponentCollector({
       filter,
     });
-    collector.on('collect', async (button) => {
-      switch (button.customId) {
+    collector.on('collect', async (button) =>
+    {
+      switch (button.customId)
+      {
         case 'quePrevious':
           await page--;
           await button.update({
@@ -66,7 +61,8 @@ module.exports = {
     /** -- Button Collector -- */
   },
 
-  QueSetEmbed: function (queue, guildId, page) {
+  QueSetEmbed: function (queue, guildId, page)
+  {
     const embed = new MessageEmbed()
       .setTitle('**🎶 | Queue:**')
       .setTimestamp()
@@ -76,30 +72,28 @@ module.exports = {
     const pageStart = 10 * page;
     const pageEnd = pageStart + 10;
 
-    let tracks = `\`Now Playing.\` ** | [${queue.current.title} by ${queue.current.author}](${queue.current.url})**\n`
+    let tracks = `\`Now Playing.\` ** | [${queue.current.title} by ${queue.current.author}](${queue.current.uri})**\n`;
 
-    queue.slice(pageStart, pageEnd).map((track, i) => {
-      console.log(track);
+    queue.slice(pageStart, pageEnd).map((track, i) =>
+    {
       let pos = i + pageStart + 1;
-      return tracks += `\n\`${pos}.\` ** | [${track.title} by ${
-					track.author
-				}](${track.url})**`
+      return (tracks += `\n\`${pos}.\` ** | [${track.title} by ${track.author}](${track.uri})**`);
     });
 
     embed
       .setDescription(
-        `${tracks}${
-					queue.size > pageEnd
-						? `\nand... \`${queue.totalSize - pageEnd}\` more track(s)`
-						: ''
-				}`
+        `${tracks}${queue.size > pageEnd
+          ? `\nand... \`${queue.totalSize - pageEnd}\` more track(s)`
+          : ''
+        }`
       )
       .setColor('DARK_GREEN');
 
     return embed;
   },
 
-  QueSetButtons: function (queue, guildId, page) {
+  QueSetButtons: function (queue, guildId, page)
+  {
     let previous = false;
     if (page <= 0.1) previous = true;
     else previous = false;
@@ -110,26 +104,25 @@ module.exports = {
     if (currPage >= Math.floor((queue.totalSize - 1) / 10)) next = true;
     else next = false;
 
-    const pages = `Page: ${currPage + 1} / ${
-			Math.floor((queue.totalSize - 1) / 10) + 1
-		}`;
+    const pages = `Page: ${currPage + 1} / ${Math.floor((queue.totalSize - 1) / 10) + 1
+      }`;
 
     const buttons = new MessageActionRow().addComponents(
       new MessageButton()
-      .setCustomId('quePrevious')
-      .setLabel('Previous')
-      .setStyle('PRIMARY')
-      .setDisabled(previous),
+        .setCustomId('quePrevious')
+        .setLabel('Previous')
+        .setStyle('PRIMARY')
+        .setDisabled(previous),
       new MessageButton()
-      .setCustomId('quePages')
-      .setLabel(pages)
-      .setStyle('SUCCESS')
-      .setDisabled(true),
+        .setCustomId('quePages')
+        .setLabel(pages)
+        .setStyle('SUCCESS')
+        .setDisabled(true),
       new MessageButton()
-      .setCustomId('queNext')
-      .setLabel('Next')
-      .setStyle('PRIMARY')
-      .setDisabled(next)
+        .setCustomId('queNext')
+        .setLabel('Next')
+        .setStyle('PRIMARY')
+        .setDisabled(next)
     );
 
     return buttons;
