@@ -26,6 +26,7 @@ client.manager = new Manager({
       port: Number(process.env.PORT),
       password: process.env.PASSWORD,
       retryDelay: 5000,
+      "secure": false
     },
   ],
   plugins: [
