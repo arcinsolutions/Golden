@@ -9,6 +9,7 @@ const {
   deleteChannel,
   populateChannel,
   setEmbed,
+  replyInteractionEmbed
 } = require("../../modules/channelModule/channelModule");
 
 const {
@@ -18,11 +19,17 @@ const {
   shuffle
 } = require("../../modules/musicControllerModule/musicControllerModule");
 const { createEmbed } = require("../../modules/embedModule/embedModule");
+const { checkPermissions } = require("../../modules/permissionModule/permissionModule")
 
 module.exports = {
   name: "interactionCreate",
   once: false,
   async execute(interaction, client) {
+
+    const missingPermissions = checkPermissions(interaction);
+    if(missingPermissions.length > 0)
+      return replyInteractionEmbed(interaction, 'Missing permission', `Golden needs the following permissions in order to work properly:\n\n**${missingPermissions.join(',\n')}** `, 'RED', 'https://cdn.discordapp.com/attachments/922836431045525525/922841155098533928/warn.png');
+
     if (interaction.isButton()) {
       switch (interaction.customId) {
 
