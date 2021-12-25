@@ -21,6 +21,7 @@ module.exports = {
     
     if (!channel) return replyInteractionEmbed(interaction, '', 'Join a voice channel first.', 'RED');
     if (channel.id !== player.voiceChannel) return replyInteractionEmbed(interaction, '', 'I\'ve to be in the same voice channel with you for requesting tracks.', 'RED');
+    if (!player.queue.current.isSeekable) return replyInteractionEmbed(interaction, '', 'This track is not seekable.', 'RED');
 
     const position = player.position;
     const duration = player.queue.current.duration;
