@@ -6,6 +6,8 @@ module.exports = {
     data: new SlashCommandBuilder()
         .setName("np")
         .setDescription("See what is currently being played"),
+
+    alias: ['nowplaying'],
     async execute(interaction, client)
     {
         const player = interaction.client.manager.get(interaction.guild.id);
