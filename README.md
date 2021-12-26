@@ -29,5 +29,6 @@
     ™ and © 2021 The Golden Authors. All Rights Reserved.
     </div>
   <div align="center">
+  <br/>
   <img style="width: 75px;" src="https://cds.spasten.studio/static/spasten_studio_black.svg">
     </div>
