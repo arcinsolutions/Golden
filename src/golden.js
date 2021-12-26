@@ -3,6 +3,7 @@ require("dotenv").config({ path: "./data/.env" });
 const Spotify = require("erela.js-spotify");
 const { Client, Intents } = require("discord.js");
 const { Manager } = require("erela.js");
+const { DiscordTogether } = require('discord-together');
 
 const {
   registerCommands,
@@ -41,6 +42,8 @@ client.manager = new Manager({
     if (guild) guild.shard.send(payload);
   },
 });
+
+client.discordTogether = new DiscordTogether(client);
 
 registerMusicEvents(client);
 registerGenericEvents(client);
