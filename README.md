@@ -13,8 +13,8 @@
 ```
 
 ## This bot is made with:
-> [**erela.js**](https://github.com/MenuDocs/erela.js) by [MenuDocs](https://github.com/MenuDocs)
-> [**erela.js-spotify**](https://github.com/MenuDocs/erela.js-spotify) by [MenuDocs](https://github.com/MenuDocs)
+> - [**erela.js**](https://github.com/MenuDocs/erela.js) by [MenuDocs](https://github.com/MenuDocs)
+> - [**erela.js-spotify**](https://github.com/MenuDocs/erela.js-spotify) by [MenuDocs](https://github.com/MenuDocs)
 
 ## Links
 >[Discord-Server](https://discord.gg/PX28nyVgdP)
