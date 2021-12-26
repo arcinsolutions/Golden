@@ -7,6 +7,7 @@ module.exports = {
 		.setName('help')
 		.setDescription('Replies with a nice Menu!'),
 
+	alias: ['h'],
 	async execute(interaction, client) {
 		let i = 0;
 		const commands = [];
