@@ -15,6 +15,7 @@ const { createEmbed } = require('../embedModule/embedModule');
 
 const { MessageActionRow, MessageEmbed, MessageButton } = require('discord.js');
 const format = require('format-duration');
+const checkLinks = require('check-links');
 
 module.exports = {
 	createChannel: async function (guild) {
@@ -167,8 +168,13 @@ module.exports = {
 				// if there's no thumbnail (e.g. SoundCloud or radio link)
 				channelEmbed.embeds[0].image.url = channelEmbedThumbnail;
 			} else {
-				channelEmbed.embeds[0].image.url =
-					await player.queue.current.displayThumbnail('maxresdefault'); // TODO: check if 404, sometimes maxresdefault doesn't exist, then use hqdefault or smth
+				let trackThumbnail = await player.queue.current.displayThumbnail("maxresdefault");
+				const checkedLinks = await checkLinks([trackThumbnail]);
+
+				if(checkedLinks[trackThumbnail].status === "dead") // there is no maxres thumbnail
+					trackThumbnail = await player.queue.current.displayThumbnail("hqdefault"); // use a lower quality res one instead
+
+				channelEmbed.embeds[0].image.url = trackThumbnail;
 			}
 
 			const loop = player.trackRepeat
