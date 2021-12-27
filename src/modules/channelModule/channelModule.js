@@ -285,6 +285,7 @@ module.exports = {
 	generateQueue: function (queue) {
 		if (queue.length < 1) return embedEmptyQueue;
 
+		let contentLength = 0;
 		const formattedQueueArray = [];
 
 		for (var i = 0; i <= queue.length; i++) {
@@ -292,8 +293,9 @@ module.exports = {
 			let index = i;
 
 			if (track === undefined) continue;
+			contentLength += track.title.length;
 
-			if (i > 25) {
+			if(contentLength > 450) {
 				formattedQueueArray.push(`\nAnd **${queue.length - i}** more tracks`);
 				formattedQueueArray.push('\n__**Queue:**__');
 				return formattedQueueArray.reverse().join('');
