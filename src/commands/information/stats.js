@@ -6,6 +6,7 @@ module.exports = {
     .setName("stats")
     .setDescription("View statistics about Golden"),
 
+  alias: ['status'],
   async execute(interaction, client) {
     const embed = new MessageEmbed();
 
