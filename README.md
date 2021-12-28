@@ -17,9 +17,9 @@
 > - [**erela.js-spotify**](https://github.com/MenuDocs/erela.js-spotify) by [MenuDocs](https://github.com/MenuDocs)
 
 ## Links
-><a href="https://discord.gg/PX28nyVgdP" target="_blank" rel="noopener noreferrer">Discord-Server</a>
+><a href="https://discord.gg/PX28nyVgdP">Discord-Server</a>
 
-><a href="https://status.spasten.studio" target="_blank" rel="noopener noreferrer">Better Uptime</a>
+><a href="https://status.spasten.studio">Better Uptime</a>
 
 <br/>
   <div align="center">
