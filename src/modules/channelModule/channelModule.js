@@ -133,7 +133,7 @@ module.exports = {
 						createEmbed(
 							'Broken channel',
 							'Sorry but it seems like the channel is broken. Please create a new one!',
-							'RED',
+							'DARK_RED',
 							'https://cdn.discordapp.com/attachments/922836431045525525/922841155098533928/warn.png'
 						),
 					],
@@ -214,7 +214,7 @@ module.exports = {
 						createEmbed(
 							'Broken channel',
 							'Sorry but it seems like the channel is broken. Please create a new one!',
-							'RED',
+							'DARK_RED',
 							'https://cdn.discordapp.com/attachments/922836431045525525/922841155098533928/warn.png'
 						),
 					],

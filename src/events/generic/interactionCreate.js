@@ -28,7 +28,7 @@ module.exports = {
 
     const missingPermissions = checkPermissions(interaction);
     if(missingPermissions.length > 0)
-      return replyInteractionEmbed(interaction, 'Missing permission', `Golden needs the following permissions in order to work properly:\n\n**${missingPermissions.join(',\n')}** `, 'RED', 'https://cdn.discordapp.com/attachments/922836431045525525/922841155098533928/warn.png');
+      return replyInteractionEmbed(interaction, 'Missing permission', `Golden needs the following permissions in order to work properly:\n\n**${missingPermissions.join(',\n')}** `, 'DARK_RED', 'https://cdn.discordapp.com/attachments/922836431045525525/922841155098533928/warn.png');
 
     if (interaction.isButton()) {
       switch (interaction.customId) {
@@ -36,7 +36,7 @@ module.exports = {
         // channel setup components
         case "cancelDeleteChannel":
           return interaction.update({
-            embeds: [createEmbed('Channel creation cancelled', `Okay, I'll stick with my current channel <#${getGuildChannel(interaction.guild.id)}>`, 'GREY', 'https://cdn.discordapp.com/attachments/922836431045525525/922846375312498698/pop.png')],
+            embeds: [createEmbed('Channel creation cancelled', `Okay, I'll stick with my current channel <#${getGuildChannel(interaction.guild.id)}>`, 'DARKER_GREY', 'https://cdn.discordapp.com/attachments/922836431045525525/922846375312498698/pop.png')],
             components: [],
           });
 
@@ -60,7 +60,7 @@ module.exports = {
           });
 
           return interaction.update({
-            embeds: [createEmbed('Channel creation successful', `I\'ve created my new channel successfully ${channel}\nJust send any track url or name into the channel and I'll do the rest.`, 'GREEN', 'https://cdn.discordapp.com/attachments/922836431045525525/922846375312498698/pop.png')],
+            embeds: [createEmbed('Channel creation successful', `I\'ve created my new channel successfully ${channel}\nJust send any track url or name into the channel and I'll do the rest.`, 'DARK_GREEN', 'https://cdn.discordapp.com/attachments/922836431045525525/922846375312498698/pop.png')],
             components: []
           })
 

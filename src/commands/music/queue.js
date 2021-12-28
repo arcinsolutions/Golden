@@ -17,7 +17,7 @@ module.exports = {
         interaction,
         'ERROR',
         'Please request a Song before using this Command.',
-        'RED'
+        'DARK_RED'
       );
 
     const queue = player.queue;

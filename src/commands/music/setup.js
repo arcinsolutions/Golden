@@ -4,9 +4,10 @@ const {
   createChannel,
   channelExists,
   populateChannel,
-  setEmbed
+  setEmbed,
+  replyInteractionEmbed
 } = require("../../modules/channelModule/channelModule");
-const { createEmbed } = require("../../modules/embedModule/embedModule")
+const { createEmbed } = require("../../modules/embedModule/embedModule");
 const { MessageActionRow, MessageButton } = require("discord.js");
 
 const setupChannelComponents = new MessageActionRow()
@@ -30,9 +31,15 @@ module.exports = {
     .setName("setup")
     .setDescription("Setup the music channel"),
 
-  async execute(interaction, client) {
+  async execute(interaction, client)
+  {
+    if (!interaction.member.permissions.has("ADMINISTRATOR"))
+    {
+      return replyInteractionEmbed(interaction, 'ERROR', 'You need admin permission to do that.', 'DARK_RED')
+    }
 
-    if (await channelExists(interaction.guild, "MUSIC_CHANNEL")) {
+    if (await channelExists(interaction.guild, "MUSIC_CHANNEL"))
+    {
       return interaction.reply({
         embeds: [createEmbed('Golden already has a channel', 'It looks like, Golden already has a channel on this Discord server. But if you want, you can create a new one at anytime.', 'RED', 'https://cdn.discordapp.com/attachments/922836431045525525/922841155098533928/warn.png')],
         components: [setupChannelComponents],
@@ -46,18 +53,19 @@ module.exports = {
     setGuildChannelEmbed(interaction.guild.id, channelEmbed.id);
     setGuildChannelHero(interaction.guild.id, channelHero.id);
 
-    client.manager.players.filter(async player => { 
-      if(player.guild !== interaction.guild.id) return;
+    client.manager.players.filter(async player =>
+    {
+      if (player.guild !== interaction.guild.id) return;
 
       const guild = await client.guilds.fetch(player.guild);
-      if(guild === undefined) return;
+      if (guild === undefined) return;
 
       setEmbed(guild, player);
     });
 
-  return interaction.reply({
-    embeds: [createEmbed('Channel creation successful', `I\'ve created my new channel successfully ${channel}\nJust send any track url or name into the channel and I'll do the rest.`, 'GREEN', 'https://cdn.discordapp.com/attachments/922836431045525525/922846375312498698/pop.png')],
-    ephemeral: true
-  })
+    return interaction.reply({
+      embeds: [createEmbed('Channel creation successful', `I\'ve created my new channel successfully ${channel}\nJust send any track url or name into the channel and I'll do the rest.`, 'DARK_GREEN', 'https://cdn.discordapp.com/attachments/922836431045525525/922846375312498698/pop.png')],
+      ephemeral: true
+    });
   },
 };

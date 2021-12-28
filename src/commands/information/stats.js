@@ -11,7 +11,7 @@ module.exports = {
     const embed = new MessageEmbed();
 
     const sent = await interaction.reply({
-      embeds: [embed.setDescription(`**Pinging...**`).setColor("RED")],
+      embeds: [embed.setDescription(`**Pinging...**`).setColor('DARK_RED')],
       fetchReply: true,
     });
 

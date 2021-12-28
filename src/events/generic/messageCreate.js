@@ -15,7 +15,7 @@ module.exports = {
       const missingPermissions = checkPermissions(message);
       if(missingPermissions.length > 0) {
         if(missingPermissions.includes("SEND_MESSAGES")) return;
-        return message.channel.send({ embeds: [new MessageEmbed().setTitle('Missing permission').setDescription(`Golden needs the following permissions in order to work properly:\n\n**${missingPermissions.join(',\n')}** `).setColor('RED').setThumbnail('https://cdn.discordapp.com/attachments/922836431045525525/922841155098533928/warn.png')] })
+        return message.channel.send({ embeds: [new MessageEmbed().setTitle('Missing permission').setDescription(`Golden needs the following permissions in order to work properly:\n\n**${missingPermissions.join(',\n')}** `).setColor('DARK_RED').setThumbnail('https://cdn.discordapp.com/attachments/922836431045525525/922841155098533928/warn.png')] })
       }
 
       try {
