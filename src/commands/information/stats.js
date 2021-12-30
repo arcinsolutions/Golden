@@ -81,7 +81,7 @@ module.exports = {
               inline: true,
             },
             {
-              name: "Golden channels",
+              name: "Music channels",
               value: `${getGlobal().stats.goldenChannelCount}`,
               inline: true,
             },
