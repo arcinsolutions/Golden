@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { setGuildChannel, setGuildChannelEmbed, setGuildChannelHero } = require("../../modules/databaseModule/databaseModule");
+const { setGuildChannel, setGuildChannelEmbed, setGuildChannelHero, increaseGlobalChannelCreation } = require("../../modules/databaseModule/databaseModule");
 const {
   createChannel,
   channelExists,
@@ -34,9 +34,7 @@ module.exports = {
   async execute(interaction, client)
   {
     if (!interaction.member.permissions.has("ADMINISTRATOR"))
-    {
-      return replyInteractionEmbed(interaction, 'ERROR', 'You need admin permission to do that.', 'DARK_RED')
-    }
+      return replyInteractionEmbed(interaction, 'Missing permission', 'You need admin permission to do that.', 'DARK_RED', 'https://cdn.discordapp.com/attachments/922836431045525525/922841155098533928/warn.png');
 
     if (await channelExists(interaction.guild, "MUSIC_CHANNEL"))
     {
@@ -63,6 +61,7 @@ module.exports = {
       setEmbed(guild, player);
     });
 
+    increaseGlobalChannelCreation();
     return interaction.reply({
       embeds: [createEmbed('Channel creation successful', `I\'ve created my new channel successfully ${channel}\nJust send any track url or name into the channel and I'll do the rest.`, 'DARK_GREEN', 'https://cdn.discordapp.com/attachments/922836431045525525/922846375312498698/pop.png')],
       ephemeral: true

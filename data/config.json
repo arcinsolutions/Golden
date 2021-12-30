@@ -14,7 +14,7 @@
             "type": "PLAYING"
           },
           {
-            "name": "/channelCacheSize/ Channels",
+            "name": "/goldenChannelCount/ music channels",
             "type": "LISTENING"
           },
           {
@@ -22,7 +22,7 @@
             "type": "WATCHING"
           },
           {
-            "name": "@Botis‽#0666",
+            "name": "@Raved#8329",
             "type": "PLAYING"
           }
     ]

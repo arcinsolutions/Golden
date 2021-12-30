@@ -3,6 +3,7 @@ const {
   setGuildChannel,
   setGuildChannelEmbed,
   setGuildChannelHero,
+  increaseGlobalChannelCreation
 } = require("../../modules/databaseModule/databaseModule");
 const {
   createChannel,
@@ -59,6 +60,7 @@ module.exports = {
             setEmbed(guild, player);
           });
 
+          increaseGlobalChannelCreation();
           return interaction.update({
             embeds: [createEmbed('Channel creation successful', `I\'ve created my new channel successfully ${channel}\nJust send any track url or name into the channel and I'll do the rest.`, 'DARK_GREEN', 'https://cdn.discordapp.com/attachments/922836431045525525/922846375312498698/pop.png')],
             components: []

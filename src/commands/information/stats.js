@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageEmbed } = require("discord.js");
+const { getGlobal } = require("../../modules/databaseModule/databaseModule");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -80,8 +81,8 @@ module.exports = {
               inline: true,
             },
             {
-              name: "Channels",
-              value: `${client.channels.cache.size}`,
+              name: "Golden channels",
+              value: `${getGlobal().stats.goldenChannelCount}`,
               inline: true,
             },
             {
