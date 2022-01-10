@@ -8,7 +8,6 @@ module.exports = {
 
     async execute(interaction, client)
     {
-
         const player = interaction.client.manager.get(interaction.guild.id);
         if (!player) return replyInteractionEmbed(interaction, '', 'Play a track before using this command.', 'DARK_RED');
 

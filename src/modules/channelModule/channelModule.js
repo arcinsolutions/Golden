@@ -77,7 +77,7 @@ module.exports = {
 			.setTitle(embedNoSongPlayingTitle)
 			.setDescription(embedDescription)
 			.setImage(channelEmbedThumbnail)
-			.setFooter(`0 songs in queue | Volume: 100%  | Loop: Disabled`);
+			.setFooter({text: `0 songs in queue | Volume: 100%  | Loop: Disabled`});
 
 		const channelEmbedMessage = await channel
 			.send({
