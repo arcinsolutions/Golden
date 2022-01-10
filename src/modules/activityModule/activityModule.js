@@ -29,8 +29,6 @@ module.exports = {
       client.user.setActivity(`${activity.name}`, {
         type: activity.type,
       });
-
-      await wait(600000);
     }, 60000);
   },
 };
