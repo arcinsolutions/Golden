@@ -8,6 +8,5 @@ module.exports = async (client, player, track, payload) => {
     if(guild === undefined) return;
 
     setEmbed(guild, player);
-    console.log(track.identifier);
     player.set(`previoustrack`, track);
 }
