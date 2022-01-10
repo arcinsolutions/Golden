@@ -3,11 +3,15 @@ const activities = require("../../../data/config.json").activities;
 const { getGlobal } = require("../databaseModule/databaseModule");
 
 module.exports = {
-  setRandomActivities: async function (client) {
-
-    while (true) {
+  setRandomActivities: async function (client)
+  {
+    setInterval(() =>
+    {
       const activity =
         activities[Math.floor(Math.random() * activities.length)];
+
+      client.guilds.fetch();
+      client.users.fetch();
 
       activity.name = activity.name.replace(
         "/guildCacheSize/",
@@ -27,6 +31,6 @@ module.exports = {
       });
 
       await wait(600000);
-    }
+    }, 60000);
   },
 };
