@@ -7,7 +7,7 @@ module.exports = async (client, player) =>
     const previoustrack = player.get("previoustrack");
     const mixURL = `https://www.youtube.com/watch?v=${previoustrack.identifier}&list=RD${previoustrack.identifier}`;
     const response = await player.search(mixURL, previoustrack.requester);
-    return player.play(tracks[Math.floor(Math.random() * response.tracks.length)]);
+    return player.play(response.tracks[Math.floor(Math.random() * response.tracks.length)]);
   }
 
   const guild = await client.guilds.fetch(player.guild);
