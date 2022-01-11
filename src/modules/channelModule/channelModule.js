@@ -43,30 +43,30 @@ module.exports = {
 			.addComponents(
 				new MessageButton()
 					.setCustomId('playpause')
-					.setEmoji('⏯')
+					.setEmoji('<:playpause:930535466908934144>')
 					.setStyle('SECONDARY')
 			)
 			.addComponents(
 				new MessageButton()
 					.setCustomId('stop')
-					.setEmoji('⏹')
+					.setEmoji('<:stop:930538012805333122>')
 					.setStyle('SECONDARY')
 			)
 			.addComponents(
 				new MessageButton()
 					.setCustomId('skip')
-					.setEmoji('⏭')
+					.setEmoji('<:skip:930535779887874110>')
 					.setStyle('SECONDARY')
 			)
 			.addComponents(
 				new MessageButton()
 					.setCustomId('shuffle')
-					.setEmoji('🔀')
+					.setEmoji('<:shuffle:930534110185783386>')
 					.setStyle('SECONDARY')
 			)
 			.addComponents(
 				new MessageButton()
-					.setLabel('Source')
+					.setEmoji('<:youtube:930538416771313755>')
 					.setStyle('LINK')
 					.setURL('https://golden.spasten.studio/')
 					.setDisabled(true)
@@ -151,7 +151,7 @@ module.exports = {
 					for (const button of currComponents.components) {
 						if (button.style === 'LINK') {
 							button.disabled = false;
-							button.url = player.queue.current.uri;
+							button.url = `https://www.youtube.com/watch?v=${player.queue.current.identifier}`;
 						}
 					}
 				} else {
