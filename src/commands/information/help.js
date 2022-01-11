@@ -1,6 +1,7 @@
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { MessageEmbed, MessageButton, MessageActionRow } = require('discord.js');
 var fs = require('fs');
+const { waitForDebugger } = require('inspector');
 
 module.exports = {
 	data: new SlashCommandBuilder()
@@ -8,25 +9,34 @@ module.exports = {
 		.setDescription('Replies with a nice Menu!'),
 
 	alias: ['h'],
-	async execute(interaction, client) {
+	async execute(interaction, client)
+	{
 		let i = 0;
 		const commands = [];
 
 		const categories = fs.readdirSync('./src/commands/');
-		categories.forEach((dir) => {
+		categories.forEach((dir) =>
+		{
 			const commandFiles = fs
 				.readdirSync(`./src/commands/${dir}/`)
 				.filter((file) => file.endsWith('.js'));
 
-			for (const file of commandFiles) {
+			commandFiles.forEach(file =>
+			{
 				const command = require(`../${dir}/${file}`);
+				if (command.data.name == command.alias)
+				{
+					const real = file.split('.');
+					command.data.name = real[0];
+				}
 				const commandData = {
 					name: command.data.name,
 					description: command.data.description,
 					category: dir,
+					alias: command.alias,
 				};
-				commands.push(commandData);
-			}
+				return commands.push(commandData);
+			});
 		});
 
 		const embed = this.HelpSetEmbed(commands, categories[i]);
@@ -47,28 +57,34 @@ module.exports = {
 		const collector = interaction.channel.createMessageComponentCollector({
 			filter,
 		});
-		collector.on('collect', async (button) => {
-			switch (button.customId) {
+		collector.on('collect', async (button) =>
+		{
+			switch (button.customId)
+			{
 				case 'helpPrevious':
 					await (i -= 1);
-					try {
+					try
+					{
 						await button.update({
 							embeds: [this.HelpSetEmbed(commands, categories[i])],
 							components: [this.HelpSetButton(categories, i)],
 						});
-					} catch (e) {
+					} catch (e)
+					{
 						console.error(e);
 					}
 					break;
 
 				case 'helpNext':
 					await (i += 1);
-					try {
+					try
+					{
 						await button.update({
 							embeds: [this.HelpSetEmbed(commands, categories[i])],
 							components: [this.HelpSetButton(categories, i)],
 						});
-					} catch (e) {
+					} catch (e)
+					{
 						console.error(e);
 					}
 					break;
@@ -77,33 +93,48 @@ module.exports = {
 		/** -- Button Collector */
 	},
 
-	HelpSetEmbed: function (commands, category) {
+	HelpSetEmbed: function (commands, category)
+	{
 		const embed = new MessageEmbed()
 			.setTimestamp()
 			.setTitle('**Help Menu**')
 			.setColor('DARK_GREEN');
 
-		const commandsNames = commands.map((description) => {
+		const commandsNames = commands.map((description) =>
+		{
 			let temp = {
 				Name: description.name,
 				Description: description.description,
 				Category: description.category,
+				Alias: description.alias,
 			};
 			return temp;
 		});
 
-		for (var i = 0; i < commandsNames.length; i++) {
+		let text = "";
+
+		for (var i = 0; i < commandsNames.length; i++)
+		{
 			const name = commandsNames[i].Name;
 			const description = commandsNames[i].Description;
-			if (category == commandsNames[i].Category) {
-				embed.addField(`${name}`, `Description: ${description}`, false);
+			const alias = commandsNames[i].Alias;
+			if (category == commandsNames[i].Category)
+			{
+				alias != undefined ?
+					text += `**${name} / ${alias}**\n<:arrowrightbottom:930552463088562246> ${description}\n`
+					: text += `**${name}**\n<:arrowrightbottom:930552463088562246> ${description}\n`;
+				// text += `**${name}**\n<:arrowrightbottom:930552463088562246> ${description}\n`;
+				// if (commandsNames[i].Alias != undefined)
+				// 	text += `<:arrowrightbottom:930552463088562246> ${commandsNames[i].Alias}\n`;
 			}
 		}
+		embed.setDescription(text);
 
 		return embed;
 	},
 
-	HelpSetButton: function (categories, i) {
+	HelpSetButton: function (categories, i)
+	{
 		let previous = false;
 		if (i == 0) previous = true;
 		else previous = false;
