@@ -6,7 +6,7 @@
     "embedEmptyQueue": "\n__**Queue:**__\nJoin a Voice Channel and add a Song or a Playlist",
     "activities": [
         {
-            "name": "/guildCacheSize/ Guilds",
+            "name": "/guildCacheSize/ Servers",
             "type": "LISTENING"
           },
           {
