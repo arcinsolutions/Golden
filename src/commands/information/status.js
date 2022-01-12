@@ -4,10 +4,10 @@ const { getGlobal } = require("../../modules/databaseModule/databaseModule");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("stats")
+    .setName("status")
     .setDescription("View statistics about Golden"),
 
-  alias: ['status'],
+  alias: ['stats'],
   async execute(interaction, client) {
     const embed = new MessageEmbed();
 

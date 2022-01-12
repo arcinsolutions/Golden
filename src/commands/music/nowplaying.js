@@ -4,10 +4,10 @@ const { replyInteractionEmbed, generateProgressBar, calcMsInTime } = require("..
 
 module.exports = {
     data: new SlashCommandBuilder()
-        .setName("np")
+        .setName("nowplaying")
         .setDescription("See what is currently being played"),
 
-    alias: ['nowplaying'],
+    alias: ['np'],
     async execute(interaction, client)
     {
         const player = interaction.client.manager.get(interaction.guild.id);
