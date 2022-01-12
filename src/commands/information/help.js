@@ -13,7 +13,6 @@ module.exports = {
 	{
 		let i = 0;
 		const commands = [];
-
 		const categories = fs.readdirSync('./src/commands/');
 		categories.forEach((dir) =>
 		{
@@ -120,12 +119,13 @@ module.exports = {
 			const alias = commandsNames[i].Alias;
 			if (category == commandsNames[i].Category)
 			{
-				alias != undefined ?
-					text += `**${name} / ${alias}**\n<:arrowrightbottom:930552463088562246> ${description}\n`
-					: text += `**${name}**\n<:arrowrightbottom:930552463088562246> ${description}\n`;
-				// text += `**${name}**\n<:arrowrightbottom:930552463088562246> ${description}\n`;
-				// if (commandsNames[i].Alias != undefined)
-				// 	text += `<:arrowrightbottom:930552463088562246> ${commandsNames[i].Alias}\n`;
+				text += `**${name}`
+				if(alias != undefined) {
+					alias.forEach(alia => {
+						text += ` / ${alia}`
+					});
+				}
+				text += `**\n<:arrowrightbottom:930552463088562246> ${description}\n`
 			}
 		}
 		embed.setDescription(text);
@@ -146,8 +146,8 @@ module.exports = {
 		const buttons = new MessageActionRow().addComponents(
 			new MessageButton()
 				.setCustomId('helpPrevious')
-				.setLabel('Previous')
-				.setStyle('PRIMARY')
+				.setEmoji('<:arrowleft:930879597178929153>')
+				.setStyle('SECONDARY')
 				.setDisabled(previous),
 			new MessageButton()
 				.setCustomId('category')
@@ -156,8 +156,8 @@ module.exports = {
 				.setDisabled(true),
 			new MessageButton()
 				.setCustomId('helpNext')
-				.setLabel('Next')
-				.setStyle('PRIMARY')
+				.setEmoji('<:arrowright:930879597472518145>')
+				.setStyle('SECONDARY')
 				.setDisabled(next)
 		);
 
