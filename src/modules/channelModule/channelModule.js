@@ -143,7 +143,7 @@ module.exports = {
 				? 'LIVE'
 				: format(player.queue.current.duration);
 
-			channelEmbed.embeds[0].title = `🎶 | Now playing: ${player.queue.current.title} by ${player.queue.current.author} [${duration}]`;
+			channelEmbed.embeds[0].title = `<:musicnote:930887306045435934> | Now playing: ${player.queue.current.title} by ${player.queue.current.author} [${duration}]`;
 
 			const currComponents = channelEmbed.components[0];
 			if (currComponents !== undefined) {
