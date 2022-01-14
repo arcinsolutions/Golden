@@ -18,7 +18,8 @@ const format = require('format-duration');
 const checkLinks = require('check-links');
 
 module.exports = {
-	createChannel: async function (guild) {
+	createChannel: async function (guild)
+	{
 		const channel = await guild.channels.create('golden-song-requests', {
 			type: 'text',
 			permissionOverwrites: [
@@ -32,7 +33,8 @@ module.exports = {
 		return channel;
 	},
 
-	populateChannel: async function (guild) {
+	populateChannel: async function (guild)
+	{
 		const guildId = guild.id;
 		const channelId = await getGuildChannel(guildId);
 		const channel = await guild.channels.cache.get(channelId);
@@ -43,30 +45,30 @@ module.exports = {
 			.addComponents(
 				new MessageButton()
 					.setCustomId('playpause')
-					.setEmoji('⏯')
+					.setEmoji('<:playpause:930535466908934144>')
 					.setStyle('SECONDARY')
 			)
 			.addComponents(
 				new MessageButton()
 					.setCustomId('stop')
-					.setEmoji('⏹')
+					.setEmoji('<:stop:930538012805333122>')
 					.setStyle('SECONDARY')
 			)
 			.addComponents(
 				new MessageButton()
 					.setCustomId('skip')
-					.setEmoji('⏭')
+					.setEmoji('<:skip:930535779887874110>')
 					.setStyle('SECONDARY')
 			)
 			.addComponents(
 				new MessageButton()
 					.setCustomId('shuffle')
-					.setEmoji('🔀')
+					.setEmoji('<:shuffle:930534110185783386>')
 					.setStyle('SECONDARY')
 			)
 			.addComponents(
 				new MessageButton()
-					.setLabel('Source')
+					.setEmoji('<:youtube:930538416771313755>')
 					.setStyle('LINK')
 					.setURL('https://golden.spasten.studio/')
 					.setDisabled(true)
@@ -77,7 +79,7 @@ module.exports = {
 			.setTitle(embedNoSongPlayingTitle)
 			.setDescription(embedDescription)
 			.setImage(channelEmbedThumbnail)
-			.setFooter(`0 songs in queue | Volume: 100%  | Loop: Disabled`);
+			.setFooter({ text: `0 songs in queue | Volume: 100%  | Loop: Disabled` });
 
 		const channelEmbedMessage = await channel
 			.send({
@@ -85,12 +87,13 @@ module.exports = {
 				embeds: [channelEmbed],
 				components: [channelControlComponent],
 			})
-			.catch((e) => {});
+			.catch((e) => { });
 
 		return { channelHero: channelHero, channelEmbed: channelEmbedMessage };
 	},
 
-	deleteChannel: async function (guild) {
+	deleteChannel: async function (guild)
+	{
 		const guildId = guild.id;
 		const channelId = await getGuildChannel(guildId);
 		const channel = await guild.channels.cache.get(channelId);
@@ -99,7 +102,8 @@ module.exports = {
 		return channel.delete();
 	},
 
-	channelExists: async function (guild) {
+	channelExists: async function (guild)
+	{
 		const guildId = guild.id;
 		return (
 			hasGuildChannel(guildId) &&
@@ -107,20 +111,23 @@ module.exports = {
 		);
 	},
 
-	channelEmbedExists: async function (guildId, client) {
+	channelEmbedExists: async function (guildId, client)
+	{
 		const embedMessageId = await getGuildChannelEmbed(guildId);
 		const channelId = await getGuildChannel(guildId);
 		const channel = client.channels.cache.get(channelId);
 
 		if (channel === undefined) return false;
 		return (
-			(await channel.messages.fetch(embedMessageId).catch((e) => {})) !==
+			(await channel.messages.fetch(embedMessageId).catch((e) => { })) !==
 			undefined
 		);
 	},
 
-	setEmbed: async function (guild, player) {
-		if (await module.exports.channelExists(guild)) {
+	setEmbed: async function (guild, player)
+	{
+		if (await module.exports.channelExists(guild))
+		{
 			const channelId = await getGuildChannel(guild.id); // ID of the golden channel for this guild
 			const channelEmbedId = await getGuildChannelEmbed(guild.id); // ID of the player Embed inside the golden channel
 
@@ -133,7 +140,7 @@ module.exports = {
 						createEmbed(
 							'Broken channel',
 							'Sorry but it seems like the channel is broken. Please create a new one!',
-							'RED',
+							'DARK_RED',
 							'https://cdn.discordapp.com/attachments/922836431045525525/922841155098533928/warn.png'
 						),
 					],
@@ -143,20 +150,30 @@ module.exports = {
 				? 'LIVE'
 				: format(player.queue.current.duration);
 
-			channelEmbed.embeds[0].title = `🎶 | Now playing: ${player.queue.current.title} by ${player.queue.current.author} [${duration}]`;
+			if (!player.get(`autoplay`))
+				channelEmbed.embeds[0].title = `<:musicnote:930887306045435934> | Now playing: ${player.queue.current.title} by ${player.queue.current.author} [${duration}]`;
+			else
+				channelEmbed.embeds[0].title = `<:auto:931241431979417661> | Now playing: ${player.queue.current.title} by ${player.queue.current.author} [${duration}]`;
 
 			const currComponents = channelEmbed.components[0];
-			if (currComponents !== undefined) {
-				if (player.queue.current.uri !== '') {
-					for (const button of currComponents.components) {
-						if (button.style === 'LINK') {
+			if (currComponents !== undefined)
+			{
+				if (player.queue.current.uri !== '')
+				{
+					for (const button of currComponents.components)
+					{
+						if (button.style === 'LINK')
+						{
 							button.disabled = false;
-							button.url = player.queue.current.uri;
+							button.url = `https://www.youtube.com/watch?v=${player.queue.current.identifier}`;
 						}
 					}
-				} else {
-					for (const button of currComponents.components) {
-						if (button.style === 'LINK') {
+				} else
+				{
+					for (const button of currComponents.components)
+					{
+						if (button.style === 'LINK')
+						{
 							button.disabled = true;
 							button.url = 'https://golden.spasten.studio';
 						}
@@ -164,14 +181,16 @@ module.exports = {
 				}
 			}
 
-			if (player.queue.current.thumbnail === null) {
+			if (player.queue.current.thumbnail === null)
+			{
 				// if there's no thumbnail (e.g. SoundCloud or radio link)
 				channelEmbed.embeds[0].image.url = channelEmbedThumbnail;
-			} else {
+			} else
+			{
 				let trackThumbnail = await player.queue.current.displayThumbnail("maxresdefault");
 				const checkedLinks = await checkLinks([trackThumbnail]);
 
-				if(checkedLinks[trackThumbnail].status === "dead") // there is no maxres thumbnail
+				if (checkedLinks[trackThumbnail].status === "dead") // there is no maxres thumbnail
 					trackThumbnail = await player.queue.current.displayThumbnail("hqdefault"); // use a lower quality res one instead
 
 				channelEmbed.embeds[0].image.url = trackThumbnail;
@@ -180,14 +199,13 @@ module.exports = {
 			const loop = player.trackRepeat
 				? 'Track'
 				: player.queueRepeat
-				? 'Queue'
-				: 'Disabled';
+					? 'Queue'
+					: 'Disabled';
 			const paused = player.paused ? '| Paused' : '';
 
 			channelEmbed.embeds[0].footer = {
-				text: `${player.queue.length} song${
-					player.queue.length === 1 ? '' : 's'
-				} in queue | Volume: ${player.volume}% | Loop: ${loop} ${paused}`,
+				text: `${player.queue.length} song${player.queue.length === 1 ? '' : 's'
+					} in queue | Volume: ${player.volume}% | Loop: ${loop} ${paused}`,
 			};
 
 			channelEmbed.edit({
@@ -198,10 +216,12 @@ module.exports = {
 		}
 	},
 
-	resetChannel: async function (guild, volume) {
+	resetChannel: async function (guild, volume)
+	{
 		if (volume === undefined) volume = 100;
 
-		if (await module.exports.channelExists(guild)) {
+		if (await module.exports.channelExists(guild))
+		{
 			const channelId = await getGuildChannel(guild.id); // ID of the golden channel for this guild
 			const channelEmbedId = await getGuildChannelEmbed(guild.id); // ID of the player Embed inside the golden channel
 
@@ -214,7 +234,7 @@ module.exports = {
 						createEmbed(
 							'Broken channel',
 							'Sorry but it seems like the channel is broken. Please create a new one!',
-							'RED',
+							'DARK_RED',
 							'https://cdn.discordapp.com/attachments/922836431045525525/922841155098533928/warn.png'
 						),
 					],
@@ -223,8 +243,10 @@ module.exports = {
 			channelEmbed.embeds[0].title = embedNoSongPlayingTitle;
 
 			const currComponents = channelEmbed.components[0];
-			for (const button of currComponents.components) {
-				if (button.style === 'LINK') {
+			for (const button of currComponents.components)
+			{
+				if (button.style === 'LINK')
+				{
 					button.disabled = true;
 					button.url = 'https://golden.spasten.studio';
 				}
@@ -243,9 +265,11 @@ module.exports = {
 		}
 	},
 
-	sendTemporaryMessage: async function (channel, content, time) {
-		channel.send(content).then((msg) => {
-			setTimeout(() => msg.delete().catch((e) => {}), time);
+	sendTemporaryMessage: async function (channel, content, time)
+	{
+		channel.send(content).then((msg) =>
+		{
+			setTimeout(() => msg.delete().catch((e) => { }), time);
 		});
 	},
 
@@ -256,16 +280,19 @@ module.exports = {
 		color,
 		thumbnailUrl,
 		ephemeral
-	) {
+	)
+	{
 		if (ephemeral == null) ephemeral = false;
 
-		if (interaction.channel.id === getGuildChannel(interaction.guild.id)) {
+		if (interaction.channel.id === getGuildChannel(interaction.guild.id))
+		{
 			await interaction.reply({
 				embeds: [createEmbed(title, description, color, thumbnailUrl)],
 				ephemeral: ephemeral,
 			});
-			setTimeout(() => interaction.deleteReply().catch((e) => {}), 10000);
-		} else {
+			setTimeout(() => interaction.deleteReply().catch((e) => { }), 10000);
+		} else
+		{
 			await interaction.reply({
 				embeds: [createEmbed(title, description, color, thumbnailUrl)],
 				ephemeral: true,
@@ -273,29 +300,63 @@ module.exports = {
 		}
 	},
 
-	replyInteractionMessage: async function (interaction, message) {
-		if (interaction.channel.id === getGuildChannel(interaction.guild.id)) {
+	replyInteractionEmbed: async function (
+		interaction,
+		description,
+		color,
+		thumbnailUrl,
+		buttons,
+	)
+	{
+		interaction.reply({
+			embeds: [createEmbed('', description, color, thumbnailUrl)],
+			components: [buttons],
+			ephemeral: true,
+		});
+	},
+
+	editInteractionEmbed: async function (interaction, description, color, thumbnailUrl)
+	{
+		try
+		{
+			interaction.editReply({
+				embeds: [createEmbed('', description, color, thumbnailUrl)],
+			});
+		} catch (e)
+		{
+			return;
+		}
+	},
+
+	replyInteractionMessage: async function (interaction, message)
+	{
+		if (interaction.channel.id === getGuildChannel(interaction.guild.id))
+		{
 			await interaction.reply(message);
-			setTimeout(() => interaction.deleteReply().catch((e) => {}), 10000);
-		} else {
+			setTimeout(() => interaction.deleteReply().catch((e) => { }), 10000);
+		} else
+		{
 			await interaction.reply({ content: message, ephemeral: true });
 		}
 	},
 
-	generateQueue: function (queue) {
+	generateQueue: function (queue)
+	{
 		if (queue.length < 1) return embedEmptyQueue;
 
 		let contentLength = 0;
 		const formattedQueueArray = [];
 
-		for (var i = 0; i <= queue.length; i++) {
+		for (var i = 0; i <= queue.length; i++)
+		{
 			const track = queue[i];
 			let index = i;
 
 			if (track === undefined) continue;
 			contentLength += track.title.length;
 
-			if(contentLength > 450) {
+			if (contentLength > 450)
+			{
 				formattedQueueArray.push(`\nAnd **${queue.length - i}** more tracks`);
 				formattedQueueArray.push('\n__**Queue:**__');
 				return formattedQueueArray.reverse().join('');
@@ -311,7 +372,8 @@ module.exports = {
 		return formattedQueueArray.reverse().join('');
 	},
 
-	generateProgressBar: function (ms, duration) {
+	generateProgressBar: function (ms, duration)
+	{
 		const part = Math.floor((ms / duration) * 10);
 		return '═'.repeat(part) + '🟢' + '═'.repeat(10 - part);
 	},

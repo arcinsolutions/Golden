@@ -1,12 +1,12 @@
 {
     "channelHeader": "https://cdn.discordapp.com/attachments/911271717492621343/914553180883406898/bg2v3.png",
     "channelEmbedThumbnail": "https://cdn.discordapp.com/attachments/911271717492621343/912002185267646544/bg4.png",
-    "embedNoSongPlayingTitle": "🎶 | No song is being played",
+    "embedNoSongPlayingTitle": "<:musicnote:930887306045435934> | No song is being played",
     "embedDescription": "[Bot Invite](https://golden.invite.spasten.studio/) | [Dashboard](https://golden.spasten.studio) | [Commands](https://golden.spasten.studio) | [Support](https://discord.gg/PX28nyVgdP)",
     "embedEmptyQueue": "\n__**Queue:**__\nJoin a Voice Channel and add a Song or a Playlist",
     "activities": [
         {
-            "name": "/guildCacheSize/ Guilds",
+            "name": "/guildCacheSize/ Servers",
             "type": "LISTENING"
           },
           {
@@ -14,7 +14,7 @@
             "type": "PLAYING"
           },
           {
-            "name": "/channelCacheSize/ Channels",
+            "name": "/goldenChannelCount/ music channels",
             "type": "LISTENING"
           },
           {
@@ -22,7 +22,7 @@
             "type": "WATCHING"
           },
           {
-            "name": "@Botis‽#0666",
+            "name": "@Raved#8329",
             "type": "PLAYING"
           }
     ]

@@ -1,18 +1,20 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageEmbed } = require("discord.js");
+const { getGlobal } = require("../../modules/databaseModule/databaseModule");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName("stats")
+    .setName("status")
     .setDescription("View statistics about Golden"),
 
-  alias: ['status'],
+  alias: ['stats'],
   async execute(interaction, client) {
     const embed = new MessageEmbed();
 
     const sent = await interaction.reply({
-      embeds: [embed.setDescription(`**Pinging...**`).setColor("RED")],
+      embeds: [embed.setDescription(`**Pinging...**`).setColor('DARK_RED')],
       fetchReply: true,
+      ephemeral: true,
     });
 
     let totalSeconds = client.uptime / 1000;
@@ -29,7 +31,7 @@ module.exports = {
       embeds: [
         embed
           .setDescription("")
-          .addFields(
+          .setFields(
             {
               name: "Uptime",
               value: `${days} day${days === 1 ? "" : "s"}, ${hours} hour${
@@ -80,8 +82,8 @@ module.exports = {
               inline: true,
             },
             {
-              name: "Channels",
-              value: `${client.channels.cache.size}`,
+              name: "Music channels",
+              value: `${getGlobal().stats.goldenChannelCount}`,
               inline: true,
             },
             {

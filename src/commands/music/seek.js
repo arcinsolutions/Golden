@@ -15,13 +15,13 @@ module.exports = {
 
   async execute(interaction, client) {
     const player = interaction.client.manager.get(interaction.guild.id);
-    if (!player) return replyInteractionEmbed(interaction, '', 'Play a track before using this command.', 'RED');
+    if (!player) return replyInteractionEmbed(interaction, '', 'Play a track before using this command.', 'DARK_RED');
 
     const { channel } = interaction.member.voice;
     
-    if (!channel) return replyInteractionEmbed(interaction, '', 'Join a voice channel first.', 'RED');
-    if (channel.id !== player.voiceChannel) return replyInteractionEmbed(interaction, '', 'I\'ve to be in the same voice channel with you for requesting tracks.', 'RED');
-    if (!player.queue.current.isSeekable) return replyInteractionEmbed(interaction, '', 'This track is not seekable.', 'RED');
+    if (!channel) return replyInteractionEmbed(interaction, '', 'Join a voice channel first.', 'DARK_RED');
+    if (channel.id !== player.voiceChannel) return replyInteractionEmbed(interaction, '', 'I\'ve to be in the same voice channel with you for requesting tracks.', 'DARK_RED');
+    if (!player.queue.current.isSeekable) return replyInteractionEmbed(interaction, '', 'This track is not seekable.', 'DARK_RED');
 
     const position = player.position;
     const duration = player.queue.current.duration;
@@ -29,17 +29,17 @@ module.exports = {
     const ms = Number(t.split(':')[0]) * 60 * 1000 + Number(t.split(':')[1]) * 1000;
 
     if(!ms)
-      return replyInteractionEmbed(interaction, '', 'Please give me a timestamp with the following format: 4:20', 'RED');
+      return replyInteractionEmbed(interaction, '', 'Please give me a timestamp with the following format: 4:20', 'DARK_RED');
 
     if (ms >= duration) 
-      return replyInteractionEmbed(interaction, '', 'Can\'t skip so far', 'RED');
+      return replyInteractionEmbed(interaction, '', 'Can\'t skip so far', 'DARK_RED');
 
     player.seek(ms);
 
     if (ms > position) {
-      return replyInteractionEmbed(interaction, '', `Skipped to ${t}`, 'RED');
+      return replyInteractionEmbed(interaction, '', `Skipped to ${t}`, 'DARK_RED');
     } else {
-      return replyInteractionEmbed(interaction, '', `Rewind to ${t}`, 'RED');
+      return replyInteractionEmbed(interaction, '', `Rewind to ${t}`, 'DARK_RED');
     }
     
   },

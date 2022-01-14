@@ -24,8 +24,7 @@ module.exports = {
                 .setRequired(true)
                 .addChoices(games)
         ),
-
-    alias: ['youtube'],
+        
     async execute(interaction, client)
     {
         if (interaction.member.voice.channel)

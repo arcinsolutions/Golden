@@ -12,6 +12,7 @@ const {
 } = require("./modules/handlerModule/handlerModule");
 
 const client = new Client({
+  fetchAllMembers: true,
   shards: "auto",
   intents: [
     Intents.FLAGS.GUILDS,

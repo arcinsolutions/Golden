@@ -74,7 +74,7 @@ module.exports = {
   playTrack: async function (client, guild, channel, voiceChannel, content, author, interaction) {
 
     if (!voiceChannel)
-      return sendTemporaryMessage(channel, { embeds: [createEmbed('', 'Join a voice channel before requesting tracks.', 'RED')] }, 10000);
+      return sendTemporaryMessage(channel, { embeds: [createEmbed('', 'Join a voice channel before requesting tracks.', 'DARK_RED')] }, 10000);
 
     const player = await client.manager.create({
       guild: guild.id,
@@ -83,7 +83,7 @@ module.exports = {
     });
     
     if (voiceChannel.id !== player.voiceChannel) 
-      return sendTemporaryMessage(channel, { embeds: [createEmbed('', 'I\'ve to be in the same voice channel with you for requesting tracks.', 'RED')] }, 10000);
+      return sendTemporaryMessage(channel, { embeds: [createEmbed('', 'I\'ve to be in the same voice channel with you for requesting tracks.', 'DARK_RED')] }, 10000);
 
     if (player.state !== "CONNECTED") player.connect();
 
@@ -97,7 +97,7 @@ module.exports = {
         throw res.exception;
       }
     } catch (err) {
-      return sendTemporaryMessage(channel,  { embeds: [createEmbed('', `There was an error while searching: ${err.message}`, 'RED')] }, 10000);
+      return sendTemporaryMessage(channel,  { embeds: [createEmbed('', `There was an error while searching: ${err.message}`, 'DARK_RED')] }, 10000);
     }
 
     switch (res.loadType) {
@@ -105,7 +105,7 @@ module.exports = {
         if (!player.queue.current) player.destroy();
         return sendTemporaryMessage(
           channel,
-          { embeds: [createEmbed('', 'I couldn\'t find what you were looking for.', 'RED')] },
+          { embeds: [createEmbed('', 'I couldn\'t find what you were looking for.', 'DARK_RED')] },
           10000
         );
 

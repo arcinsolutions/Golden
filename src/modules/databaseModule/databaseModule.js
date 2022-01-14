@@ -60,4 +60,24 @@ module.exports = {
   hasGuildChannel: function (guildId, channelType) {
     return db.get(`${guildId}.musicChannel`) !== "";
   },
+
+  createGlobalIfNotExist: function() {
+    if(!db.get('global'))
+      db.set('global', {
+        stats: {
+          goldenChannelCount: 0
+        }
+      });
+  },
+
+  getGlobal: function() {
+    module.exports.createGlobalIfNotExist();
+    return db.get('global');
+  },
+
+  increaseGlobalChannelCreation: function() {
+    module.exports.createGlobalIfNotExist();
+    db.set('global.stats.goldenChannelCount', db.get('global.stats.goldenChannelCount')+1);
+  }
+
 };

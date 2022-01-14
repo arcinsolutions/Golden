@@ -23,12 +23,12 @@ module.exports = {
   async execute(interaction, client) {
 
     const player = interaction.client.manager.get(interaction.guild.id);
-    if (!player) return replyInteractionEmbed(interaction, '', 'Play a track before using this command.', 'RED');
+    if (!player) return replyInteractionEmbed(interaction, '', 'Play a track before using this command.', 'DARK_RED');
 
     const { channel } = interaction.member.voice;
     
-    if (!channel) return replyInteractionEmbed(interaction, '', 'Join a voice channel first.', 'RED');
-    if (channel.id !== player.voiceChannel) return replyInteractionEmbed(interaction, '', 'I\'ve to be in the same voice channel with you for requesting tracks.', 'RED');
+    if (!channel) return replyInteractionEmbed(interaction, '', 'Join a voice channel first.', 'DARK_RED');
+    if (channel.id !== player.voiceChannel) return replyInteractionEmbed(interaction, '', 'I\'ve to be in the same voice channel with you for requesting tracks.', 'DARK_RED');
 
     let level = interaction.options.getString("level");
 
@@ -42,6 +42,6 @@ module.exports = {
       if (i[1] == level) level = i[0];
     });
 
-    return replyInteractionEmbed(interaction, '', `Set the bassboost level to ${level}`, 'GREEN');
+    return replyInteractionEmbed(interaction, '', `Set the bassboost level to ${level}`, 'DARK_GREEN');
   },
 };

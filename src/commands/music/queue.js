@@ -17,7 +17,7 @@ module.exports = {
         interaction,
         'ERROR',
         'Please request a Song before using this Command.',
-        'RED'
+        'DARK_RED'
       );
 
     const queue = player.queue;
@@ -64,7 +64,7 @@ module.exports = {
   QueSetEmbed: function (queue, guildId, page)
   {
     const embed = new MessageEmbed()
-      .setTitle('**🎶 | Queue:**')
+      .setTitle('**<:playlistmusic:930887305697325148>|Queue**')
       .setTimestamp()
       .setColor('DARK_GREEN');
 
@@ -72,7 +72,7 @@ module.exports = {
     const pageStart = 10 * page;
     const pageEnd = pageStart + 10;
 
-    let tracks = `\`Now Playing.\` ** | [${queue.current.title} by ${queue.current.author}](${queue.current.uri})**\n`;
+    let tracks = `\`Now Playing.\` ** | [${queue.current.title} by ${queue.current.author}](${queue.current.uri})**`;
 
     queue.slice(pageStart, pageEnd).map((track, i) =>
     {
@@ -110,18 +110,18 @@ module.exports = {
     const buttons = new MessageActionRow().addComponents(
       new MessageButton()
         .setCustomId('quePrevious')
-        .setLabel('Previous')
-        .setStyle('PRIMARY')
+        .setEmoji('<:arrowleft:930879597178929153>')
+        .setStyle('SECONDARY')
         .setDisabled(previous),
       new MessageButton()
         .setCustomId('quePages')
         .setLabel(pages)
-        .setStyle('SUCCESS')
+        .setStyle('SECONDARY')
         .setDisabled(true),
       new MessageButton()
         .setCustomId('queNext')
-        .setLabel('Next')
-        .setStyle('PRIMARY')
+        .setEmoji('<:arrowright:930879597472518145>')
+        .setStyle('SECONDARY')
         .setDisabled(next)
     );
 
