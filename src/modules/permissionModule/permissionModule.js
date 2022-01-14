@@ -7,6 +7,7 @@ const permissions = [
   "CONNECT",
   "SPEAK",
   "USE_VAD",
+  "MANAGE_MESSAGES"
 ];
 
 module.exports = {
