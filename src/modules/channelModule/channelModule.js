@@ -279,40 +279,49 @@ module.exports = {
 		description,
 		color,
 		thumbnailUrl,
-		ephemeral
+		ephemeral,
+		buttons
 	)
 	{
 		if (ephemeral == null) ephemeral = false;
 
-		if (interaction.channel.id === getGuildChannel(interaction.guild.id))
-		{
-			await interaction.reply({
-				embeds: [createEmbed(title, description, color, thumbnailUrl)],
-				ephemeral: ephemeral,
-			});
-			setTimeout(() => interaction.deleteReply().catch((e) => { }), 10000);
-		} else
-		{
-			await interaction.reply({
-				embeds: [createEmbed(title, description, color, thumbnailUrl)],
-				ephemeral: true,
-			});
-		}
-	},
+		if (buttons == null) { // TODO: optimize this
 
-	replyInteractionEmbed: async function (
-		interaction,
-		description,
-		color,
-		thumbnailUrl,
-		buttons,
-	)
-	{
-		interaction.reply({
-			embeds: [createEmbed('', description, color, thumbnailUrl)],
-			components: [buttons],
-			ephemeral: true,
-		});
+			if (interaction.channel.id === getGuildChannel(interaction.guild.id))
+			{
+				await interaction.reply({
+					embeds: [createEmbed(title, description, color, thumbnailUrl)],
+					ephemeral: ephemeral,
+				});
+				setTimeout(() => interaction.deleteReply().catch((e) => { }), 10000);
+			} else
+			{
+				await interaction.reply({
+					embeds: [createEmbed(title, description, color, thumbnailUrl)],
+					ephemeral: true,
+				});
+			}
+
+		} else {
+
+			if (interaction.channel.id === getGuildChannel(interaction.guild.id))
+			{
+				await interaction.reply({
+					embeds: [createEmbed(title, description, color, thumbnailUrl)],
+					components: [buttons],
+					ephemeral: ephemeral,
+				});
+				setTimeout(() => interaction.deleteReply().catch((e) => { }), 10000);
+			} else
+			{
+				await interaction.reply({
+					embeds: [createEmbed(title, description, color, thumbnailUrl)],
+					components: [buttons],
+					ephemeral: true,
+				});
+			}
+
+		}
 	},
 
 	editInteractionEmbed: async function (interaction, description, color, thumbnailUrl)
