@@ -14,6 +14,7 @@ module.exports = {
     const sent = await interaction.reply({
       embeds: [embed.setDescription(`**Pinging...**`).setColor('DARK_RED')],
       fetchReply: true,
+      ephemeral: true,
     });
 
     let totalSeconds = client.uptime / 1000;
@@ -30,7 +31,7 @@ module.exports = {
       embeds: [
         embed
           .setDescription("")
-          .addFields(
+          .setFields(
             {
               name: "Uptime",
               value: `${days} day${days === 1 ? "" : "s"}, ${hours} hour${
