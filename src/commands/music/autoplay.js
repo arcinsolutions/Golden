@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { replyInteractionEmbed } = require("../../modules/channelModule/channelModule");
+const { replyInteractionEmbed, setEmbed } = require("../../modules/channelModule/channelModule");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -18,6 +18,7 @@ module.exports = {
 
         player.set(`autoplay`, !player.get(`autoplay`))
 
-        return replyInteractionEmbed(interaction, '', `Toggled Autoplay to ${player.get(`autoplay`)}`, 'DARK_GREEN');
+        setEmbed(interaction.guild, player);
+        return replyInteractionEmbed(interaction, '', `**${player.get(`autoplay`) ? "activated" : "deactivated"}** Autoplay`, 'DARK_GREEN');
     },
 };
