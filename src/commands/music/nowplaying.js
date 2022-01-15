@@ -1,7 +1,7 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageActionRow, MessageButton } = require("discord.js");
 const formatDuration = require("format-duration");
-const { replyInteractionEmbed, generateProgressBar, calcMsInTime, editInteractionEmbed } = require("../../modules/channelModule/channelModule");
+const { replyInteractionEmbed, generateProgressBar, calcMsInTime, editBtnInteractionEmbed, replyBtnInteractionEmbed } = require("../../modules/channelModule/channelModule");
 
 module.exports = {
     data: new SlashCommandBuilder()
@@ -14,9 +14,7 @@ module.exports = {
         const player = interaction.client.manager.get(interaction.guild.id);
         if (!player) return replyInteractionEmbed(interaction, '', 'Play a track before using this command.', 'DARK_RED');
 
-        await NPEmbed(interaction, player);
-
-        // return editInteractionEmbed(interaction, `<:musicnote:930887306045435934> **Now Playing:** [${queue.current.title} by ${queue.current.author}](${queue.current.uri})\n**Duration:** ${bar} ${formatDuration(player.position)}|${formatDuration(queue.current.duration)}\n**Requested by:** ${queue.current.requester}`, `DARK_GREEN`, player.queue.current.displayThumbnail("mqdefault"))
+        return await NPEmbed(interaction, player);
     },
 };
 
@@ -57,15 +55,14 @@ async function NPEmbed(interaction, player)
 					.setURL('https://www.youtube.com/watch?v=' + queue.current.identifier)
 			);
 
-    const Temp = await replyInteractionEmbed(interaction, '', `<:musicnote:930887306045435934> **Now Playing:** [${queue.current.title} by ${queue.current.author}](${queue.current.uri})\n**Duration:** ${bar} ${formatDuration(player.position)}|${formatDuration(queue.current.duration)}\n**Requested by:** ${queue.current.requester}`, `DARK_GREEN`, player.queue.current.displayThumbnail("mqdefault"), channelControlComponent);
+    await replyBtnInteractionEmbed(interaction, '', `<:musicnote:930887306045435934> **Now Playing:** [${queue.current.title} by ${queue.current.author}](${queue.current.uri})\n**Duration:** ${bar} ${formatDuration(player.position)}|${formatDuration(queue.current.duration)}\n**Requested by:** ${queue.current.requester}`, `DARK_GREEN`, queue.current.displayThumbnail("mqdefault"), channelControlComponent);
 
-    Temp
     setInterval(() =>
     {
         const pos = formatDuration(player.position)
+		if (queue.current == undefined || interaction == undefined || player.position >= (queue.current.duration-10000)) return;
         bar = generateProgressBar(player.position, queue.current.duration);
-        editInteractionEmbed(interaction, `<:musicnote:930887306045435934> **Now Playing:** [${queue.current.title} by ${queue.current.author}](${queue.current.uri})\n**Duration:** ${bar} ${pos}|${formatDuration(queue.current.duration)}\n**Requested by:** ${queue.current.requester}`, `DARK_GREEN`, player.queue.current.displayThumbnail("mqdefault"));
-        if (interaction == undefined) return;
+        editBtnInteractionEmbed(interaction, '', `<:musicnote:930887306045435934> **Now Playing:** [${queue.current.title} by ${queue.current.author}](${queue.current.uri})\n**Duration:** ${bar} ${pos}|${formatDuration(queue.current.duration)}\n**Requested by:** ${queue.current.requester}`, `DARK_GREEN`, queue.current.displayThumbnail("mqdefault"));
     }, 5000);
 
 };
