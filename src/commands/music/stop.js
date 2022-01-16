@@ -13,7 +13,7 @@ module.exports = {
 
     const { channel } = interaction.member.voice;
 
-    if (!channel) return replyInteraction(interaction, '', 'Join a voice channel first.', 'DARK_RED');
+    if (!channel) return replyInteractionEmbed(interaction, '', 'Join a voice channel first.', 'DARK_RED');
     if (channel.id !== player.voiceChannel) return replyInteractionEmbed(interaction, '', 'I\'ve to be in the same voice channel with you for requesting tracks.', 'DARK_RED');
 
     player.destroy();
