@@ -16,8 +16,6 @@ module.exports = {
         guild.members.fetch();
       });
 
-      console.log(client.users.cache.size);
-
       activity.name = activity.name.replace(
         "/guildCacheSize/",
         client.guilds.cache.size
@@ -34,6 +32,6 @@ module.exports = {
       client.user.setActivity(`${activity.name}`, {
         type: activity.type,
       });
-    }, 6000);
+    }, 60000);
   },
 };
