@@ -21,7 +21,6 @@ module.exports = async (client, player) =>
           if (song.identifier == prevSong.identifier && song.identifier != prevprevtrack.identifier)
             equalSongs.push(song);
         });
-        console.log(equalSongs.length);
       });
 
       if (equalSongs.length != 0)
