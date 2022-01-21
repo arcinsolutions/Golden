@@ -1,5 +1,5 @@
 const {
-  hasGuildChannel,
+  guildExists,
   getGuildChannel,
   getGuildChannelEmbed,
 } = require('../databaseModule/databaseModule');
@@ -106,8 +106,8 @@ module.exports = {
   {
     const guildId = guild.id;
     return (
-      hasGuildChannel(guildId) &&
-      guild.channels.cache.get(getGuildChannel(guildId)) !== undefined
+      await guildExists(guildId) &&
+      guild.channels.cache.get(await getGuildChannel(guildId)) !== undefined
     );
   },
 

@@ -1,7 +1,8 @@
 const { resetChannel, channelEmbedExists } = require('../../modules/channelModule/channelModule');
-const { getAll } = require('../../modules/databaseModule/databaseModule');
+const { getAllGuilds } = require('../../modules/databaseModule/databaseModule');
 const { setRandomActivities } = require('../../modules/activityModule/activityModule');
 const { Uptime } = require('better-uptime');
+const { createTables } = require('../../modules/databaseModule/databaseModule')
 
 module.exports = {
     name: 'ready',
@@ -19,16 +20,17 @@ module.exports = {
         );
         console.log('╰' + '─'.repeat(65) + '╯');
 
-        const registeredGuilds = getAll();
+        await createTables(); // create tables if not exists
+
+        const registeredGuilds = await getAllGuilds();
 
         for (const guild of registeredGuilds)
         {
-            const guildId = guild.ID;
-            const cachedGuild = client.guilds.cache.get(guildId);
+            const guildId = guild.guildId;
+            const cachedGuild = await client.guilds.cache.get(guildId);
+
             if (cachedGuild !== undefined && await channelEmbedExists(guildId, client))
-            {
                 resetChannel(cachedGuild);
-            }
         }
 
         if (process.env.URL.includes('http'))

@@ -3,7 +3,7 @@ const {
   setGuildChannel,
   setGuildChannelEmbed,
   setGuildChannelHero,
-  increaseGlobalChannelCreation
+  increaseChannelCount
 } = require("../../modules/databaseModule/databaseModule");
 const {
   createChannel,
@@ -37,7 +37,7 @@ module.exports = {
         // channel setup components
         case "cancelDeleteChannel":
           return interaction.update({
-            embeds: [createEmbed('Channel creation cancelled', `Okay, I'll stick with my current channel <#${getGuildChannel(interaction.guild.id)}>`, 'DARKER_GREY', 'https://cdn.discordapp.com/attachments/922836431045525525/922846375312498698/pop.png')],
+            embeds: [createEmbed('Channel creation cancelled', `Okay, I'll stick with my current channel <#${await getGuildChannel(interaction.guild.id)}>`, 'DARKER_GREY', 'https://cdn.discordapp.com/attachments/922836431045525525/922846375312498698/pop.png')],
             components: [],
           });
 
@@ -45,7 +45,7 @@ module.exports = {
           await deleteChannel(interaction.guild);
 
           const channel = await createChannel(interaction.guild);
-          await setGuildChannel(interaction.guild.id, channel.id);
+          await setGuildChannel(interaction.guild.id, channel.id, interaction.guild.name);
           const { channelHero, channelEmbed } = await populateChannel(interaction.guild);
           if(channelHero && channelEmbed === undefined) return interaction.deferUpdate();
           setGuildChannelEmbed(interaction.guild.id, channelEmbed.id);
@@ -60,7 +60,7 @@ module.exports = {
             setEmbed(guild, player);
           });
 
-          increaseGlobalChannelCreation();
+          increaseChannelCount();
           return interaction.update({
             embeds: [createEmbed('Channel creation successful', `I\'ve created my new channel successfully ${channel}\nJust send any track url or name into the channel and I'll do the rest.`, 'DARK_GREEN', 'https://cdn.discordapp.com/attachments/922836431045525525/922846375312498698/pop.png')],
             components: []

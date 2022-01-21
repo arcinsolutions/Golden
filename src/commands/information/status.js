@@ -26,6 +26,7 @@ module.exports = {
     let seconds = Math.floor(totalSeconds % 60);
 
     const usage = process.cpuUsage();
+    const global = await getGlobal();
 
     interaction.editReply({
       embeds: [
@@ -83,7 +84,7 @@ module.exports = {
             },
             {
               name: "Music channels",
-              value: `${getGlobal().stats.goldenChannelCount}`,
+              value: `${global.value}`,
               inline: true,
             },
             {

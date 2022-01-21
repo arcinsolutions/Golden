@@ -25,19 +25,19 @@ const client = new Client({
 client.manager = new Manager({
   nodes: [
     {
-      host: process.env.HOST,
-      port: Number(process.env.PORT),
-      password: process.env.PASSWORD,
+      host: process.env.LL_HOST,
+      port: Number(process.env.LL_PORT),
+      password: process.env.LL_PASSWORD,
       retryDelay: 5000,
-      secure: Boolean(process.env.SECURE)
+      secure: process.env.LL_SECURE === "true" ? true : false
     },
   ],
-  plugins: [
+  /*plugins: [
     new Spotify({
       clientID: process.env.CLIENTID,
       clientSecret: process.env.CLIENTSECRET,
     }),
-  ],
+  ],*/
   autoPlay: true,
   send: (id, payload) =>
   {

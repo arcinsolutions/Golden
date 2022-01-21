@@ -4,8 +4,9 @@ const { getGlobal } = require("../databaseModule/databaseModule");
 module.exports = {
   setRandomActivities: async function (client)
   {
-    setInterval(() =>
+    setInterval(async () =>
     {
+      const global = await getGlobal();
       const activity =
         activities[Math.floor(Math.random() * activities.length)];
 
@@ -26,7 +27,7 @@ module.exports = {
       );
       activity.name = activity.name.replace(
         "/goldenChannelCount/",
-        getGlobal().stats.goldenChannelCount
+        global.value
       );
 
       client.user.setActivity(`${activity.name}`, {
