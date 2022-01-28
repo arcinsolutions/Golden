@@ -32,12 +32,12 @@ client.manager = new Manager({
       secure: process.env.LL_SECURE === "true" ? true : false
     },
   ],
-  /*plugins: [
+  plugins: [
     new Spotify({
       clientID: process.env.CLIENTID,
       clientSecret: process.env.CLIENTSECRET,
     }),
-  ],*/
+  ],
   autoPlay: true,
   send: (id, payload) =>
   {
