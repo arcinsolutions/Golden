@@ -370,4 +370,16 @@ module.exports = {
     const part = Math.floor((ms / duration) * 10);
     return '═'.repeat(part) + '🟢' + '═'.repeat(10 - part);
   },
+
+  countAllListeningMembers: async function (client) {
+    let members = 0;
+    for (const [guild, playerData] of client.manager.players.entries()) {
+      const cachedGuild = await client.guilds.cache.get(guild);
+      const channel = await cachedGuild.channels.cache.get(playerData.voiceChannel);
+      members += channel.members.size;
+
+      if (channel.members.has(client.user.id)) members--; // If Golden is already in the music channel: do not count him
+    }
+    return members;
+  }
 };

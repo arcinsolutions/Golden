@@ -1,5 +1,5 @@
-const { resetChannel, channelEmbedExists } = require('../../modules/channelModule/channelModule');
-const { getAllGuilds } = require('../../modules/databaseModule/databaseModule');
+const { resetChannel, channelEmbedExists, countAllListeningMembers } = require('../../modules/channelModule/channelModule');
+const { getAllGuilds, setActiveListeners, setActivePlayers } = require('../../modules/databaseModule/databaseModule');
 const { setRandomActivities } = require('../../modules/activityModule/activityModule');
 const { Uptime } = require('better-uptime');
 const { createTables } = require('../../modules/databaseModule/databaseModule')
@@ -39,5 +39,10 @@ module.exports = {
                 time: 3,
                 time_type: 'minute', //millisecond, minute, hour, day, week
             });
+        
+        if (process.env.GRAFANA_ENABLED) {
+            await setActivePlayers(client.manager.players.size)
+            await setActiveListeners(await countAllListeningMembers(client))
+        }
     }
 };

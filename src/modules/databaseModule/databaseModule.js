@@ -29,7 +29,18 @@ module.exports = {
                                     musicChannelId VARCHAR(255),\
                                     musicChannelHeroId VARCHAR(255),\
                                     musicChannelEmbedId VARCHAR(255)\
-                                  );", [1, "mariadb"]);
+                                  );\
+                                  CREATE TABLE IF NOT EXISTS grafana(\
+                                    id VARCHAR(255) UNIQUE NOT NULL,\
+                                    value INT NOT NULL,\
+                                    lastUpdated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\
+                                    );\
+                                    INSERT IGNORE INTO grafana\
+                                    (id, value) VALUES ('activePlayers', 0)\
+                                  ;\
+                                  INSERT IGNORE INTO grafana\
+                                    (id, value) VALUES ('activeListeners', 0)\
+                                  ;", [1, "mariadb"]);
 
     } catch (err) {
       console.log(err)
@@ -181,6 +192,32 @@ module.exports = {
     } finally {
       if (conn) return conn.end();
     }
-  }
+  },
 
+  setActivePlayers: async function(amount) {
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      await conn.query(`UPDATE grafana SET value = ${amount} WHERE id = 'activePlayers';`, [1, "mariadb"]);
+    } catch (err) {
+      console.log(err)
+      throw err;
+    } finally {
+      if (conn) return conn.end();
+    }
+  },
+  
+  setActiveListeners: async function(amount) {
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      await conn.query(`UPDATE grafana SET value = ${amount} WHERE id = 'activeListeners';`, [1, "mariadb"]);
+    } catch (err) {
+      console.log(err)
+      throw err;
+    } finally {
+      if (conn) return conn.end();
+    }
+
+  }
 }
