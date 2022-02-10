@@ -1,5 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { setGuildChannel, setGuildChannelEmbed, setGuildChannelHero, increaseChannelCount } = require("../../modules/databaseModule/databaseModule");
+const { setGuildChannel, setGuildChannelEmbed, setGuildChannelHero, increaseChannelsCreated } = require("../../modules/databaseModule/databaseModule");
 const {
   createChannel,
   channelExists,
@@ -61,7 +61,8 @@ module.exports = {
       setEmbed(guild, player);
     });
 
-    increaseChannelCount();
+    if (process.env.ANALYTICS_ENABLED)
+      increaseChannelsCreated();
     return interaction.reply({
       embeds: [createEmbed('Channel creation successful', `I\'ve created my new channel successfully ${channel}\nJust send any track url or name into the channel and I'll do the rest.`, 'DARK_GREEN', 'https://cdn.discordapp.com/attachments/922836431045525525/922846375312498698/pop.png')],
       ephemeral: true

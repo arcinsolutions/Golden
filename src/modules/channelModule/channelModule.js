@@ -4,13 +4,6 @@ const {
   getGuildChannelEmbed,
 } = require('../databaseModule/databaseModule');
 
-const {
-  channelHeader,
-  channelEmbedThumbnail,
-  embedNoSongPlayingTitle,
-  embedDescription,
-  embedEmptyQueue,
-} = require('../../../data/config.json');
 const { createEmbed } = require('../embedModule/embedModule');
 
 const { MessageActionRow, MessageEmbed, MessageButton } = require('discord.js');
@@ -39,7 +32,7 @@ module.exports = {
     const channelId = await getGuildChannel(guildId);
     const channel = await guild.channels.cache.get(channelId);
 
-    const channelHero = await channel.send(channelHeader);
+    const channelHero = await channel.send(process.env.GOLDEN_HEADER);
 
     const channelControlComponent = new MessageActionRow()
       .addComponents(
@@ -76,14 +69,14 @@ module.exports = {
 
     const channelEmbed = new MessageEmbed()
       .setColor('DARK_BUT_NOT_BLACK')
-      .setTitle(embedNoSongPlayingTitle)
-      .setDescription(embedDescription)
-      .setImage(channelEmbedThumbnail)
+      .setTitle(process.env.GOLDEN_EMBED_TITLE)
+      .setDescription(process.env.GOLDEN_EMBED_DESCRIPTION)
+      .setImage(process.env.GOLDEN_EMBED_THUMBNAIL)
       .setFooter({ text: `0 songs in queue | Volume: 100%  | Loop: Disabled` });
 
     const channelEmbedMessage = await channel
       .send({
-        content: embedEmptyQueue,
+        content: process.env.GOLDEN_EMBED_MESSAGE,
         embeds: [channelEmbed],
         components: [channelControlComponent],
       })
@@ -184,7 +177,7 @@ module.exports = {
       if (player.queue.current.thumbnail === null)
       {
         // if there's no thumbnail (e.g. SoundCloud or radio link)
-        channelEmbed.embeds[0].image.url = channelEmbedThumbnail;
+        channelEmbed.embeds[0].image.url = process.env.GOLDEN_EMBED_THUMBNAIL;
       } else
       {
         let trackThumbnail = await player.queue.current.displayThumbnail("maxresdefault");
@@ -240,7 +233,7 @@ module.exports = {
           ],
         }); // e.g. embed was removed from message manually
 
-      channelEmbed.embeds[0].title = embedNoSongPlayingTitle;
+      channelEmbed.embeds[0].title = process.env.GOLDEN_EMBED_TITLE;
 
       const currComponents = channelEmbed.components[0];
       for (const button of currComponents.components)
@@ -252,13 +245,13 @@ module.exports = {
         }
       }
 
-      channelEmbed.embeds[0].image = { url: channelEmbedThumbnail };
+      channelEmbed.embeds[0].image = { url: process.env.GOLDEN_EMBED_THUMBNAIL };
       channelEmbed.embeds[0].footer = {
         text: `0 songs in queue | Volume: ${volume}% | Loop: Disabled`,
       };
 
       channelEmbed.edit({
-        content: embedEmptyQueue,
+        content: process.env.GOLDEN_EMBED_MESSAGE,
         embeds: [new MessageEmbed(channelEmbed.embeds[0])],
         components: [new MessageActionRow(currComponents)],
       });
@@ -335,7 +328,7 @@ module.exports = {
 
   generateQueue: function (queue)
   {
-    if (queue.length < 1) return embedEmptyQueue;
+    if (queue.length < 1) return process.env.GOLDEN_EMBED_MESSAGE;
 
     let contentLength = 0;
     const formattedQueueArray = [];

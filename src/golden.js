@@ -1,4 +1,4 @@
-require("dotenv").config({ path: "./data/.env" });
+const env = require("dotenv").config({ path: "./data/config.env" });
 
 const Spotify = require("erela.js-spotify");
 const { Client, Intents } = require("discord.js");
@@ -11,8 +11,10 @@ const {
   registerMusicEvents
 } = require("./modules/handlerModule/handlerModule");
 
+if (!env.parsed)
+  return console.log('Fatal: config.env file missing or unreadable\nSetup instructions at https://github.com/spastenstudio/Golden')
+
 const client = new Client({
-  fetchAllMembers: true,
   shards: "auto",
   intents: [
     Intents.FLAGS.GUILDS,
@@ -22,25 +24,26 @@ const client = new Client({
   ],
 });
 
+const plugins = []
+if (process.env.SPOTIFY_ENABLED === 'true')
+  plugins.push(new Spotify({
+    clientID: process.env.SPOTIFY_CLIENTID,
+    clientSecret: process.env.SPOTIFY_CLIENTSECRET,
+  }))
+
 client.manager = new Manager({
   nodes: [
     {
-      host: process.env.LL_HOST,
-      port: Number(process.env.LL_PORT),
-      password: process.env.LL_PASSWORD,
+      host: process.env.LAVALINK_HOST,
+      port: Number(process.env.LAVALINK_PORT),
+      password: process.env.LAVALINK_PASSWORD,
       retryDelay: 5000,
-      secure: process.env.LL_SECURE === "true" ? true : false
+      secure: process.env.LAVALINK_SSL === "true" ? true : false
     },
   ],
-  plugins: [
-    new Spotify({
-      clientID: process.env.CLIENTID,
-      clientSecret: process.env.CLIENTSECRET,
-    }),
-  ],
+  plugins,
   autoPlay: true,
-  send: (id, payload) =>
-  {
+  send: (id, payload) => {
     const guild = client.guilds.cache.get(id);
     if (guild) guild.shard.send(payload);
   },
@@ -50,6 +53,6 @@ client.discordTogether = new DiscordTogether(client);
 
 registerMusicEvents(client);
 registerGenericEvents(client);
-registerCommands(client, false);
+registerCommands(client);
 
-client.login(process.env.TOKEN);
+client.login(process.env.DISCORD_TOKEN);

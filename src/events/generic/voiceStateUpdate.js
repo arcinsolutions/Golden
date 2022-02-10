@@ -5,7 +5,7 @@ module.exports = {
     name: 'voiceStateUpdate',
     once: false,
     async execute(oldUser, newUser, client) {
-        if (!process.env.GRAFANA_ENABLED) return;
+        if (!process.env.ANALYTICS_ENABLED) return;
 
         if (newUser.member.user.bot) {
             const player = await client.manager.get(newUser.guild.id);

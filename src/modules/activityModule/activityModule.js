@@ -1,21 +1,28 @@
-const activities = require("../../../data/config.json").activities;
-const { getGlobal } = require("../databaseModule/databaseModule");
+const { getChannelsCreated } = require("../databaseModule/databaseModule");
+
+const activities = [
+      {
+          "name": "/guildCacheSize/ Servers",
+          "type": "LISTENING"
+        },
+        {
+          "name": "with /userCacheSize/ Members",
+          "type": "PLAYING"
+        },
+        {
+          "name": "/goldenChannelsCreated/ music channels",
+          "type": "LISTENING"
+        }
+  ]
 
 module.exports = {
   setRandomActivities: async function (client)
   {
     setInterval(async () =>
     {
-      const global = await getGlobal();
+      const channelsCreated = await getChannelsCreated();
       const activity =
         activities[Math.floor(Math.random() * activities.length)];
-
-      client.guilds.fetch();
-
-      client.guilds.cache.forEach(guild =>
-      {
-        guild.members.fetch();
-      });
 
       activity.name = activity.name.replace(
         "/guildCacheSize/",
@@ -23,11 +30,11 @@ module.exports = {
       );
       activity.name = activity.name.replace(
         "/userCacheSize/",
-        client.users.cache.size
+        client.guilds.cache.map((g) => g.memberCount).reduce((a, c) => a + c)
       );
       activity.name = activity.name.replace(
-        "/goldenChannelCount/",
-        global.value
+        "/goldenChannelsCreated/",
+        channelsCreated.value
       );
 
       client.user.setActivity(`${activity.name}`, {

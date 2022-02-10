@@ -1,6 +1,7 @@
 const mariadb = require('mariadb');
 const pool = mariadb.createPool({
   host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
   user: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_DATABASE,
@@ -14,14 +15,11 @@ module.exports = {
     let conn;
     try {
       conn = await pool.getConnection();
-      // TODO: change global table.., check connection in golden.js, maybe change setup icon buttons to yellow?
-      await conn.query("CREATE TABLE IF NOT EXISTS global(\
+      await conn.query("CREATE TABLE IF NOT EXISTS analytics(\
                                     id VARCHAR(255) UNIQUE NOT NULL,\
-                                    value INT NOT NULL\
-                                  );\
-                                  INSERT IGNORE INTO global\
-                                    (id, value) VALUES ('channelCount', 0)\
-                                  ;\
+                                    value INT NOT NULL,\
+                                    lastUpdated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\
+                                    );\
                                   CREATE TABLE IF NOT EXISTS guilds(\
                                     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\
                                     guildId VARCHAR(255) UNIQUE NOT NULL,\
@@ -30,20 +28,17 @@ module.exports = {
                                     musicChannelHeroId VARCHAR(255),\
                                     musicChannelEmbedId VARCHAR(255)\
                                   );\
-                                  CREATE TABLE IF NOT EXISTS grafana(\
-                                    id VARCHAR(255) UNIQUE NOT NULL,\
-                                    value INT NOT NULL,\
-                                    lastUpdated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\
-                                    );\
-                                    INSERT IGNORE INTO grafana\
+                                  INSERT IGNORE INTO analytics\
+                                    (id, value) VALUES ('channelsCreated', 0)\
+                                  ;\
+                                  INSERT IGNORE INTO analytics\
                                     (id, value) VALUES ('activePlayers', 0)\
                                   ;\
-                                  INSERT IGNORE INTO grafana\
+                                  INSERT IGNORE INTO analytics\
                                     (id, value) VALUES ('activeListeners', 0)\
                                   ;", [1, "mariadb"]);
 
     } catch (err) {
-      console.log(err)
       throw err;
     } finally {
       if (conn) return conn.end();
@@ -55,7 +50,6 @@ module.exports = {
   },
 
   addGuild: async function (guildId, guildName) {
-    console.log(guildName)
     if (guildName === undefined) guildName = "Unknown";
     let conn;
     try {
@@ -104,6 +98,7 @@ module.exports = {
 
   getGuildChannel: async function (guildId) {
     const guild = await module.exports.getGuild(guildId);
+    if (guild === undefined) return null; // return null if guild doesnt' exist
     return guild.musicChannelId;
   },
 
@@ -166,11 +161,11 @@ module.exports = {
     }
   },
 
-  getGlobal: async function () {
+  getChannelsCreated: async function () {
     let conn;
     try {
       conn = await pool.getConnection();
-      const res = await conn.query(`SELECT * FROM global;`, [1, "mariadb"]);
+      const res = await conn.query(`SELECT * FROM analytics WHERE id = 'channelsCreated';`, [1, "mariadb"]);
 
       if (conn) conn.end();
       return res[0]
@@ -181,11 +176,11 @@ module.exports = {
     }
   },
 
-  increaseChannelCount: async function () {
+  increaseChannelsCreated: async function () {
     let conn;
     try {
       conn = await pool.getConnection();
-      await conn.query(`UPDATE global SET value = value + 1 WHERE id = 'channelCount';`, [1, "mariadb"]);
+      await conn.query(`UPDATE analytics SET value = value + 1 WHERE id = 'channelsCreated';`, [1, "mariadb"]);
     } catch (err) {
       console.log(err)
       throw err;
@@ -198,7 +193,7 @@ module.exports = {
     let conn;
     try {
       conn = await pool.getConnection();
-      await conn.query(`UPDATE grafana SET value = ${amount} WHERE id = 'activePlayers';`, [1, "mariadb"]);
+      await conn.query(`UPDATE analytics SET value = ${amount} WHERE id = 'activePlayers';`, [1, "mariadb"]);
     } catch (err) {
       console.log(err)
       throw err;
@@ -211,13 +206,21 @@ module.exports = {
     let conn;
     try {
       conn = await pool.getConnection();
-      await conn.query(`UPDATE grafana SET value = ${amount} WHERE id = 'activeListeners';`, [1, "mariadb"]);
+      await conn.query(`UPDATE analytics SET value = ${amount} WHERE id = 'activeListeners';`, [1, "mariadb"]);
     } catch (err) {
       console.log(err)
       throw err;
     } finally {
       if (conn) return conn.end();
     }
+  },
 
+  closeConnection: async function() {
+    try {
+      console.log('Closing database connection...')
+      await pool.end();
+    } catch (err) {
+      throw err;
+    }
   }
 }
