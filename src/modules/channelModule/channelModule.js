@@ -139,8 +139,8 @@ module.exports = {
 			let title = player.queue.current.title.includes(
 				player.queue.current.author
 			)
-				? (title = `Now playing: ${player.queue.current.title} [${duration}]`)
-				: (title = `Now playing: ${player.queue.current.title} by ${player.queue.current.author} [${duration}]`);
+				? `Now playing: ${player.queue.current.title} [${duration}]`
+				: `Now playing: ${player.queue.current.title} by ${player.queue.current.author} [${duration}]`;
 
 			player.get(`autoplay`)
 				? (channelEmbed.embeds[0].title = `<:auto:931241431979417661> | ${title}`)
