@@ -68,11 +68,19 @@ module.exports = {
 		const pageStart = 10 * page;
 		const pageEnd = pageStart + 10;
 
-		let tracks = `\`Now Playing.\` ** | [${queue.current.title} by ${queue.current.author}](${queue.current.uri})**`;
+		let tracks = '';
+
+		queue.current.title.includes(queue.current.author)
+			? (tracks = `\`Now Playing.\` ** | [${queue.current.title}](${queue.current.uri})**`)
+			: (tracks = `\`Now Playing.\` ** | [${queue.current.title} by ${queue.current.author}](${queue.current.uri})**`);
 
 		queue.slice(pageStart, pageEnd).map((track, i) => {
 			let pos = i + pageStart + 1;
-			return (tracks += `\n\`${pos}.\` ** | [${track.title} by ${track.author}](${track.uri})**`);
+
+			if (track.title.includes(track.author))
+				return (tracks += `\n\`${pos}.\` ** | [${track.title}](${track.uri})**`);
+			else
+				return (tracks += `\n\`${pos}.\` ** | [${track.title} by ${track.author}](${track.uri})**`);
 		});
 
 		embed
