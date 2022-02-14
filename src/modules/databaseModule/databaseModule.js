@@ -46,7 +46,7 @@ module.exports = {
   },
 
   addGuildIfNotExists: async function (guildId, guildName) {
-    if (!await module.exports.guildExists(guildId)) module.exports.addGuild(guildId, guildName)
+    if (!await module.exports.guildExists(guildId)) await module.exports.addGuild(guildId, guildName)
   },
 
   addGuild: async function (guildId, guildName) {
@@ -112,7 +112,7 @@ module.exports = {
   },
 
   addGuildIfNotExists: async function (guildId, guildName) {
-    if (!await module.exports.guildExists(guildId)) module.exports.addGuild(guildId, guildName);
+    if (!await module.exports.guildExists(guildId)) await module.exports.addGuild(guildId, guildName);
   },
 
 
