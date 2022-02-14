@@ -12,7 +12,7 @@ const {
 } = require("./modules/handlerModule/handlerModule");
 
 if (!env.parsed)
-  return console.log('Fatal: config.env file missing or unreadable\nSetup instructions at https://github.com/spastenstudio/Golden')
+  return console.log('Fatal: config.env file missing or unreadable\nSetup instructions at https://github.com/spasten-studio/Golden')
 
 const client = new Client({
   shards: "auto",
