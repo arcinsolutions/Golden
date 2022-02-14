@@ -132,4 +132,24 @@ module.exports = {
       }
     })();
   },
+  
+  cleanCommands: async function (client) {
+    const commandsArray = client.commands.map((data, name) => {
+      return name
+    })
+    
+
+    const registeredCommands = await client.application.commands.fetch()
+
+    for (const registeredCommand of registeredCommands) {
+      const name = registeredCommand[1].name
+      if (!commandsArray.includes(name)) {
+
+        // Command is registered but no longer exists in the bot - delete it!
+        client.application.commands.delete(registeredCommand[0])
+          .then(console.log(`/${name} has been deleted globally since it's no longer existing`))
+          .catch(console.error);
+      }
+    }
+  }
 };

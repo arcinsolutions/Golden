@@ -3,6 +3,7 @@ const { getAllGuilds, setActiveListeners, setActivePlayers, closeConnection } = 
 const { setRandomActivities } = require('../../modules/activityModule/activityModule');
 const { Uptime } = require('better-uptime');
 const { createTables } = require('../../modules/databaseModule/databaseModule')
+const { cleanCommands } = require('../../modules/handlerModule/handlerModule')
 
 module.exports = {
     name: 'ready',
@@ -43,6 +44,8 @@ module.exports = {
             if (cachedGuild !== undefined && await channelEmbedExists(guildId, client))
                 resetChannel(cachedGuild);
         }
+
+        cleanCommands(client) // delete registered commands, which no longer exists in the bot
 
         if (process.env.BETTERUPTIME_ENABLED === 'true')
             new Uptime({
