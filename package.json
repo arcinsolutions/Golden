@@ -1,6 +1,6 @@
 {
   "name": "golden",
-  "version": "4.2.0",
+  "version": "4.3.0",
   "description": "A Premium Discord Bot with a lot of functions and wihtout any Paywalls!",
   "main": "./src/golden.js",
   "scripts": {
