@@ -28,7 +28,7 @@
 <br/>
 <br/>
   <div align="center">
-    ™ and © 2021 The Golden Authors. All Rights Reserved.
+    ™ and © 2022 The Golden Authors. All Rights Reserved.
     </div>
   <div align="center">
   <br/>
