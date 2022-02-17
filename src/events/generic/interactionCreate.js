@@ -48,8 +48,8 @@ module.exports = {
           await setGuildChannel(interaction.guild.id, channel.id, interaction.guild.name);
           const { channelHero, channelEmbed } = await populateChannel(interaction.guild);
           if(channelHero && channelEmbed === undefined) return interaction.deferUpdate();
-          setGuildChannelEmbed(interaction.guild.id, channelEmbed.id);
-          setGuildChannelHero(interaction.guild.id, channelHero.id);
+          setGuildChannelEmbed(interaction.guild.id, channelEmbed.id, interaction.guild.name);
+          setGuildChannelHero(interaction.guild.id, channelHero.id, interaction.guild.name);
 
           client.manager.players.filter(async (player) => {
             if (player.guild !== interaction.guild.id) return;

@@ -48,8 +48,8 @@ module.exports = {
     const channel = await createChannel(interaction.guild);
     await setGuildChannel(interaction.guild.id, channel.id, interaction.guild.name);
     const { channelHero, channelEmbed } = await populateChannel(interaction.guild);
-    await setGuildChannelEmbed(interaction.guild.id, channelEmbed.id);
-    await setGuildChannelHero(interaction.guild.id, channelHero.id);
+    await setGuildChannelEmbed(interaction.guild.id, channelEmbed.id, interaction.guild.name);
+    await setGuildChannelHero(interaction.guild.id, channelHero.id, interaction.guild.name);
 
     client.manager.players.filter(async player =>
     {

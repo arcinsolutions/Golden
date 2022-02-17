@@ -45,10 +45,6 @@ module.exports = {
     }
   },
 
-  addGuildIfNotExists: async function (guildId, guildName) {
-    if (!await module.exports.guildExists(guildId)) await module.exports.addGuild(guildId, guildName)
-  },
-
   addGuild: async function (guildId, guildName) {
     if (guildName === undefined) guildName = "Unknown";
     let conn;
@@ -56,6 +52,25 @@ module.exports = {
       conn = await pool.getConnection();
       await conn.query(`INSERT INTO guilds\
                                       (guildId, guildName) VALUES ('${guildId}', '${guildName}')\
+                                    ;`, [1, "mariadb"]);
+
+    } catch (err) {
+      console.log(err)
+      throw err;
+    } finally {
+      if (conn) return conn.end();
+    }
+  },
+
+  updateGuild: async function (guildId, guildName) {
+    console.log(guildName)
+    if (guildName === undefined) guildName = "Unknown";
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      await conn.query(`UPDATE guilds\
+                                      SET guildName = '${guildName}'\
+                                      WHERE guildId = '${guildId}'\
                                     ;`, [1, "mariadb"]);
 
     } catch (err) {
@@ -112,7 +127,11 @@ module.exports = {
   },
 
   addGuildIfNotExists: async function (guildId, guildName) {
-    if (!await module.exports.guildExists(guildId)) await module.exports.addGuild(guildId, guildName);
+    if (!await module.exports.guildExists(guildId)) {
+     await module.exports.addGuild(guildId, guildName);
+    } else {
+      await module.exports.updateGuild(guildId, guildName);
+    }
   },
 
 
