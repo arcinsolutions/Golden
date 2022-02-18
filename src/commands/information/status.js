@@ -1,6 +1,6 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageEmbed } = require("discord.js");
-const { getGlobal } = require("../../modules/databaseModule/databaseModule");
+const { getChannelsCreated } = require("../../modules/databaseModule/databaseModule");
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -26,7 +26,8 @@ module.exports = {
     let seconds = Math.floor(totalSeconds % 60);
 
     const usage = process.cpuUsage();
-
+    const channelsCreated = await getChannelsCreated();
+    
     interaction.editReply({
       embeds: [
         embed
@@ -83,12 +84,12 @@ module.exports = {
             },
             {
               name: "Music channels",
-              value: `${getGlobal().stats.goldenChannelCount}`,
+              value: `${channelsCreated.value}`,
               inline: true,
             },
             {
               name: "Users",
-              value: `${client.users.cache.size}`,
+              value: `${client.guilds.cache.map((g) => g.memberCount).reduce((a, c) => a + c)}`,
               inline: true,
             }
           )

@@ -13,10 +13,10 @@ module.exports = {
 
         const channel = interaction.member.voice;
         if (!channel) return replyInteractionEmbed(interaction, '', 'Join a voice channel first.', 'DARK_RED');
-        if (channel.channel.id!= player.voiceChannel)
+        if (channel.channelId != player.voiceChannel)
             return replyInteractionEmbed(interaction, '', 'I\'ve to be in the same voice channel with you for toggling Autoplay.', 'DARK_RED');
 
-        player.set(`autoplay`, !player.get(`autoplay`))
+        player.set(`autoplay`, !player.get(`autoplay`));
 
         setEmbed(interaction.guild, player);
         return replyInteractionEmbed(interaction, '', `**${player.get(`autoplay`) ? "activated" : "deactivated"}** Autoplay`, 'DARK_GREEN');

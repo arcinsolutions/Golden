@@ -1,6 +1,6 @@
-require("dotenv").config({ path: "./data/.env" });
+const env = require("dotenv").config({ path: "./data/config.env" });
 
-const Spotify = require("erela.js-spotify");
+const Spotify = require("better-erela.js-spotify").default;
 const { Client, Intents } = require("discord.js");
 const { Manager } = require("erela.js");
 const { DiscordTogether } = require('discord-together');
@@ -11,32 +11,37 @@ const {
   registerMusicEvents
 } = require("./modules/handlerModule/handlerModule");
 
+if (!env.parsed)
+  return console.log('Fatal: config.env file missing or unreadable\nSetup instructions at https://github.com/spasten-studio/Golden')
+
 const client = new Client({
-  fetchAllMembers: true,
   shards: "auto",
   intents: [
     Intents.FLAGS.GUILDS,
     Intents.FLAGS.GUILD_VOICE_STATES,
     Intents.FLAGS.GUILD_MESSAGES,
+    Intents.FLAGS.GUILD_MEMBERS,
   ],
 });
+
+const plugins = []
+if (process.env.SPOTIFY_ENABLED === 'true')
+  plugins.push(new Spotify({
+    clientID: process.env.SPOTIFY_CLIENTID,
+    clientSecret: process.env.SPOTIFY_CLIENTSECRET,
+  }))
 
 client.manager = new Manager({
   nodes: [
     {
-      host: process.env.HOST,
-      port: Number(process.env.PORT),
-      password: process.env.PASSWORD,
+      host: process.env.LAVALINK_HOST,
+      port: Number(process.env.LAVALINK_PORT),
+      password: process.env.LAVALINK_PASSWORD,
       retryDelay: 5000,
-      secure: Boolean(process.env.SECURE)
+      secure: process.env.LAVALINK_SSL === "true" ? true : false
     },
   ],
-  plugins: [
-    new Spotify({
-      clientID: process.env.CLIENTID,
-      clientSecret: process.env.CLIENTSECRET,
-    }),
-  ],
+  plugins,
   autoPlay: true,
   send: (id, payload) => {
     const guild = client.guilds.cache.get(id);
@@ -48,6 +53,6 @@ client.discordTogether = new DiscordTogether(client);
 
 registerMusicEvents(client);
 registerGenericEvents(client);
-registerCommands(client, false);
+registerCommands(client);
 
-client.login(process.env.TOKEN);
+client.login(process.env.DISCORD_TOKEN);

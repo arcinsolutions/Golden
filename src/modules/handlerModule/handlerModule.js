@@ -43,10 +43,8 @@ module.exports = {
     }
   },
 
-  registerCommands: function (client, global)
+  registerCommands: function (client)
   {
-    // global parameter => register slash commands globally
-
     const commands = [];
     client.commands = new Collection();
 
@@ -80,7 +78,7 @@ module.exports = {
 
     // Deploy commands
 
-    const rest = new REST({ version: "9" }).setToken(process.env.TOKEN);
+    const rest = new REST({ version: "9" }).setToken(process.env.DISCORD_TOKEN);
 
     (async () =>
     {
@@ -103,12 +101,12 @@ module.exports = {
 
       try
       {
-        if (!global)
+        if (!process.env.DISCORD_GLOBAL_COMMANDS)
         {
           await rest.put(
             Routes.applicationGuildCommands(
-              process.env.APPID,
-              process.env.GUILDID
+              process.env.DISCORD_APPID,
+              process.env.DISCORD_GUILDID
             ),
             {
               body: commands,
@@ -116,7 +114,7 @@ module.exports = {
           );
         } else
         {
-          await rest.put(Routes.applicationCommands(process.env.APPID), {
+          await rest.put(Routes.applicationCommands(process.env.DISCORD_APPID), {
             body: commands,
           });
         }
@@ -134,4 +132,24 @@ module.exports = {
       }
     })();
   },
+  
+  cleanCommands: async function (client) {
+    const commandsArray = client.commands.map((data, name) => {
+      return name
+    })
+    
+
+    const registeredCommands = await client.application.commands.fetch()
+
+    for (const registeredCommand of registeredCommands) {
+      const name = registeredCommand[1].name
+      if (!commandsArray.includes(name)) {
+
+        // Command is registered but no longer exists in the bot - delete it!
+        client.application.commands.delete(registeredCommand[0])
+          .then(console.log(`/${name} has been deleted globally since it's no longer existing`))
+          .catch(console.error);
+      }
+    }
+  }
 };

@@ -55,5 +55,19 @@ async function NPEmbed(interaction, player)
 				.setURL('https://www.youtube.com/watch?v=' + queue.current.identifier)
 		);
 
+	if (typeof queue.current.resolve == 'function') await queue.current.resolve();
 	await replyBtnInteractionEmbed(interaction, '', `<:musicnote:930887306045435934> **Now Playing:** [${queue.current.title} by ${queue.current.author}](${queue.current.uri})\n**Duration:** ${bar} ${formatDuration(player.position)}|${formatDuration(queue.current.duration)}\n**Requested by:** ${queue.current.requester}`, `DARK_GREEN`, queue.current.displayThumbnail("mqdefault"), channelControlComponent);
+
+	const Interval = setInterval(() =>
+	{
+		const pos = formatDuration(player.position);
+		if (queue.current == undefined || interaction == undefined || player.position > (queue.current.duration - 5000))
+		{
+			editBtnInteractionEmbed(interaction, '', '**Player stopped or its not available anymore!', 'DARK_RED');
+			clearInterval(Interval);
+			return;
+		};
+		bar = generateProgressBar(player.position, queue.current.duration);
+		editBtnInteractionEmbed(interaction, '', `<:musicnote:930887306045435934> **Now Playing:** [${queue.current.title} by ${queue.current.author}](${queue.current.uri})\n**Duration:** ${bar} ${pos}|${formatDuration(queue.current.duration)}\n**Requested by:** ${queue.current.requester}`, `DARK_GREEN`, queue.current.displayThumbnail("mqdefault"));
+	}, 5000);
 };

@@ -1,5 +1,5 @@
 const format = require('format-duration');
-const { setEmbed, generateQueue } = require('../channelModule/channelModule');
+const { setEmbed } = require('../channelModule/channelModule');
 
 module.exports = {
   trackLoaded: async function (guild, player, track) {
@@ -10,8 +10,7 @@ module.exports = {
     if (player.queue.length >= 1) {
       setEmbed(guild, player);
     } else {
-      if (track.thumbail === undefined && track.resolve !== undefined)
-        await track.resolve("thumbnail"); // fetch thumbnail
+      if (typeof track.resolve == 'function') await track.resolve();
         setEmbed(guild, player);
     }
   },

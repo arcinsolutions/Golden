@@ -1,83 +1,244 @@
-const { Database } = require("@devsnowflake/quick.db");
-
-const db = new Database(__dirname + "/../../../data/data.db", {
-  path: __dirname + "/../../../data",
-  table: "ROOT",
+const mariadb = require('mariadb');
+const pool = mariadb.createPool({
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  user: process.env.DB_USERNAME,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_DATABASE,
+  connectionLimit: 5,
+  multipleStatements: true
 });
 
 module.exports = {
-  createGuild: function (guildId) {
-    return db.set(guildId, {
-      musicChannel: "",
-      musicChannelHero: "",
-      musicChannelEmbed: "",
-    });
+
+  createTables: async function () {
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      await conn.query("CREATE TABLE IF NOT EXISTS analytics(\
+                                    id VARCHAR(255) UNIQUE NOT NULL,\
+                                    value INT NOT NULL,\
+                                    lastUpdated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\
+                                    );\
+                                  CREATE TABLE IF NOT EXISTS guilds(\
+                                    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,\
+                                    guildId VARCHAR(255) UNIQUE NOT NULL,\
+                                    guildName VARCHAR(255),\
+                                    musicChannelId VARCHAR(255),\
+                                    musicChannelHeroId VARCHAR(255),\
+                                    musicChannelEmbedId VARCHAR(255)\
+                                  );\
+                                  INSERT IGNORE INTO analytics\
+                                    (id, value) VALUES ('channelsCreated', 0)\
+                                  ;\
+                                  INSERT IGNORE INTO analytics\
+                                    (id, value) VALUES ('activePlayers', 0)\
+                                  ;\
+                                  INSERT IGNORE INTO analytics\
+                                    (id, value) VALUES ('activeListeners', 0)\
+                                  ;", [1, "mariadb"]);
+
+    } catch (err) {
+      throw err;
+    } finally {
+      if (conn) return conn.end();
+    }
   },
 
-  getAll: function () {
-    return db.all();
+  addGuild: async function (guildId, guildName) {
+    if (guildName === undefined) guildName = "Unknown";
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      await conn.query(`INSERT INTO guilds\
+                                      (guildId, guildName) VALUES ('${guildId}', '${guildName}')\
+                                    ;`, [1, "mariadb"]);
+
+    } catch (err) {
+      console.log(err)
+      throw err;
+    } finally {
+      if (conn) return conn.end();
+    }
   },
 
-  getGuild: function (guildId) {
-    return db.get(guildId);
+  updateGuild: async function (guildId, guildName) {
+    if (guildName === undefined) guildName = "Unknown";
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      await conn.query(`UPDATE guilds\
+                                      SET guildName = '${guildName}'\
+                                      WHERE guildId = '${guildId}'\
+                                    ;`, [1, "mariadb"]);
+
+    } catch (err) {
+      console.log(err)
+      throw err;
+    } finally {
+      if (conn) return conn.end();
+    }
   },
 
-  hasGuild: function (guildId) {
-    return db.has(guildId);
+  getAllGuilds: async function () {
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      const res = await conn.query('SELECT * FROM guilds;', [1, "mariadb"]);
+
+      if (conn) conn.end();
+      return res;
+
+    } catch (err) {
+      console.log(err)
+      throw err;
+    }
   },
 
-  createGuildIfNotExists: function (guildId) {
-    if (!module.exports.hasGuild(guildId)) module.exports.createGuild(guildId);
+  getGuild: async function (guildId) {
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      const res = await conn.query(`SELECT * FROM guilds WHERE guildId = '${guildId}';`, [1, "mariadb"]);
+
+      if (conn) conn.end();
+      return res[0]
+
+    } catch (err) {
+      console.log(err)
+      throw err;
+    }
   },
 
-  setGuildChannel: function (guildId, channelId) {
-    module.exports.createGuildIfNotExists(guildId);
-    return db.set(`${guildId}.musicChannel`, channelId);
+  getGuildChannel: async function (guildId) {
+    const guild = await module.exports.getGuild(guildId);
+    if (guild === undefined) return null; // return null if guild doesnt' exist
+    return guild.musicChannelId;
   },
 
-  setGuildChannelEmbed: function (guildId, messageId) {
-    module.exports.createGuildIfNotExists(guildId);
-    return db.set(`${guildId}.musicChannelEmbed`, messageId);
+  getGuildChannelEmbed: async function (guildId) {
+    const guild = await module.exports.getGuild(guildId);
+    return guild.musicChannelEmbedId;
   },
 
-  setGuildChannelHero: function (guildId, messageId) {
-    module.exports.createGuildIfNotExists(guildId);
-    return db.set(`${guildId}.musicChannelHero`, messageId);
+  guildExists: async function (guildId) {
+    return await module.exports.getGuild(guildId) === undefined ? false : true
   },
 
-  getGuildChannel: function (guildId) {
-    return db.get(`${guildId}.musicChannel`);
+  addGuildIfNotExists: async function (guildId, guildName) {
+    if (!await module.exports.guildExists(guildId)) {
+     await module.exports.addGuild(guildId, guildName);
+    } else {
+      await module.exports.updateGuild(guildId, guildName);
+    }
   },
 
-  getGuildChannelEmbed: function (guildId) {
-    return db.get(`${guildId}.musicChannelEmbed`);
+
+  setGuildChannel: async function (guildId, channelId, guildName) {
+    await module.exports.addGuildIfNotExists(guildId, guildName)
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      await conn.query(`UPDATE guilds SET musicChannelId = '${channelId}' WHERE guildId = '${guildId}';`, [1, "mariadb"]);
+
+    } catch (err) {
+      console.log(err)
+      throw err;
+    } finally {
+      if (conn) return conn.end();
+    }
   },
 
-  getGuildChannelHero: function (guildId) {
-    return db.get(`${guildId}.musicChannelHero`);
+  setGuildChannelHero: async function (guildId, messageId, guildName) {
+    await module.exports.addGuildIfNotExists(guildId, guildName)
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      await conn.query(`UPDATE guilds SET musicChannelHeroId = '${messageId}' WHERE guildId = '${guildId}';`, [1, "mariadb"]);
+
+    } catch (err) {
+      console.log(err)
+      throw err;
+    } finally {
+      if (conn) return conn.end();
+    }
   },
 
-  hasGuildChannel: function (guildId, channelType) {
-    return db.get(`${guildId}.musicChannel`) !== "";
+  setGuildChannelEmbed: async function (guildId, messageId, guildName) {
+    await module.exports.addGuildIfNotExists(guildId, guildName)
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      await conn.query(`UPDATE guilds SET musicChannelEmbedId = '${messageId}' WHERE guildId = '${guildId}';`, [1, "mariadb"]);
+
+    } catch (err) {
+      console.log(err)
+      throw err;
+    } finally {
+      if (conn) return conn.end();
+    }
   },
 
-  createGlobalIfNotExist: function() {
-    if(!db.get('global'))
-      db.set('global', {
-        stats: {
-          goldenChannelCount: 0
-        }
-      });
+  getChannelsCreated: async function () {
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      const res = await conn.query(`SELECT * FROM analytics WHERE id = 'channelsCreated';`, [1, "mariadb"]);
+
+      if (conn) conn.end();
+      return res[0]
+
+    } catch (err) {
+      console.log(err)
+      throw err;
+    }
   },
 
-  getGlobal: function() {
-    module.exports.createGlobalIfNotExist();
-    return db.get('global');
+  increaseChannelsCreated: async function () {
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      await conn.query(`UPDATE analytics SET value = value + 1 WHERE id = 'channelsCreated';`, [1, "mariadb"]);
+    } catch (err) {
+      console.log(err)
+      throw err;
+    } finally {
+      if (conn) return conn.end();
+    }
   },
 
-  increaseGlobalChannelCreation: function() {
-    module.exports.createGlobalIfNotExist();
-    db.set('global.stats.goldenChannelCount', db.get('global.stats.goldenChannelCount')+1);
+  setActivePlayers: async function(amount) {
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      await conn.query(`UPDATE analytics SET value = ${amount} WHERE id = 'activePlayers';`, [1, "mariadb"]);
+    } catch (err) {
+      console.log(err)
+      throw err;
+    } finally {
+      if (conn) return conn.end();
+    }
+  },
+  
+  setActiveListeners: async function(amount) {
+    let conn;
+    try {
+      conn = await pool.getConnection();
+      await conn.query(`UPDATE analytics SET value = ${amount} WHERE id = 'activeListeners';`, [1, "mariadb"]);
+    } catch (err) {
+      console.log(err)
+      throw err;
+    } finally {
+      if (conn) return conn.end();
+    }
+  },
+
+  closeConnection: async function() {
+    try {
+      console.log('Closing database connection...')
+      await pool.end();
+    } catch (err) {
+      throw err;
+    }
   }
-
-};
+}

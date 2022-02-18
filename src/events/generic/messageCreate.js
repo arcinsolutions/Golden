@@ -9,7 +9,7 @@ module.exports = {
   once: false,
   async execute(message, client) {
 
-    if (channelExists(message.guild) && getGuildChannel(message.guild.id) === message.channel.id) {
+    if (channelExists(message.guild) && await getGuildChannel(message.guild.id) === message.channel.id) {
       if (message.author.bot) return;
 
       const missingPermissions = checkPermissions(message);
