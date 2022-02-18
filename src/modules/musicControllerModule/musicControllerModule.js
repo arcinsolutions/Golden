@@ -85,6 +85,9 @@ module.exports = {
     if (voiceChannel.id !== player.voiceChannel) 
       return sendTemporaryMessage(channel, { embeds: [createEmbed('', 'I\'ve to be in the same voice channel with you for requesting tracks.', 'DARK_RED')] }, 10000);
 
+    if (content.includes('https://open.spotify.com/episode') || content.includes('https://open.spotify.com/show'))
+      return sendTemporaryMessage(channel, { embeds: [createEmbed('', 'I don\'t support podcasts from Spotify for now, please use another source.', 'DARK_RED')] }, 10000);
+
     if (player.state !== "CONNECTED") player.connect();
 
     const search = content;
