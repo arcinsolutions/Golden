@@ -49,8 +49,8 @@ module.exports = {
 
         if (process.env.BETTERUPTIME_ENABLED === 'true')
             new Uptime({
-                url: process.env.BETTERUPTIME_URL,
-                time: process.env.BETTERUPTIME_TIME,
+                url: process.env.BETTERUPTIME_HEARTBEAT_URL,
+                time: Number(process.env.BETTERUPTIME_TIME),
                 time_type: process.env.BETTERUPTIME_TIME_TYPE, //millisecond, minute, hour, day, week
             });
         
