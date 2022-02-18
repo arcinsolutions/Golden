@@ -169,6 +169,7 @@ module.exports = {
 				// if there's no thumbnail (e.g. SoundCloud or radio link)
 				channelEmbed.embeds[0].image.url = process.env.GOLDEN_EMBED_THUMBNAIL;
 			} else {
+				if (typeof player.queue.current.resolve == 'function') await player.queue.current.resolve();
 				let trackThumbnail = await player.queue.current.displayThumbnail(
 					'maxresdefault'
 				);

@@ -55,6 +55,7 @@ async function NPEmbed(interaction, player)
 				.setURL('https://www.youtube.com/watch?v=' + queue.current.identifier)
 		);
 
+	if (typeof queue.current.resolve == 'function') await queue.current.resolve();
 	await replyBtnInteractionEmbed(interaction, '', `<:musicnote:930887306045435934> **Now Playing:** [${queue.current.title} by ${queue.current.author}](${queue.current.uri})\n**Duration:** ${bar} ${formatDuration(player.position)}|${formatDuration(queue.current.duration)}\n**Requested by:** ${queue.current.requester}`, `DARK_GREEN`, queue.current.displayThumbnail("mqdefault"), channelControlComponent);
 
 	const Interval = setInterval(() =>
