@@ -63,7 +63,6 @@ module.exports = {
   },
 
   updateGuild: async function (guildId, guildName) {
-    console.log(guildName)
     if (guildName === undefined) guildName = "Unknown";
     let conn;
     try {
