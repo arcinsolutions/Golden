@@ -1,6 +1,6 @@
 const env = require("dotenv").config({ path: "./data/config.env" });
 
-const Spotify = require("erela.js-spotify");
+const Spotify = require("better-erela.js-spotify").default;
 const { Client, Intents } = require("discord.js");
 const { Manager } = require("erela.js");
 const { DiscordTogether } = require('discord-together');
