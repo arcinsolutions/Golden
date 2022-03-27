@@ -12,7 +12,10 @@ const {
 } = require("./modules/handlerModule/handlerModule");
 
 if (!env.parsed)
-  return console.log('Fatal: config.env file missing or unreadable\nSetup instructions at https://github.com/spasten-studio/Golden')
+{
+  console.log('Fatal: config.env file missing or unreadable\nSetup instructions at https://github.com/spasten-studio/Golden');
+  process.exit;
+}
 
 const client = new Client({
   shards: "auto",
@@ -24,12 +27,12 @@ const client = new Client({
   ],
 });
 
-const plugins = []
+const plugins = [];
 if (process.env.SPOTIFY_ENABLED === 'true')
   plugins.push(new Spotify({
     clientID: process.env.SPOTIFY_CLIENTID,
     clientSecret: process.env.SPOTIFY_CLIENTSECRET,
-  }))
+  }));
 
 client.manager = new Manager({
   nodes: [
@@ -43,7 +46,8 @@ client.manager = new Manager({
   ],
   plugins,
   autoPlay: true,
-  send: (id, payload) => {
+  send: (id, payload) =>
+  {
     const guild = client.guilds.cache.get(id);
     if (guild) guild.shard.send(payload);
   },

@@ -233,6 +233,23 @@ module.exports = {
     }
   },
 
+  addReachable: async function(guildId, message, guildName) {
+    try
+        {
+            conn = await pool.getConnection();
+            await conn.query(`UPDATE guilds SET reachableChannelEmbedId = '${message.id}' WHERE guildId = '${interaction.guild.id}';`, [1, "mariadb"]);
+            await conn.query(`UPDATE guilds SET reachableChannelID = '${message.channel.id}' WHERE guildId = '${interaction.guild.id}';`, [1, "mariadb"]);
+
+        } catch (err)
+        {
+            console.log(err);
+            throw err;
+        } finally
+        {
+            if (conn) return conn.end();
+        }
+  },
+
   closeConnection: async function() {
     try {
       console.log('Closing database connection...')
