@@ -47,6 +47,7 @@ module.exports = {
 
   addGuild: async function (guildId, guildName) {
     if (guildName === undefined) guildName = "Unknown";
+    guildName = guildName.replaceAll("'", "''");
     let conn;
     try {
       conn = await pool.getConnection();
@@ -64,6 +65,7 @@ module.exports = {
 
   updateGuild: async function (guildId, guildName) {
     if (guildName === undefined) guildName = "Unknown";
+    guildName = guildName.replaceAll("'", "''");
     let conn;
     try {
       conn = await pool.getConnection();
