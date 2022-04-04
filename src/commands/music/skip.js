@@ -25,7 +25,6 @@ module.exports = {
 		const queue_number = interaction.options.getInteger('queue_number');
 
 		const player = interaction.client.manager.get(interaction.guild.id);
-		const queue = player.queue;
 
 		if (!player)
 			return replyInteractionEmbed(
@@ -35,6 +34,7 @@ module.exports = {
 				'DARK_RED'
 			);
 
+		const queue = player.queue;
 		const { channel } = interaction.member.voice;
 
 		if (!channel)
