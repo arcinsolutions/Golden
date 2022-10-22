@@ -1,3 +1,5 @@
+## Golden is no longer maintained. Please look forward to [Bertram](https://github.com/arcinsolutions/Bertram-Framework).
+
 ## Features:
 > - Slash Commands
 > - plays Music from Spotify, Soundcloud, YouTube
