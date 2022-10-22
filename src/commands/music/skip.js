@@ -25,7 +25,6 @@ module.exports = {
 		const queue_number = interaction.options.getInteger('queue_number');
 
 		const player = interaction.client.manager.get(interaction.guild.id);
-		const queue = player.queue;
 
 		if (!player)
 			return replyInteractionEmbed(
@@ -35,7 +34,9 @@ module.exports = {
 				'DARK_RED'
 			);
 
+		const queue = player.queue;
 		const { channel } = interaction.member.voice;
+
 		if (!channel)
 			return replyInteractionEmbed(
 				interaction,
@@ -43,6 +44,7 @@ module.exports = {
 				'Join a voice channel first.',
 				'DARK_RED'
 			);
+
 		if (channel.id !== player.voiceChannel)
 			return replyInteractionEmbed(
 				interaction,
@@ -71,14 +73,7 @@ module.exports = {
 				);
 
 			await queue.remove(0, amount);
-			await player.stop();
-
-			return replyInteractionEmbed(
-				interaction,
-				'Songs were skipped',
-				`Now Playing ${queue.current.title}`,
-				'DARK_GREEN'
-			);
+			return player.stop();
 		} else if (queue_number != undefined) {
 			if (player.queue.totalSize < queue_number)
 				return replyInteractionEmbed(
@@ -89,14 +84,7 @@ module.exports = {
 				);
 
 			await queue.remove(0, queue_number - 1);
-			await player.stop();
-
-			return replyInteractionEmbed(
-				interaction,
-				'Songs were skipped',
-				`Now Playing ${queue.current.title}`,
-				'DARK_GREEN'
-			);
+			return player.stop();
 		}
 
 		player.stop();

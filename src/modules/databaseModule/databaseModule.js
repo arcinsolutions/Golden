@@ -47,6 +47,7 @@ module.exports = {
 
   addGuild: async function (guildId, guildName) {
     if (guildName === undefined) guildName = "Unknown";
+    guildName = guildName.replaceAll("'", "''");
     let conn;
     try {
       conn = await pool.getConnection();
@@ -64,6 +65,7 @@ module.exports = {
 
   updateGuild: async function (guildId, guildName) {
     if (guildName === undefined) guildName = "Unknown";
+    guildName = guildName.replaceAll("'", "''");
     let conn;
     try {
       conn = await pool.getConnection();
@@ -231,6 +233,23 @@ module.exports = {
     } finally {
       if (conn) return conn.end();
     }
+  },
+
+  addReachable: async function(guildId, message, guildName) {
+    try
+        {
+            conn = await pool.getConnection();
+            await conn.query(`UPDATE guilds SET reachableChannelEmbedId = '${message.id}' WHERE guildId = '${interaction.guild.id}';`, [1, "mariadb"]);
+            await conn.query(`UPDATE guilds SET reachableChannelID = '${message.channel.id}' WHERE guildId = '${interaction.guild.id}';`, [1, "mariadb"]);
+
+        } catch (err)
+        {
+            console.log(err);
+            throw err;
+        } finally
+        {
+            if (conn) return conn.end();
+        }
   },
 
   closeConnection: async function() {
