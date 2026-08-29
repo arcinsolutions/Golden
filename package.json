@@ -21,6 +21,6 @@
     "dotenv": "^10.0.0",
     "erela.js-vk": "^2.3.3-vk-8",
     "format-duration": "^1.4.0",
-    "mariadb": "^2.5.5"
+    "mariadb": "^3.5.3"
   }
 }
